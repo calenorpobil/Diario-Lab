@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Modelos.Dato;
+import com.merlita.diariolab.Modelos.DatoTipo;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.Ocurrencia;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -44,6 +48,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -115,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorFilas);
 
-        //borrarTodo();
-        //datosDePrueba();
+        borrarTodo();
+        insertarDatosIniciales();
         actualizarDatos();
 
 
@@ -525,16 +531,100 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-    private void datosDePrueba() {
-        Estudio a = new Estudio("Tomar manzana", "Es bueno", 8);
-        if(insertarSQL(a)!=-1)
-            listaEstudios.add(a);
-        a= new Estudio("Vasos de agua", "También", 18);
-        if(insertarSQL(a)!=-1)
-            listaEstudios.add(a);
-        a= new Estudio("Errores detectados", "Malos", 1080);
-        if(insertarSQL(a)!=-1)
-            listaEstudios.add(a);
+    public void insertarDatosIniciales() {
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, 1);) {
+
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            // Iniciar una transacción para mejorar el rendimiento
+            try {
+                db.beginTransaction();
+                // Insertar estudios
+                usdbh.insertarEstudio(db, new Estudio("Tomar Café", "Registro de consumo diario de café"));
+                usdbh. insertarEstudio(db,new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento"));
+                usdbh. insertarEstudio(db,new Estudio("Diario", "Registro personal diario"));
+
+                // Insertar tipos de datos para "Tomar Café"
+                usdbh. insertarDatoTipo(db,new DatoTipo("Tazas", "Numero", "Cantidad de tazas consumidas", "Tomar Café"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
+
+                // Tipos para "Ir al gimnasio"
+                usdbh. insertarDatoTipo(db,new DatoTipo("Duración", "Numero", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
+
+                // Tipos para "Diario"
+                usdbh. insertarDatoTipo(db,new DatoTipo("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Fecha", "Fecha", "Fecha del registro", "Diario"));
+                usdbh. insertarDatoTipo(db,new DatoTipo("Evento destacado", "Texto", "Evento importante del día", "Diario"));
+
+                // Insertar ocurrencias para "Tomar Café"
+                // Ocurrencias para "Tomar Café"
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-01T08:30:00"), "Tomar Café"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-02T09:15:00"), "Tomar Café"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-03T07:45:00"), "Tomar Café"));
+
+                // Ocurrencias para "Ir al gimnasio"
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-01T18:00:00"), "Ir al gimnasio"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-03T19:30:00"), "Ir al gimnasio"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-05T17:45:00"), "Ir al gimnasio"));
+
+                // Ocurrencias para "Diario"
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-01T22:00:00"), "Diario"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-02T21:30:00"), "Diario"));
+                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDateTime.parse("2024-03-03T23:00:00"), "Diario"));
+
+                // Insertar datos para "Tomar Café"
+                // Datos para "Tomar Café"
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDateTime.parse("2024-03-01T08:30:00"), "2"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDateTime.parse("2024-03-01T08:30:00"), "2024-03-01T08:30:00"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDateTime.parse("2024-03-01T08:30:00"), "Espresso"));
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDateTime.parse("2024-03-02T09:15:00"), "1"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDateTime.parse("2024-03-02T09:15:00"), "2024-03-02T09:15:00"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDateTime.parse("2024-03-02T09:15:00"), "Latte"));
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDateTime.parse("2024-03-03T07:45:00"), "3"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDateTime.parse("2024-03-03T07:45:00"), "2024-03-03T07:45:00"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDateTime.parse("2024-03-03T07:45:00"), "Americano"));
+
+                // Datos para "Ir al gimnasio"
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDateTime.parse("2024-03-01T18:00:00"), "60"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDateTime.parse("2024-03-01T18:00:00"), "2024-03-01"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDateTime.parse("2024-03-01T18:00:00"), "Cardio"));
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDateTime.parse("2024-03-03T19:30:00"), "45"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDateTime.parse("2024-03-03T19:30:00"), "2024-03-03"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDateTime.parse("2024-03-03T19:30:00"), "Pesas"));
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDateTime.parse("2024-03-05T17:45:00"), "90"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDateTime.parse("2024-03-05T17:45:00"), "2024-03-05"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDateTime.parse("2024-03-05T17:45:00"), "Yoga"));
+
+                // Datos para "Diario"
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDateTime.parse("2024-03-01T22:00:00"), "Feliz"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDateTime.parse("2024-03-01T22:00:00"), "2024-03-01"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDateTime.parse("2024-03-01T22:00:00"), "Reunión con amigos"));
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDateTime.parse("2024-03-02T21:30:00"), "Cansado"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDateTime.parse("2024-03-02T21:30:00"), "2024-03-02"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDateTime.parse("2024-03-02T21:30:00"), "Trabajo intenso"));
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDateTime.parse("2024-03-03T23:00:00"), "Relajado"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDateTime.parse("2024-03-03T23:00:00"), "2024-03-03"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDateTime.parse("2024-03-03T23:00:00"), "Día de descanso"));
+
+                // Marcar la transacción como exitosa
+                db.setTransactionSuccessful();
+            }catch (Exception e) {
+                Log.e("DB_ERROR", "Error en transacción: " + e.getMessage());
+            } finally {
+                // Finalizar la transacción
+
+                if (db != null && db.inTransaction()) {
+                    db.endTransaction();
+                }
+                db.close();
+            }
+        }
     }
 
     private long insertarSQL(Estudio estudio){
@@ -543,7 +633,8 @@ public class MainActivity extends AppCompatActivity implements
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, 1);) {
 
-            res = usdbh.insertarSQL(estudio);
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+            res = usdbh. insertarEstudio(db,estudio);
         }
         return res;
     }
@@ -556,9 +647,7 @@ public class MainActivity extends AppCompatActivity implements
             String nombre = c.getString(index);
             index = c.getColumnIndex("DESCRIPCION");
             String descripcion = c.getString(index);
-            index = c.getColumnIndex("CUENTA");
-            int cuenta = c.getInt(index);
-            listaEstudios.add(new Estudio(nombre, descripcion, cuenta));
+            listaEstudios.add(new Estudio(nombre, descripcion));
         }
         c.close();
     }
@@ -580,7 +669,6 @@ public class MainActivity extends AppCompatActivity implements
                 libro = listaEstudios.get(posicionEdicion);
                 i.putExtra("NOMBRE", libro.getNombre());
                 i.putExtra("DESCRIPCION", libro.getDescripcion());
-                i.putExtra("CUENTA", libro.getCuenta());
                 lanzadorEdit.launch(i);
                 return true;
             case 122:
@@ -632,8 +720,7 @@ public class MainActivity extends AppCompatActivity implements
                         assert data != null;
                         Estudio editLibro = new Estudio(
                                 data.getStringExtra("NOMBRE"),
-                                data.getStringExtra("DESCRIPCION"),
-                                data.getIntExtra("CUENTA", 0)
+                                data.getStringExtra("DESCRIPCION")
                         );
 
                         Estudio antig = listaEstudios.get(posicionEdicion);
@@ -666,8 +753,7 @@ public class MainActivity extends AppCompatActivity implements
                         assert data != null;
                         String nombre = data.getStringExtra("NOMBRE");
                         String desc = data.getStringExtra("DESCRIPCION");
-                        int cuenta = data.getIntExtra("CUENTA", 0);
-                        Estudio nuevoEstudio = new Estudio(nombre, desc, cuenta);
+                        Estudio nuevoEstudio = new Estudio(nombre, desc);
 
                         // Insertar en BD
                         long fila = insertarSQL(nuevoEstudio);
@@ -713,7 +799,6 @@ public class MainActivity extends AppCompatActivity implements
             ContentValues values = new ContentValues();
             values.put("NOMBRE", nuevo.getNombre());
             values.put("DESCRIPCION", nuevo.getDescripcion());
-            values.put("CUENTA", nuevo.getCuenta());
 
             // Actualizar usando el ID como condición
             String[] id = {antiguo.getNombre()};

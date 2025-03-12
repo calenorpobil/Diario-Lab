@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GuardaLibros</string>
+    <string name="app_name">Diario Lab</string>
 
     <string-array name="categorias">
         <item>Fantasía</item>

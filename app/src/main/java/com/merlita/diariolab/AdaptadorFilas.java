@@ -52,36 +52,23 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Estudio estudio = lista.get(position);
+        Estudio estudio = lista.get(holder.getAdapterPosition());
         holder.tvTitulo.setText(estudio.getNombre());
         holder.tvAutor.setText(estudio.getDescripcion());
-        holder.tvCuenta.setText(estudio.getCuenta()+"");
 
 
         holder.btEmoji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Estudio actual = lista.get(position);
-                int cuenta = actual.getCuenta();
+                Estudio actual = lista.get(holder.getAdapterPosition());
 
-                cuenta--;
-                if(editarSQL(actual, cuenta)!=-1) {
-                    holder.tvCuenta.setText(cuenta+"");
-                    actual.setCuenta(cuenta);
-                }
             }
         });
         holder.btMas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Estudio actual = lista.get(position);
-                int cuenta = actual.getCuenta();
+                Estudio actual = lista.get(holder.getAdapterPosition());
 
-                cuenta++;
-                if(editarSQL(actual, cuenta)!=-1) {
-                    holder.tvCuenta.setText(cuenta+"");
-                    actual.setCuenta(cuenta);
-                }
             }
         });
 

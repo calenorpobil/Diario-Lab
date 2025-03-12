@@ -6,31 +6,83 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.merlita.diariolab.Modelos.Dato;
+import com.merlita.diariolab.Modelos.DatoTipo;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.Ocurrencia;
 
 
 public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de Usuarios
-    String sqlCreate = "CREATE TABLE IF NOT EXISTS ESTUDIO(" +
-            "NOMBRE VARCHAR(50) PRIMARY KEY UNIQUE," +
-            "DESCRIPCION VARCHAR(9), " +
-            "CUENTA INTEGER);";
+    String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, DESCRIPCION VARCHAR(9))";
+    String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME PRIMARY KEY, FK_ESTUDIO_N VARCHAR(50), " +
+            "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE));";
+    String sqlCreate2 = "CREATE TABLE DATO ( FK_TIPO_N   VARCHAR(50), FK_TIPO_E   VARCHAR(50), " +
+            "FK_OCURRENCIA DATETIME, VALOR_TEXT TEXT, " +
+            "CONSTRAINT FK_DA_TI FOREIGN KEY (FK_TIPO_N, FK_TIPO_E)  " +
+            "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO), " +
+            "CONSTRAINT FK_DA_OC FOREIGN KEY (FK_OCURRENCIA)  " +
+            "REFERENCES OCURRENCIA (FECHA), PRIMARY KEY  (VALOR, FK_TIPO)); ";
+    String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE  VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
+            "DESCRIPCION  VARCHAR(100), CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
+            "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
+            "CHK_TIPO CHECK (TIPO IN ('Numero', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
 
-    public long insertarSQL(Estudio libro){
-        SQLiteDatabase db = getWritableDatabase();
+    public long insertarEstudio(SQLiteDatabase db, Estudio est){
         long newRowId=0;
 
         ContentValues values = new ContentValues();
-        values.put("NOMBRE", libro.getNombre());
-        values.put("DESCRIPCION", libro.getDescripcion());
-        values.put("CUENTA", libro.getCuenta());
+        values.put("NOMBRE", est.getNombre());
+        values.put("DESCRIPCION", est.getDescripcion());
 
         newRowId = db.insert("Estudio", null, values);
 
-        db.close();
         return newRowId;
     }
+
+    public long insertarDato(SQLiteDatabase db, Dato dato){
+        long newRowId=0;
+
+        ContentValues values = new ContentValues();
+        values.put("FK_TIPO_E", dato.getFkTipoE());
+        values.put("FK_TIPO_N", dato.getFkTipoN());
+        values.put("FK_TIPO_N", dato.getFkTipoN());
+        values.put("FK_OCURRENCIA", dato.getFkOcurrencia().toString());
+        values.put("VALOR_TEXT", dato.getValorText());
+
+        newRowId = db.insert("Dato", null, values);
+
+        return newRowId;
+    }
+
+    public long insertarOcurrencia(SQLiteDatabase db, Ocurrencia ocurrencia) {
+        long newRowId = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("FECHA", ocurrencia.getFecha().toString()); // DATETIME se convierte a String
+        values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
+
+        newRowId = db.insert("OCURRENCIA", null, values);
+
+        return newRowId;
+    }
+
+
+    public long insertarDatoTipo(SQLiteDatabase db, DatoTipo datoTipo) {
+        long newRowId = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("NOMBRE", datoTipo.getNombre());
+        values.put("TIPO_DATO", datoTipo.getTipoDato());
+        values.put("DESCRIPCION", datoTipo.getDescripcion());
+        values.put("FK_ESTUDIO", datoTipo.getFkEstudio());
+
+        newRowId = db.insert("DATO_TIPO", null, values);
+
+        return newRowId;
+    }
+
 
     public long borrarSQL(Estudio libro){
         long res=-1;
@@ -81,6 +133,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS estudio");
 
         db.execSQL(sqlCreate);
+        db.execSQL(sqlCreate1);
+        db.execSQL(sqlCreate2);
+        db.execSQL(sqlCreate3);
     }
 
 
