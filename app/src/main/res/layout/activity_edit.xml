@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Categoría -->
+        <TextView
+            android:id="@+id/tvCategoria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Categoría*"
+            app:layout_constraintBottom_toBottomOf="@+id/spCategoria"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/spCategoria" />
+
+        <Spinner
+            android:id="@+id/spCategoria"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvCategoria"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Título*"
+            app:layout_constraintBottom_toBottomOf="@+id/etNombre"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etNombre" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:inputType="textCapSentences"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvTitulo"
+            app:layout_constraintTop_toBottomOf="@+id/spCategoria" />
+
+        <!-- Autor -->
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Autor*"
+            app:layout_constraintBottom_toBottomOf="@+id/etDescripcion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etDescripcion" />
+
+        <EditText
+            android:id="@+id/etDescripcion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvDescripcion"
+            app:layout_constraintTop_toBottomOf="@+id/etNombre" />
+
+        <!-- Idioma -->
+        <TextView
+            android:id="@+id/tvIdioma"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Idioma"
+            app:layout_constraintBottom_toBottomOf="@+id/spIdioma"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/spIdioma" />
+
+        <Spinner
+            android:id="@+id/spIdioma"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvIdioma"
+            app:layout_constraintTop_toBottomOf="@+id/etDescripcion" />
+
+        <!-- Fecha Lectura Inicio -->
+        <TextView
+            android:id="@+id/tvFechaInicio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Fecha Inicio"
+            app:layout_constraintBottom_toBottomOf="@+id/etFechaInicio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etFechaInicio" />
+
+        <EditText
+            android:id="@+id/etFechaInicio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Seleccionar fecha"
+            android:inputType="date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvFechaInicio"
+            app:layout_constraintTop_toBottomOf="@+id/spIdioma" />
+
+        <!-- Fecha Lectura Fin -->
+        <TextView
+            android:id="@+id/tvFechaFin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Fecha Fin"
+            app:layout_constraintBottom_toBottomOf="@+id/etFechaFin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etFechaFin" />
+
+        <EditText
+            android:id="@+id/etFechaFin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Seleccionar fecha"
+            android:inputType="date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvFechaFin"
+            app:layout_constraintTop_toBottomOf="@+id/etFechaInicio" />
+
+        <!-- Prestado a -->
+        <TextView
+            android:id="@+id/tvPrestado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Prestado a"
+            app:layout_constraintBottom_toBottomOf="@+id/etPrestado"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etPrestado" />
+
+        <EditText
+            android:id="@+id/etPrestado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvPrestado"
+            app:layout_constraintTop_toBottomOf="@+id/etFechaFin" />
+
+        <!-- Valoración -->
+        <TextView
+            android:id="@+id/tvValoracion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Valoración"
+            app:layout_constraintBottom_toBottomOf="@+id/etValoracion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etValoracion" />
+
+        <EditText
+            android:id="@+id/etValoracion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="0.0 - 5.0"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvValoracion"
+            app:layout_constraintTop_toBottomOf="@+id/etPrestado" />
+
+        <!-- Formato -->
+        <TextView
+            android:id="@+id/tvFormato"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Formato"
+            app:layout_constraintBottom_toBottomOf="@+id/spFormato"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/spFormato" />
+
+        <Spinner
+            android:id="@+id/spFormato"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvFormato"
+            app:layout_constraintTop_toBottomOf="@+id/etValoracion" />
+
+        <!-- Notas -->
+        <TextView
+            android:id="@+id/tvNotas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Notas"
+            app:layout_constraintBottom_toBottomOf="@+id/etNotas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etNotas" />
+
+        <EditText
+            android:id="@+id/etNotas"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            android:lines="5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvNotas"
+            app:layout_constraintTop_toBottomOf="@+id/spFormato" />
+
+        <!-- Finalizado -->
+        <TextView
+            android:id="@+id/tvFinalizado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Finalizado"
+            app:layout_constraintBottom_toBottomOf="@+id/cbFinalizado"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbFinalizado" />
+
+        <CheckBox
+            android:id="@+id/cbFinalizado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvFinalizado"
+            app:layout_constraintTop_toBottomOf="@+id/etNotas" />
+
+        <!-- Botón Guardar -->
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:onClick="clickVolver"
+            android:text="Guardar Libro"
+            app:layout_constraintTop_toBottomOf="@+id/cbFinalizado" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

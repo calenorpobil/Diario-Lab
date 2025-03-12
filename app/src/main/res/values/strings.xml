@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">GuardaLibros</string>
+
+    <string-array name="categorias">
+        <item>Fantasía</item>
+        <item>Drama</item>
+        <item>Ciencia Ficción</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="idiomas">
+        <item>Español</item>
+        <item>Inglés</item>
+        <item>Alemán</item>
+        <item>Esperanto</item>
+    </string-array>
+
+    <string-array name="formatos">
+        <item>Libro</item>
+        <item>PDF</item>
+        <item>Epub</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string name="bt_NuevoEstudio">➕</string>
+    <string name="titulo">Título aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa del Estudio</string>
+    <string name="imagen">Imagen</string>
+    <string name="autor">Autor</string>
+    <string name="alta">Alta</string>
+    <string name="numero">Numero</string>
+    <string name="nombre">Nombre</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="bandera">🏁</string>
+    <string name="formato">Formato</string>
+    <string name="numOcurrencias">0</string>
+    <string name="finalizado">Finalizado</string>
+    <string name="notas">Notas</string>
+    <string name="prestado">Prestado</string>
+    <string name="hora">Hora</string>
+
+    <string name="alta_libro">Alta libro</string>
+    <string name="acerca_de">Acerca de…</string>
+    <string name="exportar_datos">Exportar datos</string>
+    <string name="importar_datos">Importar Datos</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="ordenar_por">Ordenar por</string>
+    <string name="finalizados">Finalizados</string>
+    <string name="por_fecha">Por fecha</string>
+    <string name="por_t_tulo">Por título</string>
+    <string name="por_autor">Por autor</string>
+    <string name="ocultar_datos_de_prueba">Ocultar Datos de prueba</string>
+    <string name="emojiItem">😀</string>
+    <string name="desc_estudio">Descriapción del estudio</string>
+    <string name="MasBoton">+</string>
+    <string name="bt_borrar">Borrar</string>
+    <string name="bt_modificar">Modificar</string>
+    <string name="bt_ver">Ver</string>
+    <string name="bt_revert">🔙</string>
+    <string name="bt_copia">☁</string>
+    <string name="btMenos">-</string>
+    <string name="cuenta">Cuenta</string>
+    <string name="descripcion_del_estudio">Descripcion del estudio</string>
+</resources>

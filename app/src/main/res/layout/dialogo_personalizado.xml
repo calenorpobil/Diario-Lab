@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/btnAltaLibro"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alta_libro"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnAcercaDe"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/acerca_de"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnOrdenarPor"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ordenar_por"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <!--
+    <Button
+        android:id="@+id/btnOcultarDatos"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ocultar_datos_de_prueba"
+        android:layout_marginBottom="8dp"/>
+    -->
+
+    <Button
+        android:id="@+id/btnImportar"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/importar_datos"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnExportar"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exportar_datos"
+        android:textAllCaps="false"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnCancelar"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancelar"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

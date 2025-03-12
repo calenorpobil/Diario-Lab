@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/btnFinalizado"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/finalizados"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnPorFecha"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/por_fecha"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnPorTitulo"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/por_t_tulo"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnPorAutor"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/por_autor"
+        android:textAllCaps="false"
+        android:layout_marginBottom="8dp"/>
+
+
+    <Button
+        android:id="@+id/btnCancelar"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancelar"
+        android:textAllCaps="false"/>
+
+</LinearLayout>
