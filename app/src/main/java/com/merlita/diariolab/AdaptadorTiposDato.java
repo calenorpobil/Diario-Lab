@@ -1,5 +1,8 @@
 package com.merlita.diariolab;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.ContextMenu;
@@ -10,18 +13,19 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import com.merlita.diariolab.Modelos.Estudio;
 
 import java.util.ArrayList;
 
-public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiContenedor> {
+public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor> {
 
     private Context context;
     private ArrayList<Estudio> lista;
     private boolean viendoDatosPrueba=true;
+
     private static boolean usando = false;
     public interface OnButtonClickListener {
         void onButtonClick(int position);
@@ -34,6 +38,40 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
 
 
     SQLiteDatabase db;
+
+
+
+    public class MiContenedor extends RecyclerView.ViewHolder
+            implements View.OnCreateContextMenuListener
+    {
+        ConstraintLayout main, botones;
+        boolean visible = false;
+        TextView tvTitulo, tvDescripcion, tvEmoji, tvCuenta;
+        Button btMas;
+
+        public MiContenedor(@NonNull View itemView) {
+            super(itemView);
+
+            main = (ConstraintLayout) itemView.findViewById(R.id.main);
+            botones = (ConstraintLayout) itemView.findViewById(R.id.botones);
+
+            tvTitulo = (TextView) itemView.findViewById(R.id.tvTitulo);
+            tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
+            tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
+            tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
+            btMas = (Button) itemView.findViewById(R.id.btMas);
+            itemView.setOnCreateContextMenuListener(this);
+
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view,
+                                        ContextMenu.ContextMenuInfo contextMenuInfo)
+        {
+            contextMenu.add(getAdapterPosition(), 121, 0, "EDITAR");
+            contextMenu.add(getAdapterPosition(), 122, 1, "BORRAR");
+        }
+    }
 
 
 
@@ -54,16 +92,11 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Estudio estudio = lista.get(holder.getAdapterPosition());
         holder.tvTitulo.setText(estudio.getNombre());
-        holder.tvAutor.setText(estudio.getDescripcion());
+        holder.tvDescripcion.setText(estudio.getDescripcion());
+        holder.tvEmoji.setText(estudio.getEmoji());
+        holder.botones.setVisibility(GONE);
 
 
-        holder.btEmoji.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Estudio actual = lista.get(holder.getAdapterPosition());
-
-            }
-        });
         holder.btMas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,12 +104,24 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
 
             }
         });
+        holder.main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!holder.visible){
+                    holder.botones.setVisibility(VISIBLE);
+                    holder.visible=true;
+                }else{
+                    holder.botones.setVisibility(GONE);
+                    holder.visible=false;
+                }
+            }
+        });
 
     }
 
 
-    public AdaptadorFilas(Context context, ArrayList<Estudio> lista,
-                          OnButtonClickListener listener) {
+    public AdaptadorTiposDato(Context context, ArrayList<Estudio> lista,
+                              OnButtonClickListener listener) {
         super();
         this.context = context;
         this.lista = lista;
@@ -86,36 +131,6 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
     @Override
     public int getItemCount() {
         return lista.size();
-    }
-
-
-
-    public class MiContenedor extends RecyclerView.ViewHolder
-            implements View.OnCreateContextMenuListener
-    {
-        TextView tvTitulo, tvAutor, tvCuenta;
-        Button btEmoji, btMas;
-
-        public MiContenedor(@NonNull View itemView) {
-            super(itemView);
-
-
-            tvTitulo = (TextView) itemView.findViewById(R.id.tvTitulo);
-            tvAutor = (TextView) itemView.findViewById(R.id.tvDescripcion);
-            tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
-            btEmoji = (Button) itemView.findViewById(R.id.btEmoji);
-            btMas = (Button) itemView.findViewById(R.id.btMas);
-            itemView.setOnCreateContextMenuListener(this);
-
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view,
-                                        ContextMenu.ContextMenuInfo contextMenuInfo)
-        {
-            contextMenu.add(getAdapterPosition(), 121, 0, "EDITAR");
-            contextMenu.add(getAdapterPosition(), 122, 1, "BORRAR");
-        }
     }
 
 
@@ -148,7 +163,7 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
 
 
 
-    public AdaptadorFilas(@NonNull Context context) {
+    public AdaptadorTiposDato(@NonNull Context context) {
         super();
     }
 
