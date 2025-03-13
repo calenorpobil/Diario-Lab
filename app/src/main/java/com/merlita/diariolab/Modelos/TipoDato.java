@@ -1,17 +1,32 @@
 package com.merlita.diariolab.Modelos;
 
-public class DatoTipo {
+public class TipoDato {
     private String nombre;       // VARCHAR(20)
     private String tipoDato;     // VARCHAR(20)
     private String descripcion;  // VARCHAR(100)
     private String fkEstudio;    // NVARCHAR(50)
 
     // Constructor
-    public DatoTipo(String nombre, String tipoDato, String descripcion, String fkEstudio) {
+    public TipoDato(String nombre, String tipoDato, String descripcion, String fkEstudio) {
         this.nombre = nombre;
         this.tipoDato = tipoDato;
         this.descripcion = descripcion;
         this.fkEstudio = fkEstudio;
+    }
+
+    public TipoDato() {
+        this.nombre="";
+        this.tipoDato="";
+        this.descripcion="";
+        this.fkEstudio = "";
+        //En el alta, el estudio se añadirá al guardar el estudio.
+    }
+
+    public TipoDato(String nombre, String tipoDato, String descripcion) {
+        this.nombre = nombre;
+        this.tipoDato = tipoDato;
+        this.descripcion = descripcion;
+        this.fkEstudio = "";
     }
 
     // Getters y Setters

@@ -2,30 +2,49 @@ package com.merlita.diariolab;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EditActivity extends AppCompatActivity {
-    EditText etTitulo, etAutor, etCuenta, etFechaInicio,
-            etFechaFin, etPrestado, etNotas, etValoracion;
-    CheckBox cbFinalizado;
-    Button bt;
-    Intent upIntent;
-    Spinner spCategoria, spIdioma, spFormato;
-    int id_libro;
+public class EditActivity extends AppCompatActivity
+        implements AdaptadorTiposDato.OnButtonClickListener {
+
+    private static final int DB_VERSION = 3;
+
+    EditText etTitulo, etEmoji, etDescripcion;
+    Button bt, btNuevoTipo;
+    ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
+    AdaptadorTiposDato adaptadorTiposDato;
+    RecyclerView vistaRecycler;
+    String nombreEstudio;
+
+
+    private void toast(String e) {
+        if(e!=null){
+            Toast.makeText(this, e,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
@@ -37,33 +56,93 @@ public class EditActivity extends AppCompatActivity {
 
         Bundle upIntent = this.getIntent().getExtras();
         assert upIntent != null;
-        id_libro = upIntent.getInt("ID");
 
-        String nombre = upIntent.getString("NOMBRE");
+        nombreEstudio = upIntent.getString("NOMBRE");
         String desc = upIntent.getString("DESCRIPCION");
-        int cuenta = upIntent.getInt("CUENTA");
-        etTitulo = findViewById(R.id.etNombre);
-        etAutor = findViewById(R.id.etDescripcion);
-        etCuenta = findViewById(R.id.etCuenta);
+        String emoji = upIntent.getString("EMOJI");
+        etTitulo = findViewById(R.id.etTitulo);
+        etEmoji = findViewById(R.id.etEmoji);
+        etDescripcion = findViewById(R.id.etDescripcion);
+        bt = findViewById(R.id.btnGuardar);
+        vistaRecycler = findViewById(R.id.recyclerTipos);
+        btNuevoTipo  = findViewById(R.id.btNuevoTipoDato);
 
-// Poblar campos de texto
-        etTitulo.setText(nombre);
-        etAutor.setText(desc);
-        if(cuenta!=0)
-            etCuenta.setText(cuenta+"");
+        // Poblar campos de texto
+        etTitulo.setText(nombreEstudio);
+        etDescripcion.setText(desc);
+        etEmoji.setText(emoji);
+
+        adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, this);
+
+
+        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
+        vistaRecycler.setAdapter(adaptadorTiposDato);
+
+        actualizarDatos();
+
+
+        btNuevoTipo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listaTiposDato.add(new TipoDato());
+                actualizarLocal();
+            }
+        });
 
     }
 
+    private void actualizarLocal() {
+        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
+        vistaRecycler.setAdapter(adaptadorTiposDato);
+    }
+
+    public void actualizarDatos() {
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                listaTiposDato.clear();
+
+                rellenarLista(db);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
+        vistaRecycler.setAdapter(adaptadorTiposDato);
+
+    }
+
+    private void rellenarLista(SQLiteDatabase db) {
+        Cursor c = db.rawQuery("select * from DATO_TIPO " +
+                "where fk_estudio = ?", new String[]{nombreEstudio});
+
+        while (c.moveToNext()) {
+            int index = c.getColumnIndex("NOMBRE");
+            String nombre = c.getString(index);
+            index = c.getColumnIndex("TIPO_DATO");
+            String tipoDato = c.getString(index);
+            index = c.getColumnIndex("DESCRIPCION");
+            String descripcion = c.getString(index);
+            listaTiposDato.add(new TipoDato(nombre, tipoDato, descripcion));
+        }
+        c.close();
+    }
     public void clickVolver(View v){
         Intent i = new Intent();
 
         // Obtengo referencias a todos los campos
 
         String nombre = etTitulo.getText().toString();
-        String desc = etAutor.getText().toString();
+        String desc = etEmoji.getText().toString();
         int cuenta=-1;
-        if(etCuenta.getText().toString()!="")
-            cuenta = Integer.parseInt(etCuenta.getText().toString());
+        if(etDescripcion.getText().toString()!="")
+            cuenta = Integer.parseInt(etDescripcion.getText().toString());
         try {
             i.putExtra("NOMBRE",  nombre);
             i.putExtra("DESCRIPCION", desc);
@@ -88,19 +167,10 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
-    private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                arrayResId, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
-        if (value != null) {
-            int position = adapter.getPosition(value);
-            if (position >= 0) {
-                spinner.setSelection(position);
-            }
-        }
+
+    @Override
+    public void onButtonClick(int position) {
+
     }
-
-
 }

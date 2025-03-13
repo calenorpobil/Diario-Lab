@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.merlita.diariolab.Modelos.Dato;
-import com.merlita.diariolab.Modelos.DatoTipo;
+import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
@@ -15,19 +15,22 @@ import com.merlita.diariolab.Modelos.Ocurrencia;
 public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de Usuarios
-    String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, DESCRIPCION VARCHAR(9))";
+    String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, " +
+            "DESCRIPCION VARCHAR(9), EMOJI TEXT)";
     String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME PRIMARY KEY, FK_ESTUDIO_N VARCHAR(50), " +
             "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE));";
-    String sqlCreate2 = "CREATE TABLE DATO ( FK_TIPO_N   VARCHAR(50), FK_TIPO_E   VARCHAR(50), " +
+    String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
             "FK_OCURRENCIA DATETIME, VALOR_TEXT TEXT, " +
             "CONSTRAINT FK_DA_TI FOREIGN KEY (FK_TIPO_N, FK_TIPO_E)  " +
             "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO), " +
             "CONSTRAINT FK_DA_OC FOREIGN KEY (FK_OCURRENCIA)  " +
-            "REFERENCES OCURRENCIA (FECHA), PRIMARY KEY  (VALOR, FK_TIPO)); ";
+            "REFERENCES OCURRENCIA (FECHA), " +
+            "PRIMARY KEY  (VALOR_TEXT, FK_OCURRENCIA));";
     String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE  VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
-            "DESCRIPCION  VARCHAR(100), CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
+            "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
+            "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
             "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
-            "CHK_TIPO CHECK (TIPO IN ('Numero', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
+            "CHK_TIPO CHECK (TIPO_DATO IN ('Numero', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
 
     public long insertarEstudio(SQLiteDatabase db, Estudio est){
         long newRowId=0;
@@ -35,6 +38,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("NOMBRE", est.getNombre());
         values.put("DESCRIPCION", est.getDescripcion());
+        values.put("EMOJI", est.getEmoji());
 
         newRowId = db.insert("Estudio", null, values);
 
@@ -51,7 +55,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         values.put("FK_OCURRENCIA", dato.getFkOcurrencia().toString());
         values.put("VALOR_TEXT", dato.getValorText());
 
-        newRowId = db.insert("Dato", null, values);
+        newRowId = db.insert("DATO", null, values);
 
         return newRowId;
     }
@@ -69,7 +73,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     }
 
 
-    public long insertarDatoTipo(SQLiteDatabase db, DatoTipo datoTipo) {
+    public long insertarTipoDato(SQLiteDatabase db, TipoDato datoTipo) {
         long newRowId = 0;
 
         ContentValues values = new ContentValues();
@@ -95,11 +99,54 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public long borrarTodo() {
+    public long borrarEstudios() {
         long res=-1;
         SQLiteDatabase db = getWritableDatabase();
 
-        res = db.delete("Estudio",
+        res = db.delete("ESTUDIO",
+                null, null);
+
+        db.close();
+        return res;
+    }
+
+    public void borrarSQL(){
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL("DROP TABLE IF EXISTS estudio");
+        db.execSQL("DROP TABLE IF EXISTS OCURRENCIA");
+        db.execSQL("DROP TABLE IF EXISTS DATO_TIPO");
+        db.execSQL("DROP TABLE IF EXISTS DATO");
+        onCreate(db);
+
+        db.close();
+    }
+
+    public long borrarDatos() {
+        long res=-1;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("DATO",
+                null, null);
+
+        db.close();
+        return res;
+    }
+    public long borrarTipo_Datos() {
+        long res=-1;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("TIPO_DATO",
+                null, null);
+
+        db.close();
+        return res;
+    }
+    public long borrarOcurrencias() {
+        long res=-1;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("OCURRENCIA",
                 null, null);
 
         db.close();
@@ -130,8 +177,6 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         //Se ejecuta la sentencia SQL de creaci�n de la tabla
-        db.execSQL("DROP TABLE IF EXISTS estudio");
-
         db.execSQL(sqlCreate);
         db.execSQL(sqlCreate1);
         db.execSQL(sqlCreate2);
@@ -150,10 +195,13 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         //      ser m�s elaborado.
 
         //Se elimina la versi�n anterior de la tabla
-        db.execSQL("DROP TABLE IF EXISTS libros");
+        db.execSQL("DROP TABLE IF EXISTS estudio");
+        db.execSQL("DROP TABLE IF EXISTS OCURRENCIA");
+        db.execSQL("DROP TABLE IF EXISTS DATO_TIPO");
+        db.execSQL("DROP TABLE IF EXISTS DATO");
 
-        //Se crea la nueva versi�n de la tabla
-        db.execSQL(sqlCreate);
+        onCreate(db);
+
     }
 
 }

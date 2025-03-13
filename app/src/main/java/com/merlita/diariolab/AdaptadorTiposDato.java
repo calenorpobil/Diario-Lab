@@ -9,13 +9,16 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 
 import java.util.ArrayList;
@@ -23,10 +26,9 @@ import java.util.ArrayList;
 public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor> {
 
     private Context context;
-    private ArrayList<Estudio> lista;
-    private boolean viendoDatosPrueba=true;
+    private ArrayList<TipoDato> lista;
+    String[] ordenSpinner = {"Número", "Texto", "Fecha"};
 
-    private static boolean usando = false;
     public interface OnButtonClickListener {
         void onButtonClick(int position);
     }
@@ -44,24 +46,16 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
-        ConstraintLayout main, botones;
-        boolean visible = false;
-        TextView tvTitulo, tvDescripcion, tvEmoji, tvCuenta;
-        Button btMas;
+        EditText etNombre, etDescripcion;
+        Spinner spTipoDato;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            main = (ConstraintLayout) itemView.findViewById(R.id.main);
-            botones = (ConstraintLayout) itemView.findViewById(R.id.botones);
-
-            tvTitulo = (TextView) itemView.findViewById(R.id.tvTitulo);
-            tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
-            tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
-            tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
-            btMas = (Button) itemView.findViewById(R.id.btMas);
+            etNombre = (EditText) itemView.findViewById(R.id.etNombre);
+            etDescripcion = (EditText) itemView.findViewById(R.id.etDescripcion);
+            spTipoDato = (Spinner) itemView.findViewById(R.id.spTipoDato);
             itemView.setOnCreateContextMenuListener(this);
-
         }
 
         @Override
@@ -82,7 +76,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflador.inflate(R.layout.text_row_item, parent, false);
+        View v = inflador.inflate(R.layout.fila_tipo_dato, parent, false);
 
         return new MiContenedor(v);
     }
@@ -90,37 +84,19 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Estudio estudio = lista.get(holder.getAdapterPosition());
-        holder.tvTitulo.setText(estudio.getNombre());
-        holder.tvDescripcion.setText(estudio.getDescripcion());
-        holder.tvEmoji.setText(estudio.getEmoji());
-        holder.botones.setVisibility(GONE);
+        TipoDato tipoDato = lista.get(holder.getAdapterPosition());
+        holder.etDescripcion.setText(tipoDato.getDescripcion());
+        holder.etNombre.setText(tipoDato.getNombre());
 
+        SpinnerAdapter adaptador = new SpinnerAdapter(this.context,
+                android.R.layout.simple_spinner_item, ordenSpinner);
+        holder.spTipoDato.setAdapter(adaptador);
 
-        holder.btMas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Estudio actual = lista.get(holder.getAdapterPosition());
-
-            }
-        });
-        holder.main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!holder.visible){
-                    holder.botones.setVisibility(VISIBLE);
-                    holder.visible=true;
-                }else{
-                    holder.botones.setVisibility(GONE);
-                    holder.visible=false;
-                }
-            }
-        });
-
+        holder.spTipoDato.setSelection(adaptador.getPosition(tipoDato.getTipoDato()));
     }
 
 
-    public AdaptadorTiposDato(Context context, ArrayList<Estudio> lista,
+    public AdaptadorTiposDato(Context context, ArrayList<TipoDato> lista,
                               OnButtonClickListener listener) {
         super();
         this.context = context;
@@ -134,6 +110,19 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     }
 
 
+    private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.context,
+                arrayResId, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        if (value != null) {
+            int position = adapter.getPosition(value);
+            if (position >= 0) {
+                spinner.setSelection(position);
+            }
+        }
+    }
 
 
     private long editarSQL(Estudio nuevo, int nuevaCuenta){
@@ -148,17 +137,6 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
         }
         return res;
-    }
-
-
-    public void filtrarLista() {
-        if(viendoDatosPrueba){
-            lista.remove(0);
-            lista.remove(0);
-            lista.remove(0);
-            viendoDatosPrueba=false;
-        }
-        notifyDataSetChanged();
     }
 
 

@@ -32,7 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.Dato;
-import com.merlita.diariolab.Modelos.DatoTipo;
+import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
@@ -48,23 +48,20 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-        AdaptadorFilas.OnButtonClickListener{
+        AdaptadorEstudios.OnButtonClickListener{
 
     RecyclerView vistaRecycler;
     ArrayList<Estudio> listaEstudios = new ArrayList<Estudio>();
     TextView tv;
-    AdaptadorFilas adaptadorFilas;
-    Button btAlta, btCopia, btRevert;
-    EditText et;
+    AdaptadorEstudios adaptadorEstudios;
+    Button btAlta, btDev, btRevert;
+
     int posicionEdicion;
-    boolean ver=true;
-    boolean isRecibiendo =false, isEnviando = false;
-    int numServidor=1;
+    public final int DB_VERSION = 3;
 
     ResultCallbackEnviar callbackEnviarServer;
     ResultCallbackRecibir callbackRecibirServer;
@@ -106,26 +103,21 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         //EdgeToEdge.enable(this);
 
-
-
-
-
         tv = findViewById(R.id.tvTitulo);
         btAlta = findViewById(R.id.btAlta);
-        btCopia = findViewById(R.id.btCopia);
+        btDev = findViewById(R.id.btCopia);
         btRevert = findViewById(R.id.btRevert);
         vistaRecycler = findViewById(R.id.recyclerView);
-        adaptadorFilas = new AdaptadorFilas(this, listaEstudios, this);
+        adaptadorEstudios = new AdaptadorEstudios(this, listaEstudios, this);
+
 
 
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorFilas);
+        vistaRecycler.setAdapter(adaptadorEstudios);
 
-        borrarTodo();
+        //borrarTodo();
         insertarDatosIniciales();
         actualizarDatos();
-
-
 
 
         btAlta.setOnClickListener(new View.OnClickListener(){
@@ -163,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        btCopia.setOnClickListener(new View.OnClickListener() {
+        btDev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -291,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements
         try{
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this,
-                                "DBEstudios", null, 1);){
+                                "DBEstudios", null,  DB_VERSION);){
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
@@ -305,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements
             toast("Intentalo en otro momento. ");
         }
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorFilas);
+        vistaRecycler.setAdapter(adaptadorEstudios);
 
     }
 
@@ -524,43 +516,39 @@ public class MainActivity extends AppCompatActivity implements
 
     };
 
-    private void mostrarFormularioAlta()  {
-        Intent i = new Intent(MainActivity.this, AltaActivity.class);
-        lanzadorAlta.launch(i);
-    }
 
 
 
     public void insertarDatosIniciales() {
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);) {
+                            "DBEstudios", null, DB_VERSION);) {
 
 
             SQLiteDatabase db = usdbh.getWritableDatabase();
 
-            // Iniciar una transacción para mejorar el rendimiento
+            //Iniciar una transacción para mejorar el rendimiento
             try {
                 db.beginTransaction();
                 // Insertar estudios
-                usdbh.insertarEstudio(db, new Estudio("Tomar Café", "Registro de consumo diario de café"));
-                usdbh. insertarEstudio(db,new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento"));
-                usdbh. insertarEstudio(db,new Estudio("Diario", "Registro personal diario"));
+                usdbh.insertarEstudio(db, new Estudio("Tomar Café", "Registro de consumo diario de café", "☕"));
+                usdbh. insertarEstudio(db,new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento", "\uD83C\uDFCB\uFE0F"));
+                usdbh. insertarEstudio(db,new Estudio("Diario", "Registro personal diario", "\uD83D\uDCD4"));
 
                 // Insertar tipos de datos para "Tomar Café"
-                usdbh. insertarDatoTipo(db,new DatoTipo("Tazas", "Numero", "Cantidad de tazas consumidas", "Tomar Café"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
+                usdbh.insertarTipoDato(db,new TipoDato("Tazas", "Numero", "Cantidad de tazas consumidas", "Tomar Café"));
+                usdbh.insertarTipoDato(db,new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                usdbh.insertarTipoDato(db,new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
 
                 // Tipos para "Ir al gimnasio"
-                usdbh. insertarDatoTipo(db,new DatoTipo("Duración", "Numero", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
+                usdbh.insertarTipoDato(db,new TipoDato("Duración", "Numero", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
+                usdbh.insertarTipoDato(db,new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
+                usdbh.insertarTipoDato(db,new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
 
                 // Tipos para "Diario"
-                usdbh. insertarDatoTipo(db,new DatoTipo("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Fecha", "Fecha", "Fecha del registro", "Diario"));
-                usdbh. insertarDatoTipo(db,new DatoTipo("Evento destacado", "Texto", "Evento importante del día", "Diario"));
+                usdbh.insertarTipoDato(db,new TipoDato("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
+                usdbh.insertarTipoDato(db,new TipoDato("Fecha", "Fecha", "Fecha del registro", "Diario"));
+                usdbh.insertarTipoDato(db,new TipoDato("Evento destacado", "Texto", "Evento importante del día", "Diario"));
 
                 // Insertar ocurrencias para "Tomar Café"
                 // Ocurrencias para "Tomar Café"
@@ -627,14 +615,25 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private long insertarSQL(Estudio estudio){
+    private long insertarEstudio(Estudio estudio){
         long  res=-1;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);) {
+                            "DBEstudios", null, DB_VERSION);) {
 
             SQLiteDatabase db = usdbh.getWritableDatabase();
             res = usdbh. insertarEstudio(db,estudio);
+        }
+        return res;
+    }
+    private long insertarTipoDato(TipoDato tipoDato){
+        long  res=-1;
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+            res = usdbh. insertarTipoDato(db,tipoDato);
         }
         return res;
     }
@@ -647,7 +646,9 @@ public class MainActivity extends AppCompatActivity implements
             String nombre = c.getString(index);
             index = c.getColumnIndex("DESCRIPCION");
             String descripcion = c.getString(index);
-            listaEstudios.add(new Estudio(nombre, descripcion));
+            index = c.getColumnIndex("EMOJI");
+            String emoji = c.getString(index);
+            listaEstudios.add(new Estudio(nombre, descripcion, emoji));
         }
         c.close();
     }
@@ -690,18 +691,20 @@ public class MainActivity extends AppCompatActivity implements
         long res;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);) {
+                            "DBEstudios", null, DB_VERSION);) {
             res = usdbh.borrarSQL(libro);
 
         }
         return res;
     }
     private void borrarTodo() {
-        long res;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);) {
-            res = usdbh.borrarTodo();
+                            "DBEstudios", null, DB_VERSION);) {
+            usdbh.borrarSQL();
+            //usdbh.borrarDatos();
+            //usdbh.borrarOcurrencias();
+            //usdbh.borrarTipo_Datos();
 
         }
     }
@@ -720,7 +723,8 @@ public class MainActivity extends AppCompatActivity implements
                         assert data != null;
                         Estudio editLibro = new Estudio(
                                 data.getStringExtra("NOMBRE"),
-                                data.getStringExtra("DESCRIPCION")
+                                data.getStringExtra("DESCRIPCION"),
+                                data.getStringExtra("EMOJI")
                         );
 
                         Estudio antig = listaEstudios.get(posicionEdicion);
@@ -751,16 +755,28 @@ public class MainActivity extends AppCompatActivity implements
 
                         Intent data = resultado.getData();
                         assert data != null;
-                        String nombre = data.getStringExtra("NOMBRE");
-                        String desc = data.getStringExtra("DESCRIPCION");
-                        Estudio nuevoEstudio = new Estudio(nombre, desc);
+                        //RECOGER DATOS:
+                        String[] datosEstudio = data.getStringArrayExtra("ESTUDIO");
+                        TipoDato[] tiposDato = (TipoDato[]) data.getParcelableArrayExtra("TIPOSDATO");
 
-                        // Insertar en BD
-                        long fila = insertarSQL(nuevoEstudio);
-                        if(fila!=-1){
-                            System.out.println(fila);
+                        //INSERTAR EL ESTUDIO:
+                        if(datosEstudio != null && tiposDato!=null){
+                            Estudio nuevoEstudio = new Estudio(
+                                    datosEstudio[0],
+                                    datosEstudio[1],
+                                    datosEstudio[2]);
                             listaEstudios.add(nuevoEstudio);
+                            if(insertarEstudio(nuevoEstudio)!=-1){
+                                //INSERTAR LOS TIPOS DE DATO:
+                                for (int i = 0; i < tiposDato.length; i++) {
+                                    //PONER LA FORÁNEA A LOS TIPOS DE DATO:
+                                    tiposDato[i].setFkEstudio(nuevoEstudio.getNombre());
+                                    //INSERTAR
+                                    insertarTipoDato(tiposDato[i]);
+                                }
+                            }
                         }
+
                         actualizarDatos();
                     }else{
                         //SIN DATOS
@@ -769,31 +785,12 @@ public class MainActivity extends AppCompatActivity implements
             });
 
 
-    //RECOGER ACERCA DE
-    ActivityResultLauncher<Intent>
-            lanzadorAcercaDe = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult resultado) {
-                    if(resultado.getResultCode()==RESULT_OK) {
-
-                        Intent data = resultado.getData();
-                        assert data != null;
-
-                    }else{
-                        //SIN DATOS
-                    }
-                }
-            });
-
-
-
 
     private int editarSQL(Estudio antiguo, Estudio nuevo){
         int res=-1;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);){
+                            "DBEstudios", null, DB_VERSION);){
             SQLiteDatabase db = usdbh.getWritableDatabase();
 
             ContentValues values = new ContentValues();

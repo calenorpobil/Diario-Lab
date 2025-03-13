@@ -4,25 +4,30 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.util.ArrayList;
 
-public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiContenedor> {
+public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.MiContenedor> {
 
     private Context context;
     private ArrayList<Estudio> lista;
@@ -49,7 +54,7 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
         ConstraintLayout main, botones;
         boolean visible = false;
         TextView tvTitulo, tvDescripcion, tvEmoji, tvCuenta;
-        Button btMas;
+        Button btMas, btBorrar, btEditar, btVer;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -62,6 +67,9 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
             tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
             tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
             btMas = (Button) itemView.findViewById(R.id.btMas);
+            btBorrar = (Button) itemView.findViewById(R.id.btBorrar);
+            btEditar = (Button) itemView.findViewById(R.id.btEditar);
+            btVer = (Button) itemView.findViewById(R.id.btVer);
             itemView.setOnCreateContextMenuListener(this);
 
         }
@@ -119,11 +127,25 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
             }
         });
 
+        holder.btEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), EditActivity.class);
+                i.putExtra("NOMBRE", estudio.getNombre());
+                i.putExtra("EMOJI", estudio.getEmoji());
+                i.putExtra("DESCRIPCION", estudio.getDescripcion());
+                view.getContext().startActivity(i);
+
+
+            }
+        });
+
+
     }
 
 
-    public AdaptadorFilas(Context context, ArrayList<Estudio> lista,
-                          OnButtonClickListener listener) {
+    public AdaptadorEstudios(Context context, ArrayList<Estudio> lista,
+                             OnButtonClickListener listener) {
         super();
         this.context = context;
         this.lista = lista;
@@ -153,19 +175,7 @@ public class AdaptadorFilas extends RecyclerView.Adapter<AdaptadorFilas.MiConten
     }
 
 
-    public void filtrarLista() {
-        if(viendoDatosPrueba){
-            lista.remove(0);
-            lista.remove(0);
-            lista.remove(0);
-            viendoDatosPrueba=false;
-        }
-        notifyDataSetChanged();
-    }
-
-
-
-    public AdaptadorFilas(@NonNull Context context) {
+    public AdaptadorEstudios(@NonNull Context context) {
         super();
     }
 

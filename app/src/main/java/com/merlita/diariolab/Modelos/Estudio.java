@@ -1,18 +1,24 @@
 package com.merlita.diariolab.Modelos;
 
+
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Estudio {
     private String nombre;          // Clave primaria
     private String descripcion;
+    private String emoji;
 
     // Constructor
-    public Estudio(String nombre, String descripcion) {
+    public Estudio(String nombre, String descripcion, String emoji) {
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.emoji = emoji;
     }
 
     // Getters y Setters
+    public String getEmoji() {return emoji;}
+    public void setEmoji(String emoji) {this.emoji = emoji;}
 
     public String getNombre() {
         return nombre;
