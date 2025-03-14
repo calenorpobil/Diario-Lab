@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.TipoDato;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -29,6 +31,8 @@ public class AltaActivity extends AppCompatActivity
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
+    String[] ordenSpinner = {"Número", "Texto", "Fecha"};
+
 
     private void toast(String e) {
         if(e!=null){
@@ -168,12 +172,18 @@ public class AltaActivity extends AppCompatActivity
             }else{
                 try {
                     // Preparar todos los datos para enviar
-                    String[] datosEstudio = {etTitulo.getText().toString(),
-                            etEmoji.getText().toString()};
-                    Object[] tipoDatos = listaTiposDato.toArray();
+                    ArrayList<String> datosEstudio = new ArrayList<>();
+                    datosEstudio.add(etTitulo.getText().toString());
+                    datosEstudio.add(etDescripcion.getText().toString());
+                    datosEstudio.add(etEmoji.getText().toString());
 
-                    i.putExtra("ESTUDIO", datosEstudio);
-                    i.putExtra("TIPOSDATO", tipoDatos);
+                    AdaptadorTiposDato a = (AdaptadorTiposDato) vistaRecycler.getAdapter();
+                    listaTiposDato = a.getLista();
+
+
+
+                    i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                    i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
 
                     setResult(RESULT_OK, i);
                 } finally {

@@ -3,9 +3,11 @@ package com.merlita.diariolab;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,13 +136,22 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                 i.putExtra("NOMBRE", estudio.getNombre());
                 i.putExtra("EMOJI", estudio.getEmoji());
                 i.putExtra("DESCRIPCION", estudio.getDescripcion());
-                view.getContext().startActivity(i);
+                int num = holder.getAbsoluteAdapterPosition();
+                i.putExtra("INDEX", num);
+                //view.getContext().startActivity(i);
+
+                Activity origin = (Activity)context;
+                origin.startActivityForResult(i, 1);
+
 
 
             }
         });
 
 
+    }
+    public  void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("MyAdapter", "onActivityResult");
     }
 
 
@@ -156,6 +167,8 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
     public int getItemCount() {
         return lista.size();
     }
+
+
 
 
 

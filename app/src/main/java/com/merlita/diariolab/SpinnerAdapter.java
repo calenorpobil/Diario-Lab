@@ -40,6 +40,8 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     }
 
 
+
+
     // And the "magic" goes here
     // This is for the "passive" state of the spinner
     @Override

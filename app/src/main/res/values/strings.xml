@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Diario Lab</string>
 
-    <string-array name="categorias">
+    <string-array name="tipos">
         <item>Número</item>
         <item>Texto</item>
         <item>Fecha</item>

@@ -150,13 +150,12 @@
     <!-- Botón Guardar -->
     <Button
         android:id="@+id/btnGuardar"
+        style="@style/IconColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:onClick="clickGuardar"
-        style="@style/IconColor"
         android:text="@string/crear_estudio"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

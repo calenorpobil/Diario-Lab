@@ -5,10 +5,13 @@ import static android.view.View.VISIBLE;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,11 +91,57 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         holder.etDescripcion.setText(tipoDato.getDescripcion());
         holder.etNombre.setText(tipoDato.getNombre());
 
-        SpinnerAdapter adaptador = new SpinnerAdapter(this.context,
-                android.R.layout.simple_spinner_item, ordenSpinner);
-        holder.spTipoDato.setAdapter(adaptador);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this.context,
+                R.array.tipos,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        holder.spTipoDato.setAdapter(adapter);
 
-        holder.spTipoDato.setSelection(adaptador.getPosition(tipoDato.getTipoDato()));
+
+        holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
+
+
+        // Establecer listeners
+        holder.etNombre.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                lista.get(holder.getAbsoluteAdapterPosition()).setNombre(s.toString());
+            }
+            // ... (métodos onTextChanged y beforeTextChanged vacíos)
+        });
+
+        holder.etDescripcion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                lista.get(holder.getAbsoluteAdapterPosition()).setDescripcion(s.toString());
+            }
+            // ... (métodos onTextChanged y beforeTextChanged vacíos)
+        });
+
+        holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                lista.get(holder.getAbsoluteAdapterPosition()).setTipoDato(
+                        parent.getItemAtPosition(pos).toString()
+                );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No se seleccionó nada
+            }
+        });
+
     }
 
 
@@ -107,6 +156,10 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     @Override
     public int getItemCount() {
         return lista.size();
+    }
+
+    public ArrayList<TipoDato> getLista(){
+        return lista;
     }
 
 

@@ -7,18 +7,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +41,7 @@ public class EditActivity extends AppCompatActivity
     RecyclerView vistaRecycler;
     String nombreEstudio;
 
+    int posicion=-1;
 
     private void toast(String e) {
         if(e!=null){
@@ -60,6 +64,7 @@ public class EditActivity extends AppCompatActivity
         nombreEstudio = upIntent.getString("NOMBRE");
         String desc = upIntent.getString("DESCRIPCION");
         String emoji = upIntent.getString("EMOJI");
+        posicion = upIntent.getInt("INDEX");
         etTitulo = findViewById(R.id.etTitulo);
         etEmoji = findViewById(R.id.etEmoji);
         etDescripcion = findViewById(R.id.etDescripcion);
@@ -78,6 +83,8 @@ public class EditActivity extends AppCompatActivity
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorTiposDato);
 
+
+
         actualizarDatos();
 
 
@@ -86,6 +93,12 @@ public class EditActivity extends AppCompatActivity
             public void onClick(View view) {
                 listaTiposDato.add(new TipoDato());
                 actualizarLocal();
+            }
+        });
+        bt.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View  view){
+                clickVolver(view);
             }
         });
 
@@ -120,7 +133,7 @@ public class EditActivity extends AppCompatActivity
 
     private void rellenarLista(SQLiteDatabase db) {
         Cursor c = db.rawQuery("select * from DATO_TIPO " +
-                "where fk_estudio = ?", new String[]{nombreEstudio});
+                "where FK_ESTUDIO = ?", new String[]{nombreEstudio});
 
         while (c.moveToNext()) {
             int index = c.getColumnIndex("NOMBRE");
@@ -134,43 +147,52 @@ public class EditActivity extends AppCompatActivity
         c.close();
     }
     public void clickVolver(View v){
-        Intent i = new Intent();
+        if(!etEmoji.getText().toString().isEmpty() &&
+                !etTitulo.getText().toString().isEmpty() &&
+                !etDescripcion.getText().toString().isEmpty() &&
+                !listaTiposDato.isEmpty())
+        {
+            Intent i = new Intent();
 
-        // Obtengo referencias a todos los campos
+            //Valido campos obligatorios (según esquema SQL)
+            if (etTitulo.getText().toString().isEmpty() ||
+                    etEmoji.getText().toString().isEmpty() ||
+                    etDescripcion.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Complete los campos obligatorios (*)",
+                        Toast.LENGTH_SHORT).show();
+            }else{
+                try {
+                    // Preparar todos los datos para enviar
+                    ArrayList<String> datosEstudio = new ArrayList<>();
+                    datosEstudio.add(etTitulo.getText().toString());
+                    datosEstudio.add(etDescripcion.getText().toString());
+                    datosEstudio.add(etEmoji.getText().toString());
 
-        String nombre = etTitulo.getText().toString();
-        String desc = etEmoji.getText().toString();
-        int cuenta=-1;
-        if(etDescripcion.getText().toString()!="")
-            cuenta = Integer.parseInt(etDescripcion.getText().toString());
-        try {
-            i.putExtra("NOMBRE",  nombre);
-            i.putExtra("DESCRIPCION", desc);
-            i.putExtra("CUENTA", cuenta);
+                    listaTiposDato = adaptadorTiposDato.getLista();
 
-            setResult(RESULT_OK, i);
-        } finally {
-            finish();
+
+
+                    i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                    i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
+                    i.putExtra("INDEX", posicion);
+
+                    setResult(RESULT_OK, i);
+                } finally {
+                    finish();
+                }
+
+            }
+
+        }else{
+            toast("Rellena todos los campos. ");
         }
-    }
-    private void setupDatePicker(EditText editText) {
-        editText.setOnClickListener(v -> {
-            Calendar c = Calendar.getInstance();
-            DatePickerDialog datePicker = new DatePickerDialog(this,
-                    (view, year, month, day) -> {
-                        Calendar selectedDate = Calendar.getInstance();
-                        selectedDate.set(year, month, day);
-                        editText.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                .format(selectedDate.getTime()));
-                    }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-            datePicker.show();
-        });
     }
 
 
 
     @Override
     public void onButtonClick(int position) {
+
 
     }
 }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -63,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements
     int posicionEdicion;
     public final int DB_VERSION = 3;
 
-    ResultCallbackEnviar callbackEnviarServer;
-    ResultCallbackRecibir callbackRecibirServer;
 
 
     private Uri selectedFileUri;
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        //borrarTodo();
+        borrarTodo();
         insertarDatosIniciales();
         actualizarDatos();
 
@@ -302,219 +302,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    private void recibirArchivo() {
-
-        new Thread(recibirServer).start();
-
-        // Comprobar Resultado
-        callbackRecibirServer = new ResultCallbackRecibir() {
-            @Override
-            public void onSuccess() {
-                // Actualizar UI o lógica post-éxito
-                runOnUiThread(() -> {
-                    toast("Se descargaron los datos de la nube. ");
-                    try {
-                        copiarArchivo(database_server, database);
-                        toast("Backup de la nube revertida. ");
-                        actualizarDatos();
-                    } catch (IOException e) {
-                        toast("No hay un archivo para revertir. ");
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                // Manejar error
-                runOnUiThread(() -> {
-                    try {
-                        //REVERTIR LOCALMENTE
-                        copiarArchivo(bk_database, database);
-                        toast("Backup revertida localmente. ");
-                        actualizarDatos();
-                    } catch (IOException ex) {
-                        toast("No se pudo revertir la copia. ");
-                    }
-                });
-            }
-        };
-
-    }
-
-    Runnable recibirServer = new Runnable() {
-        public void run() {
-            File archivoDestino;
-            try (Socket socket = new Socket();) {
-                socket.connect(new InetSocketAddress(SERVIDOR_IP, PUERTO), 1000);
-                DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
-
-                //DIGO AL SERVER QUE QUIERO RECIBIR ARCHIVO
-                outStream.writeUTF("RECIBIR");
-
-                System.out.println("Recibir dicho. ");
-
-                // Solicitar archivo "DBEstudios"
-                outStream.writeUTF("DBEstudios");
-
-
-                try (DataInputStream inStream = new DataInputStream(socket.getInputStream())) {
-                    // Recibir metadatos
-                    String nombreArchivo = inStream.readUTF();
-                    long tamanyoArchivo = inStream.readLong();
-
-                    // Prepara el archivo de destino (cliente)
-                    archivoDestino = database_server;
-
-                    archivoDestino.delete();
-
-                    if (!archivoDestino.exists()) {
-                        try {
-                            archivoDestino.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    //GUARDAR ARCHIVO
-                    try (FileOutputStream fos = new FileOutputStream(database_server);
-                         BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-
-
-                        // Recibir y guardar el archivo por bloques de 4KB
-                        byte[] buffer = new byte[4096];
-                        int count;
-                        long totalRecibido = 0;
-                        while (totalRecibido < tamanyoArchivo && (count = inStream.read(buffer)) != -1) {
-                            bos.write(buffer, 0, count);
-                            totalRecibido += count;
-                        }
-
-                        System.out.println("Archivo recibido: " + nombreArchivo);
-                        // Notificar éxito
-                        if (callbackRecibirServer != null) {
-                            new Handler(Looper.getMainLooper()).post(() -> callbackRecibirServer.onSuccess());
-                        }
-                    }
-                }
-            } catch (IOException e) {
-
-                new Handler(Looper.getMainLooper()).post(() -> callbackRecibirServer.onFailure(e));
-            }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-    };
-    private void enviarArchivoNube() {
-        //ARCHIVO SQLITE:
-
-
-        new Thread(enviarANube).start();
-
-        // Comprobar Resultado
-        callbackEnviarServer = new ResultCallbackEnviar() {
-            @Override
-            public void onSuccess() {
-                // Actualizar UI o lógica post-éxito
-                runOnUiThread(() -> {
-                    toast("Se guardó el mensaje en la nube. ");
-                });
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                // Manejar error
-                runOnUiThread(() -> {
-                    toast("La copia al servidor no funcionó. Se hará una backup local. ");
-                    backupLocalCopiar();
-                });
-            }
-        };
-
-
-
-    }
-
-
-    // Request code for creating a PDF document.
-    private static final int CREATE_FILE = 1;
-
-
-    public interface ResultCallbackEnviar {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-    public interface ResultCallbackRecibir {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    Runnable enviarANube = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                final int BUFFER_SIZE = 4096; // 4 KB
-
-                try (Socket socket = new Socket()) {
-
-                    FileInputStream fis = new FileInputStream(database);
-                    BufferedInputStream inStream = new BufferedInputStream(fis);
-                    socket.connect(new InetSocketAddress(SERVIDOR_IP, PUERTO), 1000);
-                    DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
-                    //ENVIAR ARCHIVO
-                    outStream.writeUTF("ENVIAR");
-
-
-                    // Enviar metadatos: nombre y tamaño
-                    outStream.writeUTF(database.getName()); // Nombre del archivo
-                    outStream.writeLong(database.length()); // Tamaño en bytes
-
-                    // Enviar archivo
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int count;
-                    while ((count = inStream.read(buffer)) != -1) {
-                        outStream.write(buffer, 0, count);
-                    }
-
-                    System.out.println("Archivo enviado: " + database.getName());
-                    // Notificar éxito
-                    if (callbackEnviarServer != null) {
-                        new Handler(Looper.getMainLooper()).post(() -> callbackEnviarServer.onSuccess());
-                    }
-
-
-                } catch(SocketException ex) {
-                    if (callbackEnviarServer != null) {
-                        new Handler(Looper.getMainLooper()).post(() -> callbackEnviarServer.onFailure(ex));
-                    }
-                }catch (UnknownHostException e) {
-                    System.err.println("Host desconocido: " + SERVIDOR_IP);
-                    if (callbackEnviarServer != null) {
-                        new Handler(Looper.getMainLooper()).post(() -> callbackEnviarServer.onFailure(e));
-                    }
-                } catch (IOException e) {
-                    System.err.println("Error de E/S: " + e.getMessage());
-                    if (callbackEnviarServer != null) {
-                        new Handler(Looper.getMainLooper()).post(() -> callbackEnviarServer.onFailure(e));
-                    }
-                }
-            } catch (Exception e) {
-                //NOTIFICAR ERROR
-                if (callbackEnviarServer != null) {
-                    new Handler(Looper.getMainLooper()).post(() -> callbackEnviarServer.onFailure(e));
-                }
-            }
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-    };
 
 
 
@@ -626,6 +413,31 @@ public class MainActivity extends AppCompatActivity implements
         }
         return res;
     }
+    private int editarEstudio(Estudio antiguo, Estudio nuevo){
+        int res=-1;
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, 1);){
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("NOMBRE", nuevo.getNombre());
+            values.put("DESCRIPCION", nuevo.getDescripcion());
+            values.put("EMOJI", nuevo.getEmoji());
+
+            // Actualizar usando el ID como condición
+            String[] id = {antiguo.getNombre()};
+            res= db.update("Estudio",
+                    values,
+                    "nombre = ?",
+                    id);
+
+            db.close();
+        } catch (SQLiteConstraintException ex){
+            toast(ex.getMessage());
+        }
+        return res;
+    }
     private long insertarTipoDato(TipoDato tipoDato){
         long  res=-1;
         try(EstudiosSQLiteHelper usdbh =
@@ -657,35 +469,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-    //MENU CONTEXTUAL
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item){
-        Estudio libro;
-        switch(item.getItemId())
-        {
-            case 121:
-                //MENU --> EDITAR
-                Intent i = new Intent(this, EditActivity.class);
-                posicionEdicion = item.getGroupId();
-                libro = listaEstudios.get(posicionEdicion);
-                i.putExtra("NOMBRE", libro.getNombre());
-                i.putExtra("DESCRIPCION", libro.getDescripcion());
-                lanzadorEdit.launch(i);
-                return true;
-            case 122:
-                //MENU --> BORRAR
-                posicionEdicion = item.getGroupId();
-                libro = listaEstudios.get(posicionEdicion);
-                if(borrarSQL(libro)!=-1){
-                    listaEstudios.remove(libro);
-                }
-                actualizarDatos();
-
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
 
     private long borrarSQL(Estudio libro) {
         long res;
@@ -710,39 +493,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    //RECOGER EDIT ACTIVITY
-    ActivityResultLauncher<Intent> lanzadorEdit = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>()
-            {
-                @Override
-                public void onActivityResult(ActivityResult resultado)
-                {
-                    if(resultado.getResultCode()==RESULT_OK) {
-                        Intent data = resultado.getData();
-                        assert data != null;
-                        Estudio editLibro = new Estudio(
-                                data.getStringExtra("NOMBRE"),
-                                data.getStringExtra("DESCRIPCION"),
-                                data.getStringExtra("EMOJI")
-                        );
 
-                        Estudio antig = listaEstudios.get(posicionEdicion);
-                        // Editar el libro
-
-                        int insertado = editarSQL(antig, editLibro);
-                        if(insertado != -1){
-                            listaEstudios.set(listaEstudios.indexOf(antig), editLibro);
-                        }
-
-                        actualizarDatos();
-
-                    }else{
-                        //SIN DATOS
-                    }
-                }
-            }
-    );
 
 
     //RECOGER ALTA ACTIVITY
@@ -756,23 +507,24 @@ public class MainActivity extends AppCompatActivity implements
                         Intent data = resultado.getData();
                         assert data != null;
                         //RECOGER DATOS:
-                        String[] datosEstudio = data.getStringArrayExtra("ESTUDIO");
-                        TipoDato[] tiposDato = (TipoDato[]) data.getParcelableArrayExtra("TIPOSDATO");
+                        ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
+                        ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
 
                         //INSERTAR EL ESTUDIO:
                         if(datosEstudio != null && tiposDato!=null){
                             Estudio nuevoEstudio = new Estudio(
-                                    datosEstudio[0],
-                                    datosEstudio[1],
-                                    datosEstudio[2]);
+                                    datosEstudio.get(0),
+                                    datosEstudio.get(1),
+                                    datosEstudio.get(2));
                             listaEstudios.add(nuevoEstudio);
                             if(insertarEstudio(nuevoEstudio)!=-1){
                                 //INSERTAR LOS TIPOS DE DATO:
-                                for (int i = 0; i < tiposDato.length; i++) {
+                                for (int i = 0; i < tiposDato.size(); i++) {
                                     //PONER LA FORÁNEA A LOS TIPOS DE DATO:
-                                    tiposDato[i].setFkEstudio(nuevoEstudio.getNombre());
+                                    TipoDato tipoNuevo = tiposDato.get(i);
+                                    tipoNuevo.setFkEstudio(nuevoEstudio.getNombre());
                                     //INSERTAR
-                                    insertarTipoDato(tiposDato[i]);
+                                    insertarTipoDato(tiposDato.get(i));
                                 }
                             }
                         }
@@ -811,6 +563,44 @@ public class MainActivity extends AppCompatActivity implements
         return res;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode==RESULT_OK) {
+            assert data != null;
+            ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
+            ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
+            int posicion = data.getIntExtra("INDEX",-1);
+
+            //INSERTAR EL ESTUDIO:
+            if(datosEstudio != null && tiposDato!=null){
+                Estudio editEstudio = new Estudio(
+                        datosEstudio.get(0),
+                        datosEstudio.get(1),
+                        datosEstudio.get(2));
+                Estudio viejo = listaEstudios.get(posicion);
+                if(editarEstudio(viejo, editEstudio)!=-1){
+                    //INSERTAR LOS TIPOS DE DATO:
+                    for (int i = 0; i < tiposDato.size(); i++) {
+                        //PONER LA FORÁNEA A LOS TIPOS DE DATO:
+                        TipoDato tipoNuevo = tiposDato.get(i);
+                        tipoNuevo.setFkEstudio(editEstudio.getNombre());
+                        //INSERTAR
+                        insertarTipoDato(tiposDato.get(i));
+                    }
+                }
+            }
+
+            actualizarDatos();
+
+        }else{
+            //SIN DATOS
+        }
+
+    }
+
 
 
     @Override
@@ -818,6 +608,49 @@ public class MainActivity extends AppCompatActivity implements
         // Lógica de actualización (ejemplo: modificar el elemento)
         actualizarDatos();
     }
+    /*
+    //RECOGER EDIT ACTIVITY
+    ActivityResultLauncher<Intent> lanzadorEdit = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>()
+            {
+                @Override
+                public void onActivityResult(ActivityResult resultado)
+                {
+                    if(resultado.getResultCode()==RESULT_OK) {
+                        Intent data = resultado.getData();
+                        assert data != null;
+                        ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
+                        ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
+                        int posicion = data.getIntExtra("INDEX",-1);
+
+                        //INSERTAR EL ESTUDIO:
+                        if(datosEstudio != null && tiposDato!=null){
+                            Estudio editEstudio = new Estudio(
+                                    datosEstudio.get(0),
+                                    datosEstudio.get(1),
+                                    datosEstudio.get(2));
+                            Estudio viejo = listaEstudios.get(posicion);
+                            if(insertarEstudio(editEstudio)!=-1){
+                                //INSERTAR LOS TIPOS DE DATO:
+                                for (int i = 0; i < tiposDato.size(); i++) {
+                                    //PONER LA FORÁNEA A LOS TIPOS DE DATO:
+                                    TipoDato tipoNuevo = tiposDato.get(i);
+                                    tipoNuevo.setFkEstudio(editEstudio.getNombre());
+                                    //INSERTAR
+                                    insertarTipoDato(tiposDato.get(i));
+                                }
+                            }
+                        }
+
+                        actualizarDatos();
+
+                    }else{
+                        //SIN DATOS
+                    }
+                }
+            }
+    );*/
 
 
 

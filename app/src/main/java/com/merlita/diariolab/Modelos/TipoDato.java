@@ -1,6 +1,11 @@
 package com.merlita.diariolab.Modelos;
 
-public class TipoDato {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class TipoDato implements Parcelable {
     private String nombre;       // VARCHAR(20)
     private String tipoDato;     // VARCHAR(20)
     private String descripcion;  // VARCHAR(100)
@@ -60,5 +65,39 @@ public class TipoDato {
 
     public void setFkEstudio(String fkEstudio) {
         this.fkEstudio = fkEstudio;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // Método para crear un objeto TipoDato desde un Parcel
+    protected TipoDato(Parcel in) {
+        nombre = in.readString();
+        tipoDato = in.readString();
+        descripcion = in.readString();
+        fkEstudio = in.readString();
+    }
+
+    // Creator para crear instancias de TipoDato desde un Parcel
+    public static final Creator<TipoDato> CREATOR = new Creator<TipoDato>() {
+        @Override
+        public TipoDato createFromParcel(Parcel in) {
+            return new TipoDato(in);
+        }
+
+        @Override
+        public TipoDato[] newArray(int size) {
+            return new TipoDato[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeString(nombre);
+        parcel.writeString(tipoDato);
+        parcel.writeString(descripcion);
+        parcel.writeString(fkEstudio);
     }
 }
