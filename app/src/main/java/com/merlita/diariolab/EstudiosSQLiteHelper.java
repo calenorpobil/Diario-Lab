@@ -30,7 +30,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
             "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
-            "CHK_TIPO CHECK (TIPO_DATO IN ('Numero', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
+            "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
 
     public long insertarEstudio(SQLiteDatabase db, Estudio est){
         long newRowId=0;
@@ -83,6 +83,20 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         values.put("FK_ESTUDIO", datoTipo.getFkEstudio());
 
         newRowId = db.insert("DATO_TIPO", null, values);
+
+        return newRowId;
+    }
+
+    public long editarTipoDato(SQLiteDatabase db, TipoDato datoTipo, TipoDato nuevoDatoTipo) {
+        long newRowId = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("NOMBRE", nuevoDatoTipo.getNombre());
+        values.put("TIPO_DATO", nuevoDatoTipo.getTipoDato());
+        values.put("DESCRIPCION", nuevoDatoTipo.getDescripcion());
+        values.put("FK_ESTUDIO", nuevoDatoTipo.getFkEstudio());
+
+        newRowId = db.update("DATO_TIPO", values, "NOMBRE = ?", new String[]{datoTipo.getNombre()});
 
         return newRowId;
     }

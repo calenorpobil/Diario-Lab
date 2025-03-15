@@ -32,16 +32,19 @@ import java.util.Locale;
 public class EditActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
 
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     EditText etTitulo, etEmoji, etDescripcion;
     Button bt, btNuevoTipo;
-    ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
+    ArrayList<TipoDato>
+            listaTiposDato  = new ArrayList<>(),
+            listaAntigTiposDato = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
     String nombreEstudio;
 
     int posicion=-1;
+    private boolean primeraVez=true;
 
     private void toast(String e) {
         if(e!=null){
@@ -144,6 +147,11 @@ public class EditActivity extends AppCompatActivity
             String descripcion = c.getString(index);
             listaTiposDato.add(new TipoDato(nombre, tipoDato, descripcion));
         }
+        if(primeraVez) {
+            listaAntigTiposDato = listaTiposDato;
+            primeraVez=false;
+        }
+
         c.close();
     }
     public void clickVolver(View v){
@@ -168,12 +176,11 @@ public class EditActivity extends AppCompatActivity
                     datosEstudio.add(etDescripcion.getText().toString());
                     datosEstudio.add(etEmoji.getText().toString());
 
-                    listaTiposDato = adaptadorTiposDato.getLista();
-
-
+                    ArrayList<TipoDato> nuevaListaTiposDato = adaptadorTiposDato.getLista();
 
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                    i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
+                    i.putParcelableArrayListExtra("TIPOSDATO", listaAntigTiposDato);
+                    i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
                     i.putExtra("INDEX", posicion);
 
                     setResult(RESULT_OK, i);

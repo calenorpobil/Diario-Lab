@@ -39,7 +39,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
 
     SQLiteDatabase db;
-    private final int DB_VERSION=3;
+    private final int DB_VERSION=MainActivity.DB_VERSION;
 
 
     public class MiContenedor extends RecyclerView.ViewHolder
@@ -155,20 +155,6 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                     if (usdbh.borrarEstudio(actual, db) != -1) {
                         lista.remove(actual);
                         MainActivity.actualizarLocal();
-
-
-
-                        /*Intent i = new Intent(view.getContext(), MainActivity.class);
-
-
-                        i.putExtra("ESTUDIO", actual);
-                        int num = holder.getAbsoluteAdapterPosition();
-                        i.putExtra("INDEX", num);
-
-                        Activity origin = (Activity) context;
-                        origin.startActivityForResult(i, 2);*/
-
-
 
                     }
 

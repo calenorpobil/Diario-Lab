@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     Button btAlta, btDev, btRevert;
 
     int posicionEdicion;
-    public final int DB_VERSION = 3;
+    public final static int DB_VERSION=4;
 
 
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setAdapter(adaptadorEstudios);
 
         //borrarTodo();
-        //insertarDatosIniciales();
+        insertarDatosIniciales();
         actualizarDatos();
 
 
@@ -140,13 +140,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                 openFolderPickerIn();
-
-
-                /*try {
-                    recibirArchivo();
-                }catch (SQLiteDatabaseCorruptException ex) {
-                    toast("El archivo está en uso. Inténtalo más tarde. ");
-                }*/
 
 
 
@@ -454,6 +447,18 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
+    private long editarTipoDato(TipoDato tipoDato, TipoDato nuevoTipoDato){
+        long  res=-1;
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+            res = usdbh.editarTipoDato(db,tipoDato, nuevoTipoDato);
+        }
+        return res;
+    }
+
     private void rellenarLista(SQLiteDatabase db) {
         Cursor c = db.rawQuery("select * from estudio", null);
 
@@ -576,9 +581,12 @@ public class MainActivity extends AppCompatActivity {
             adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
 
             if (resultCode == RESULT_OK) {
-                assert data != null;
+                    assert data != null;
                 ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
                 ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
+                ArrayList<TipoDato> nuevosTiposDato = data.
+                        getParcelableArrayListExtra("NUEVOSTIPOSDATO");
+
                 int posicion = data.getIntExtra("INDEX", -1);
 
                 //INSERTAR EL ESTUDIO:
@@ -595,7 +603,8 @@ public class MainActivity extends AppCompatActivity {
                             TipoDato tipoNuevo = tiposDato.get(i);
                             tipoNuevo.setFkEstudio(editEstudio.getNombre());
                             //INSERTAR
-                            insertarTipoDato(tiposDato.get(i));
+                            assert nuevosTiposDato != null;
+                            editarTipoDato(tiposDato.get(i), nuevosTiposDato.get(i));
                         }
                     }
                 }

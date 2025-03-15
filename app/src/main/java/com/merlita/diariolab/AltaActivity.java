@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class AltaActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = MainActivity.DB_VERSION;
     EditText etTitulo, etDescripcion, etEmoji;
     Button btGuardar, btNuevoTipo;
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
@@ -61,9 +61,7 @@ public class AltaActivity extends AppCompatActivity
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorTiposDato);
 
-        if(listaTiposDato.isEmpty()){
-            insertarInicial();
-        }
+
         actualizarLocal();
 
 
@@ -181,7 +179,6 @@ public class AltaActivity extends AppCompatActivity
                     assert a != null;
                     listaTiposDato = a.getLista();
 
-
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                     i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
 
@@ -189,9 +186,7 @@ public class AltaActivity extends AppCompatActivity
                 } finally {
                     finish();
                 }
-
             }
-
         }
     }
 
