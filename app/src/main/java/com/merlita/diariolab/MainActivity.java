@@ -53,13 +53,12 @@ import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements
-        AdaptadorEstudios.OnButtonClickListener{
+public class MainActivity extends AppCompatActivity {
 
-    RecyclerView vistaRecycler;
+    static RecyclerView vistaRecycler;
     ArrayList<Estudio> listaEstudios = new ArrayList<Estudio>();
     TextView tv;
-    AdaptadorEstudios adaptadorEstudios;
+    static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
 
     int posicionEdicion;
@@ -108,15 +107,15 @@ public class MainActivity extends AppCompatActivity implements
         btDev = findViewById(R.id.btCopia);
         btRevert = findViewById(R.id.btRevert);
         vistaRecycler = findViewById(R.id.recyclerView);
-        adaptadorEstudios = new AdaptadorEstudios(this, listaEstudios, this);
+        adaptadorEstudios = new AdaptadorEstudios(this, listaEstudios);
 
 
 
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        borrarTodo();
-        insertarDatosIniciales();
+        //borrarTodo();
+        //insertarDatosIniciales();
         actualizarDatos();
 
 
@@ -279,6 +278,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public static void actualizarLocal(){
+        vistaRecycler.setAdapter(adaptadorEstudios);
+
+    }
+
     public void actualizarDatos() {
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -417,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements
         int res=-1;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, 1);){
+                            "DBEstudios", null, DB_VERSION);){
             SQLiteDatabase db = usdbh.getWritableDatabase();
 
             ContentValues values = new ContentValues();
@@ -425,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements
             values.put("DESCRIPCION", nuevo.getDescripcion());
             values.put("EMOJI", nuevo.getEmoji());
 
-            // Actualizar usando el ID como condición
+            //Actualizar usando el ID como condición
             String[] id = {antiguo.getNombre()};
             res= db.update("Estudio",
                     values,
@@ -563,51 +567,57 @@ public class MainActivity extends AppCompatActivity implements
         return res;
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            //RECOGER EDIT ACTIVITY
+            adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode==RESULT_OK) {
-            assert data != null;
-            ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
-            ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
-            int posicion = data.getIntExtra("INDEX",-1);
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+                ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
+                ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
+                int posicion = data.getIntExtra("INDEX", -1);
 
-            //INSERTAR EL ESTUDIO:
-            if(datosEstudio != null && tiposDato!=null){
-                Estudio editEstudio = new Estudio(
-                        datosEstudio.get(0),
-                        datosEstudio.get(1),
-                        datosEstudio.get(2));
-                Estudio viejo = listaEstudios.get(posicion);
-                if(editarEstudio(viejo, editEstudio)!=-1){
-                    //INSERTAR LOS TIPOS DE DATO:
-                    for (int i = 0; i < tiposDato.size(); i++) {
-                        //PONER LA FORÁNEA A LOS TIPOS DE DATO:
-                        TipoDato tipoNuevo = tiposDato.get(i);
-                        tipoNuevo.setFkEstudio(editEstudio.getNombre());
-                        //INSERTAR
-                        insertarTipoDato(tiposDato.get(i));
+                //INSERTAR EL ESTUDIO:
+                if (datosEstudio != null && tiposDato != null) {
+                    Estudio editEstudio = new Estudio(
+                            datosEstudio.get(0),
+                            datosEstudio.get(1),
+                            datosEstudio.get(2));
+                    Estudio viejo = listaEstudios.get(posicion);
+                    if (editarEstudio(viejo, editEstudio) != -1) {
+                        //INSERTAR LOS TIPOS DE DATO:
+                        for (int i = 0; i < tiposDato.size(); i++) {
+                            //PONER LA FORÁNEA A LOS TIPOS DE DATO:
+                            TipoDato tipoNuevo = tiposDato.get(i);
+                            tipoNuevo.setFkEstudio(editEstudio.getNombre());
+                            //INSERTAR
+                            insertarTipoDato(tiposDato.get(i));
+                        }
                     }
                 }
             }
+        } else if (requestCode == 2) {
+            //RECOGER BORRAR DE ADAPTADORESTUDIOS
 
-            actualizarDatos();
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+                Estudio estudio = data.getParcelableExtra("ESTUDIO");
+                int posicion = data.getIntExtra("INDEX", -1);
 
-        }else{
-            //SIN DATOS
+                listaEstudios.remove(estudio);
+
+
+            }
+
         }
-
-    }
-
-
-
-    @Override
-    public void onButtonClick(int position) {
-        // Lógica de actualización (ejemplo: modificar el elemento)
         actualizarDatos();
-    }
+
+
+
     /*
     //RECOGER EDIT ACTIVITY
     ActivityResultLauncher<Intent> lanzadorEdit = registerForActivityResult(
@@ -653,5 +663,6 @@ public class MainActivity extends AppCompatActivity implements
     );*/
 
 
+    }
 
 }

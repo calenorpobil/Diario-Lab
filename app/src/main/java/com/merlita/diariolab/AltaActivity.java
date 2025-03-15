@@ -178,8 +178,8 @@ public class AltaActivity extends AppCompatActivity
                     datosEstudio.add(etEmoji.getText().toString());
 
                     AdaptadorTiposDato a = (AdaptadorTiposDato) vistaRecycler.getAdapter();
+                    assert a != null;
                     listaTiposDato = a.getLista();
-
 
 
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);

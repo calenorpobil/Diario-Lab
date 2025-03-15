@@ -132,6 +132,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.close();
         return res;
     }
+
+
+    public long borrarEstudio(Estudio actual, SQLiteDatabase db) {
+
+        long res=-1;
+
+        res = db.delete("ESTUDIO",
+                "NOMBRE = ?", new String[]{actual.getNombre()});
+
+        return res;
+    }
+
     public long borrarTipo_Datos() {
         long res=-1;
         SQLiteDatabase db = getWritableDatabase();

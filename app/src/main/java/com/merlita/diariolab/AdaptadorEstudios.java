@@ -3,6 +3,7 @@ package com.merlita.diariolab;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,21 +34,12 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
     private Context context;
     private ArrayList<Estudio> lista;
-    private boolean viendoDatosPrueba=true;
-
-    private static boolean usando = false;
-    public interface OnButtonClickListener {
-        void onButtonClick(int position);
-    }
-
-    private OnButtonClickListener listener;
-    Estudio estudioFila;
 
 
 
 
     SQLiteDatabase db;
-
+    private final int DB_VERSION=3;
 
 
     public class MiContenedor extends RecyclerView.ViewHolder
@@ -112,7 +104,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         holder.btMas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Estudio actual = lista.get(holder.getAdapterPosition());
+                Estudio actual = lista.get(holder.getAbsoluteAdapterPosition());
 
             }
         });
@@ -140,6 +132,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                 i.putExtra("INDEX", num);
                 //view.getContext().startActivity(i);
 
+
                 Activity origin = (Activity)context;
                 origin.startActivityForResult(i, 1);
 
@@ -149,48 +142,61 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         });
 
 
+        holder.btBorrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Estudio actual = lista.get(holder.getAbsoluteAdapterPosition());
+                try (EstudiosSQLiteHelper usdbh =
+                             new EstudiosSQLiteHelper(context,
+                                     "DBEstudios", null, DB_VERSION);) {
+
+                    db=usdbh.getWritableDatabase();
+
+                    if (usdbh.borrarEstudio(actual, db) != -1) {
+                        lista.remove(actual);
+                        MainActivity.actualizarLocal();
+
+
+
+                        /*Intent i = new Intent(view.getContext(), MainActivity.class);
+
+
+                        i.putExtra("ESTUDIO", actual);
+                        int num = holder.getAbsoluteAdapterPosition();
+                        i.putExtra("INDEX", num);
+
+                        Activity origin = (Activity) context;
+                        origin.startActivityForResult(i, 2);*/
+
+
+
+                    }
+
+                } catch (Exception e) {
+                    Log.e("DB_ERROR", "Error en transacción: " + e.getMessage());
+                } finally {
+                    // Finalizar la transacción
+                    db.close();
+                }
+            }
+        });
     }
+
+
+
     public  void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("MyAdapter", "onActivityResult");
     }
 
 
-    public AdaptadorEstudios(Context context, ArrayList<Estudio> lista,
-                             OnButtonClickListener listener) {
+    public AdaptadorEstudios(Context context, ArrayList<Estudio> lista) {
         super();
         this.context = context;
         this.lista = lista;
-        this.listener = listener;
     }
 
     @Override
     public int getItemCount() {
         return lista.size();
     }
-
-
-
-
-
-
-    private long editarSQL(Estudio nuevo, int nuevaCuenta){
-        long res=-1;
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this.context,
-                            "DBEstudios", null, 1);){
-            db = usdbh.getWritableDatabase();
-
-            res = usdbh.editarSQL(db, nuevo, nuevaCuenta);
-
-
-        }
-        return res;
-    }
-
-
-    public AdaptadorEstudios(@NonNull Context context) {
-        super();
-    }
-
-
 }
