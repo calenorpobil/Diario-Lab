@@ -96,7 +96,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         values.put("DESCRIPCION", nuevoDatoTipo.getDescripcion());
         values.put("FK_ESTUDIO", nuevoDatoTipo.getFkEstudio());
 
-        newRowId = db.update("DATO_TIPO", values, "NOMBRE = ?", new String[]{datoTipo.getNombre()});
+        newRowId = db.update("DATO_TIPO", values,
+                "NOMBRE = ?",
+                new String[]{datoTipo.getNombre()});
 
         return newRowId;
     }
@@ -166,6 +168,15 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
                 null, null);
 
         db.close();
+        return res;
+    }
+    public long borrarTiposDatos_PorFK(SQLiteDatabase db, TipoDato tipoDato) {
+        long res=-1;
+
+        res = db.delete("DATO_TIPO",
+                "FK_ESTUDIO = ?",
+                new String[]{tipoDato.getFkEstudio()});
+
         return res;
     }
     public long borrarOcurrencias() {

@@ -87,7 +87,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        TipoDato tipoDato = lista.get(holder.getAdapterPosition());
+        TipoDato tipoDato = lista.get(holder.getAbsoluteAdapterPosition());
         holder.etDescripcion.setText(tipoDato.getDescripcion());
         holder.etNombre.setText(tipoDato.getNombre());
 

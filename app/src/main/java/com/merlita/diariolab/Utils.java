@@ -10,6 +10,12 @@ import java.io.OutputStream;
 public class Utils {
 
 
+    public static boolean multiBoolean(long[] res){
+        for (int i = 0; i < res.length; i++) {
+            if (res[i]==-1) return false;
+        }
+        return true;
+    }
     public static void copiarArchivo(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
         try {

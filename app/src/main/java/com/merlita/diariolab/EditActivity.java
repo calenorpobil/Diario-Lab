@@ -176,7 +176,6 @@ public class EditActivity extends AppCompatActivity
                     datosEstudio.add(etDescripcion.getText().toString());
                     datosEstudio.add(etEmoji.getText().toString());
 
-                    ArrayList<TipoDato> nuevaListaTiposDato = adaptadorTiposDato.getLista();
 
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                     i.putParcelableArrayListExtra("TIPOSDATO", listaAntigTiposDato);

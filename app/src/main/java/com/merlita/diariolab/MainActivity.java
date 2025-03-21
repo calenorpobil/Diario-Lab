@@ -1,6 +1,7 @@
 package com.merlita.diariolab;
 
 import static com.merlita.diariolab.Utils.copiarArchivo;
+import static com.merlita.diariolab.Utils.multiBoolean;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -37,19 +38,8 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -447,16 +437,20 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    private long editarTipoDato(TipoDato tipoDato, TipoDato nuevoTipoDato){
-        long  res=-1;
+    private boolean editarTipoDato(ArrayList<TipoDato> nuevoTiposDato){
+        long[]  fun = new long[nuevoTiposDato.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
 
             SQLiteDatabase db = usdbh.getWritableDatabase();
-            res = usdbh.editarTipoDato(db,tipoDato, nuevoTipoDato);
+            fun[0] = usdbh.borrarTiposDatos_PorFK(db, nuevoTiposDato.get(0));
+            for (int i = 0; i < nuevoTiposDato.size(); i++) {
+                fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
+            }
+            db.close();
         }
-        return res;
+        return multiBoolean(fun);
     }
 
     private void rellenarLista(SQLiteDatabase db) {
@@ -596,16 +590,10 @@ public class MainActivity extends AppCompatActivity {
                             datosEstudio.get(1),
                             datosEstudio.get(2));
                     Estudio viejo = listaEstudios.get(posicion);
+                    nuevosTiposDato.get(0).setFkEstudio(viejo.getNombre());
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:
-                        for (int i = 0; i < tiposDato.size(); i++) {
-                            //PONER LA FORÁNEA A LOS TIPOS DE DATO:
-                            TipoDato tipoNuevo = tiposDato.get(i);
-                            tipoNuevo.setFkEstudio(editEstudio.getNombre());
-                            //INSERTAR
-                            assert nuevosTiposDato != null;
-                            editarTipoDato(tiposDato.get(i), nuevosTiposDato.get(i));
-                        }
+                        editarTipoDato(nuevosTiposDato);
                     }
                 }
             }
