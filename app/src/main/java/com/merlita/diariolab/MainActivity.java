@@ -1,5 +1,6 @@
 package com.merlita.diariolab;
 
+import static androidx.recyclerview.widget.LinearLayoutManager.VERTICAL;
 import static com.merlita.diariolab.Utils.copiarArchivo;
 import static com.merlita.diariolab.Utils.multiBoolean;
 
@@ -9,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,13 +48,13 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     static RecyclerView vistaRecycler;
-    ArrayList<Estudio> listaEstudios = new ArrayList<Estudio>();
-    TextView tv;
+    public static ArrayList<Estudio> listaEstudios = new ArrayList<Estudio>();
+    TextView tv, tvErrores;
     static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
 
     int posicionEdicion;
-    public final static int DB_VERSION=4;
+    public final static int DB_VERSION=5;
 
 
 
@@ -99,10 +101,17 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler = findViewById(R.id.recyclerView);
         adaptadorEstudios = new AdaptadorEstudios(this, listaEstudios);
 
+        tvErrores = findViewById(R.id.tvErrores);
 
 
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager lm = new LinearLayoutManager(this);
+        lm.setOrientation(VERTICAL);
+        lm.setReverseLayout(true);
+
+        vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
+
+
 
         //borrarTodo();
         insertarDatosIniciales();
@@ -274,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
+                //usdbh.onUpgrade(db, 4, DB_VERSION);
                 listaEstudios.clear();
 
                 rellenarLista(db);
@@ -310,12 +320,12 @@ public class MainActivity extends AppCompatActivity {
                 usdbh. insertarEstudio(db,new Estudio("Diario", "Registro personal diario", "\uD83D\uDCD4"));
 
                 // Insertar tipos de datos para "Tomar Café"
-                usdbh.insertarTipoDato(db,new TipoDato("Tazas", "Numero", "Cantidad de tazas consumidas", "Tomar Café"));
+                usdbh.insertarTipoDato(db,new TipoDato("Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
                 usdbh.insertarTipoDato(db,new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
                 usdbh.insertarTipoDato(db,new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
 
                 // Tipos para "Ir al gimnasio"
-                usdbh.insertarTipoDato(db,new TipoDato("Duración", "Numero", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
+                usdbh.insertarTipoDato(db,new TipoDato("Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
                 usdbh.insertarTipoDato(db,new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
                 usdbh.insertarTipoDato(db,new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
 
@@ -376,6 +386,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // Marcar la transacción como exitosa
                 db.setTransactionSuccessful();
+            /*}catch (SQLiteException e){
+                tvErrores.setError(e.getMessage());*/
             }catch (Exception e) {
                 Log.e("DB_ERROR", "Error en transacción: " + e.getMessage());
             } finally {
@@ -443,10 +455,17 @@ public class MainActivity extends AppCompatActivity {
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
 
+            //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
             SQLiteDatabase db = usdbh.getWritableDatabase();
-            fun[0] = usdbh.borrarTiposDatos_PorFK(db, nuevoTiposDato.get(0));
+            fun[0] = usdbh.borrarTiposDatos_PorFK(db, nuevoTiposDato.get(0).getFkEstudio());
             for (int i = 0; i < nuevoTiposDato.size(); i++) {
-                fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
+                //Apunta la clave Foránea del Estudio
+                nuevoTiposDato.get(i).setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
+                try{
+                    fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
+                }catch (SQLiteException e){
+                    tvErrores.setText(e.getMessage());
+                }
             }
             db.close();
         }
@@ -496,10 +515,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-    //RECOGER ALTA ACTIVITY
+    /**
+     * RECOGER ALTA ACTIVITY
+     *
+     *
+     */
     ActivityResultLauncher<Intent>
             lanzadorAlta = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -567,11 +587,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * RECOGER EDIT ACTIVITY
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            //RECOGER EDIT ACTIVITY
             adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
 
             if (resultCode == RESULT_OK) {
@@ -590,6 +616,7 @@ public class MainActivity extends AppCompatActivity {
                             datosEstudio.get(1),
                             datosEstudio.get(2));
                     Estudio viejo = listaEstudios.get(posicion);
+                    assert nuevosTiposDato != null;
                     nuevosTiposDato.get(0).setFkEstudio(viejo.getNombre());
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:

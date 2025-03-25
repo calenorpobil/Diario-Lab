@@ -1,6 +1,7 @@
 package com.merlita.diariolab;
 
-import android.app.DatePickerDialog;
+import static com.merlita.diariolab.AltaActivity.comprobaciones;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,23 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class EditActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
@@ -101,7 +94,7 @@ public class EditActivity extends AppCompatActivity
         bt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View  view){
-                clickVolver(view);
+                clickEditar(view);
             }
         });
 
@@ -154,41 +147,48 @@ public class EditActivity extends AppCompatActivity
 
         c.close();
     }
-    public void clickVolver(View v){
+    public void clickEditar(View v){
         if(!etEmoji.getText().toString().isEmpty() &&
                 !etTitulo.getText().toString().isEmpty() &&
                 !etDescripcion.getText().toString().isEmpty() &&
                 !listaTiposDato.isEmpty())
         {
-            Intent i = new Intent();
+            String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
+                    "edit");
 
-            //Valido campos obligatorios (según esquema SQL)
-            if (etTitulo.getText().toString().isEmpty() ||
-                    etEmoji.getText().toString().isEmpty() ||
-                    etDescripcion.getText().toString().isEmpty()) {
-                Toast.makeText(this, "Complete los campos obligatorios (*)",
-                        Toast.LENGTH_SHORT).show();
-            }else{
-                try {
-                    // Preparar todos los datos para enviar
-                    ArrayList<String> datosEstudio = new ArrayList<>();
-                    datosEstudio.add(etTitulo.getText().toString());
-                    datosEstudio.add(etDescripcion.getText().toString());
-                    datosEstudio.add(etEmoji.getText().toString());
+            if (error.isEmpty()) {
+                Intent i = new Intent();
+
+                //Valido campos obligatorios (según esquema SQL)
+                if (etTitulo.getText().toString().isEmpty() ||
+                        etEmoji.getText().toString().isEmpty() ||
+                        etDescripcion.getText().toString().isEmpty()) {
+                    Toast.makeText(this, "Complete los campos obligatorios (*)",
+                            Toast.LENGTH_SHORT).show();
+                }else{
+                    try {
+                        // Preparar todos los datos para enviar
+                        ArrayList<String> datosEstudio = new ArrayList<>();
+                        datosEstudio.add(etTitulo.getText().toString());
+                        datosEstudio.add(etDescripcion.getText().toString());
+                        datosEstudio.add(etEmoji.getText().toString());
 
 
-                    i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                    i.putParcelableArrayListExtra("TIPOSDATO", listaAntigTiposDato);
-                    i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
-                    i.putExtra("INDEX", posicion);
+                        i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                        i.putParcelableArrayListExtra("TIPOSDATO", listaAntigTiposDato);
+                        i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
+                        i.putExtra("INDEX", posicion);
 
-                    setResult(RESULT_OK, i);
-                } finally {
-                    finish();
+                        setResult(RESULT_OK, i);
+                    } finally {
+                        finish();
+                    }
+
                 }
 
+            }else{
+                toast(error);
             }
-
         }else{
             toast("Rellena todos los campos. ");
         }

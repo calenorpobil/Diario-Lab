@@ -152,22 +152,18 @@ public class AltaActivity extends AppCompatActivity
     }
 
 
-    public void clickGuardar(View v){
-
-        if(!etEmoji.getText().toString().isEmpty() &&
+    public void clickGuardar(View v) {
+        boolean correcto = true;
+        if (!etEmoji.getText().toString().isEmpty() &&
                 !etTitulo.getText().toString().isEmpty() &&
                 !etDescripcion.getText().toString().isEmpty() &&
-                !listaTiposDato.isEmpty())
-        {
-            Intent i = new Intent();
+                !listaTiposDato.isEmpty()) {
+            String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato, "alta");
 
-            //Valido campos obligatorios (según esquema SQL)
-            if (etTitulo.getText().toString().isEmpty() ||
-                    etEmoji.getText().toString().isEmpty() ||
-                    etDescripcion.getText().toString().isEmpty()) {
-                Toast.makeText(this, "Complete los campos obligatorios (*)",
-                        Toast.LENGTH_SHORT).show();
-            }else{
+            if (error.isEmpty()) {
+                Intent i = new Intent();
+
+                //Valido campos obligatorios (según esquema SQL)
                 try {
                     // Preparar todos los datos para enviar
                     ArrayList<String> datosEstudio = new ArrayList<>();
@@ -186,9 +182,59 @@ public class AltaActivity extends AppCompatActivity
                 } finally {
                     finish();
                 }
+
+            }else{
+                toast(error);
             }
+        } else {
+            toast("Rellena los datos o añade un Tipo de Dato. ");
         }
     }
+
+    public static String comprobaciones(EditText etTitulo, EditText etEmoji,
+                EditText etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
+        String correcto = "";
+
+
+        if(alta.equals("alta")){
+            for (int i = 0; i < MainActivity.listaEstudios.size(); i++) {
+                if(etTitulo.getText().toString().
+                        equals(MainActivity.listaEstudios.get(i).getNombre())){
+                    correcto = "Ese estudio ya existe. ";
+                }
+            }
+        }
+
+        if (etTitulo.getText().toString().isEmpty() ||
+                etEmoji.getText().toString().isEmpty() ||
+                etDescripcion.getText().toString().isEmpty()) {
+            correcto = "Complete los campos obligatorios. ";
+        }
+        //Check por cada TipoDato
+        for (int i = 0; i < listaTiposDato.size(); i++) {
+            if (correcto.isEmpty()) {
+                /*
+                if (listaTiposDato.get(i).getNombre().equals(etTitulo.getText().toString())) {
+                    correcto="El nombre de un dato no puede ser igual que el del Estudio. ";
+                    break;
+                }*/
+                for (int j = 0; j < listaTiposDato.size(); j++) {
+                    if (i != j && listaTiposDato.get(i).getNombre().
+                            equals(listaTiposDato.get(j).getNombre())) {
+                        correcto="No puedes llamar a dos datos con el mismo nombre. ";
+
+                        break;
+                    }
+                }
+                if (listaTiposDato.get(i).getNombre().isEmpty()) {
+                    correcto="Tienes que poner un nombre al dato. ";
+                    break;
+                }
+            }
+        }
+        return correcto;
+    }
+
 
 
     @Override

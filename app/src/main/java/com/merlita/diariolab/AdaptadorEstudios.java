@@ -94,7 +94,8 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Estudio estudio = lista.get(holder.getAdapterPosition());
+        int reverseIndex = lista.size() -1 -position;
+        Estudio estudio = lista.get(holder.getAbsoluteAdapterPosition());
         holder.tvTitulo.setText(estudio.getNombre());
         holder.tvDescripcion.setText(estudio.getDescripcion());
         holder.tvEmoji.setText(estudio.getEmoji());
@@ -152,7 +153,8 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
                     db=usdbh.getWritableDatabase();
 
-                    if (usdbh.borrarEstudio(actual, db) != -1) {
+                    if (usdbh.borrarEstudio(actual, db) != -1 &&
+                            usdbh.borrarTiposDatos_PorFK(db, actual.getNombre())!=-1) {
                         lista.remove(actual);
                         MainActivity.actualizarLocal();
 

@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.merlita.diariolab.Modelos.Dato;
@@ -30,7 +32,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
             "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
-            "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha')), PRIMARY KEY  (NOMBRE));";
+            "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha')), " +
+            "PRIMARY KEY (NOMBRE, FK_ESTUDIO));";
 
     public long insertarEstudio(SQLiteDatabase db, Estudio est){
         long newRowId=0;
@@ -60,20 +63,20 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return newRowId;
     }
 
-    public long insertarOcurrencia(SQLiteDatabase db, Ocurrencia ocurrencia) {
+    public long insertarOcurrencia(SQLiteDatabase db, Ocurrencia ocurrencia) throws SQLiteException{
         long newRowId = 0;
 
         ContentValues values = new ContentValues();
         values.put("FECHA", ocurrencia.getFecha().toString()); // DATETIME se convierte a String
         values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
 
-        newRowId = db.insert("OCURRENCIA", null, values);
+        newRowId = db.insertOrThrow("OCURRENCIA", null, values);
 
         return newRowId;
     }
 
 
-    public long insertarTipoDato(SQLiteDatabase db, TipoDato datoTipo) {
+    public long insertarTipoDato(SQLiteDatabase db, TipoDato datoTipo)  {
         long newRowId = 0;
 
         ContentValues values = new ContentValues();
@@ -170,12 +173,12 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.close();
         return res;
     }
-    public long borrarTiposDatos_PorFK(SQLiteDatabase db, TipoDato tipoDato) {
+    public long borrarTiposDatos_PorFK(SQLiteDatabase db, String fkEstudio) {
         long res=-1;
 
         res = db.delete("DATO_TIPO",
                 "FK_ESTUDIO = ?",
-                new String[]{tipoDato.getFkEstudio()});
+                new String[]{fkEstudio});
 
         return res;
     }

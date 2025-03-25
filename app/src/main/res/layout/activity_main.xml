@@ -10,11 +10,11 @@
 
     <TextView
         android:id="@+id/tvTitulo"
+        style="@style/TextColor1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:text="@string/estudio_diario"
-        style="@style/TextColor1"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/recyclerView"
@@ -41,10 +41,12 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/btAlta"
+        app:layout_constraintBottom_toTopOf="@+id/tvErrores"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTitulo"
+        app:reverseLayout="true"
+        app:stackFromEnd="false" />
 
     <Button
         android:id="@+id/btAlta"
@@ -97,5 +99,13 @@
         app:layout_constraintEnd_toStartOf="@+id/btAlta"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btAlta" />
+
+    <TextView
+        android:id="@+id/tvErrores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/btAlta"
+        tools:layout_editor_absoluteX="176dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
