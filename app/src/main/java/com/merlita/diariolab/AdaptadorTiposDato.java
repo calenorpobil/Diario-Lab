@@ -65,9 +65,13 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         public void onCreateContextMenu(ContextMenu contextMenu, View view,
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
-            contextMenu.add(getAdapterPosition(), 121, 0, "EDITAR");
-            contextMenu.add(getAdapterPosition(), 122, 1, "BORRAR");
+            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "BORRAR");
         }
+
+
+
+
+
     }
 
 
@@ -80,6 +84,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflador.inflate(R.layout.fila_tipo_dato, parent, false);
+
 
         return new MiContenedor(v);
     }
@@ -141,6 +146,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 // No se seleccionó nada
             }
         });
+
+
 
     }
 

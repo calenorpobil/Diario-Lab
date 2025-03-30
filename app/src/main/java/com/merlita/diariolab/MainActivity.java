@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
 
-    int posicionEdicion;
+
     public final static int DB_VERSION=5;
 
 
@@ -603,20 +603,18 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                     assert data != null;
                 ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
-                ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
                 ArrayList<TipoDato> nuevosTiposDato = data.
                         getParcelableArrayListExtra("NUEVOSTIPOSDATO");
 
                 int posicion = data.getIntExtra("INDEX", -1);
 
                 //INSERTAR EL ESTUDIO:
-                if (datosEstudio != null && tiposDato != null) {
+                if (datosEstudio != null && nuevosTiposDato != null) {
                     Estudio editEstudio = new Estudio(
                             datosEstudio.get(0),
                             datosEstudio.get(1),
                             datosEstudio.get(2));
                     Estudio viejo = listaEstudios.get(posicion);
-                    assert nuevosTiposDato != null;
                     nuevosTiposDato.get(0).setFkEstudio(viejo.getNombre());
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:

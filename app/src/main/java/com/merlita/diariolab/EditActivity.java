@@ -7,17 +7,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.util.ArrayList;
@@ -30,14 +33,15 @@ public class EditActivity extends AppCompatActivity
     EditText etTitulo, etEmoji, etDescripcion;
     Button bt, btNuevoTipo;
     ArrayList<TipoDato>
-            listaTiposDato  = new ArrayList<>(),
-            listaAntigTiposDato = new ArrayList<>();
+            listaTiposDato  = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
     String nombreEstudio;
-
     int posicion=-1;
     private boolean primeraVez=true;
+    int posicionEdicion;
+
+
 
     private void toast(String e) {
         if(e!=null){
@@ -46,6 +50,22 @@ public class EditActivity extends AppCompatActivity
         }
     }
 
+    //MENU CONTEXTUAL
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        Estudio libro;
+        switch (item.getItemId()) {
+            case 121:
+                //MENU --> BORRAR
+                Intent i = new Intent(this, EditActivity.class);
+                posicionEdicion = item.getGroupId();
+                listaTiposDato.remove(posicionEdicion);
+                actualizarLocal();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
 
 
@@ -61,7 +81,7 @@ public class EditActivity extends AppCompatActivity
         String desc = upIntent.getString("DESCRIPCION");
         String emoji = upIntent.getString("EMOJI");
         posicion = upIntent.getInt("INDEX");
-        etTitulo = findViewById(R.id.etTitulo);
+        etTitulo = findViewById(R.id.tvTitulo);
         etEmoji = findViewById(R.id.etEmoji);
         etDescripcion = findViewById(R.id.etDescripcion);
         bt = findViewById(R.id.btnGuardar);
@@ -140,10 +160,6 @@ public class EditActivity extends AppCompatActivity
             String descripcion = c.getString(index);
             listaTiposDato.add(new TipoDato(nombre, tipoDato, descripcion));
         }
-        if(primeraVez) {
-            listaAntigTiposDato = listaTiposDato;
-            primeraVez=false;
-        }
 
         c.close();
     }
@@ -175,7 +191,6 @@ public class EditActivity extends AppCompatActivity
 
 
                         i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                        i.putParcelableArrayListExtra("TIPOSDATO", listaAntigTiposDato);
                         i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
                         i.putExtra("INDEX", posicion);
 

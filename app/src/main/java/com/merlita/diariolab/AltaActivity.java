@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.TipoDato;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -48,7 +46,7 @@ public class AltaActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta);
 
-        etTitulo = findViewById(R.id.etTitulo);
+        etTitulo = findViewById(R.id.tvTitulo);
         etDescripcion = findViewById(R.id.etDescripcion);
         etEmoji = findViewById(R.id.etEmoji);
         btGuardar = findViewById(R.id.btnGuardar);

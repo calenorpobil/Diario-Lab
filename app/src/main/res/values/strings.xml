@@ -72,4 +72,6 @@
     <string name="descripci_n">Descripción</string>
     <string name="nombre_de_tu_dato">Nombre de tu dato</string>
     <string name="guardar_el_estudio">Guardar el estudio</string>
+    <string name="repeticiones">🔁️ Reps</string>
+    <string name="a_adir_la_ocurrencia">Añadir la ocurrencia</string>
 </resources>

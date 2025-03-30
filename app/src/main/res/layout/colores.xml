@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/etTitulo"
+        android:id="@+id/tvTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -27,7 +27,7 @@
         android:text="@string/numero"
         app:layout_constraintBottom_toTopOf="@+id/btVolver"
         app:layout_constraintEnd_toEndOf="@+id/btVolver"
-        app:layout_constraintStart_toStartOf="@+id/etTitulo" />
+        app:layout_constraintStart_toStartOf="@+id/tvTitulo" />
 
     <Button
         android:id="@+id/btVolver"
