@@ -1,7 +1,7 @@
-package com.merlita.diariolab;
+package com.merlita.diariolab.Utils;
 
 
-import static com.merlita.diariolab.Utils.archivoAOutputStream;
+import static com.merlita.diariolab.Utils.Utils.archivoAOutputStream;
 
 import android.content.Context;
 import android.net.Uri;

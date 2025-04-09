@@ -1,4 +1,4 @@
-package com.merlita.diariolab;
+package com.merlita.diariolab.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;

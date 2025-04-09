@@ -1,4 +1,4 @@
-package com.merlita.diariolab;
+package com.merlita.diariolab.Utils;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 
 public class SpinnerAdapter extends ArrayAdapter<String> {
 

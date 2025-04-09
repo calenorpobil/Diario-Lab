@@ -1,4 +1,4 @@
-package com.merlita.diariolab;
+package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -21,11 +21,15 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.merlita.diariolab.EditActivity;
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
+import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.OcurrenciaActivity;
+import com.merlita.diariolab.R;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.MiContenedor> {
 
@@ -36,7 +40,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
 
     SQLiteDatabase db;
-    private final int DB_VERSION=MainActivity.DB_VERSION;
+    private final int DB_VERSION= MainActivity.DB_VERSION;
 
 
     public class MiContenedor extends RecyclerView.ViewHolder

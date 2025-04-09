@@ -17,16 +17,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Adaptadores.AdaptadorDatos;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
 public class OcurrenciaActivity extends AppCompatActivity
-        implements AdaptadorDatos.OnButtonClickListener {
+        implements AdaptadorDatos.OnButtonClickListener, AdaptadorDatos.DatePickerListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
     EditText etFecha;
     TextView tvTitulo;
@@ -80,7 +82,9 @@ public class OcurrenciaActivity extends AppCompatActivity
                 listaDatos.add(new Dato(listaTiposDato.get(i).getTipoDato()));
             }
 
-            adaptadorDatos = new AdaptadorDatos(this, listaDatos, this, listaTiposDato);
+            adaptadorDatos = new AdaptadorDatos(
+                    this, listaDatos, this,
+                    listaTiposDato, this);
 
 
             vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -114,6 +118,16 @@ public class OcurrenciaActivity extends AppCompatActivity
             }
         });*/
 
+    }
+
+    @Override
+    public void mostrarDatePicker(int position) {
+        FragmentoFecha datePicker = new FragmentoFecha();
+        datePicker.setListener((view, year, month, dayOfMonth) -> {
+            // Actualizar datos según la posición
+            adaptadorDatos.actualizarFecha(position, year, month, dayOfMonth);
+        });
+        datePicker.show(getSupportFragmentManager(), "datePicker");
     }
 
     private ArrayList<TipoDato> getTiposDato() {
@@ -172,6 +186,7 @@ public class OcurrenciaActivity extends AppCompatActivity
 
         }
     }
+
 
     public void actualizarDatos() {
         try{
