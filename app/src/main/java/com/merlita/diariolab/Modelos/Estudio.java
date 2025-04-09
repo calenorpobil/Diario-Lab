@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.merlita.diariolab.MainActivity;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -56,7 +58,6 @@ public class Estudio implements Parcelable {
         // field comparison
         return Objects.equals(nombre, person.nombre);
     }
-
 
     // Método para crear un objeto TipoDato desde un Parcel
     protected Estudio(Parcel in) {

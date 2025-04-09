@@ -16,19 +16,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.merlita.diariolab.Modelos.Estudio;
-import com.merlita.diariolab.Modelos.TipoDato;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.MiContenedor> {
 
@@ -48,7 +45,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         ConstraintLayout main, botones;
         boolean visible = false;
         TextView tvTitulo, tvDescripcion, tvEmoji, tvCuenta;
-        Button btMas, btBorrar, btEditar, btVer;
+        Button btNuevaOcurrencia, btBorrar, btEditar, btVer;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -60,7 +57,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
             tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
             tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
             tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
-            btMas = (Button) itemView.findViewById(R.id.btMas);
+            btNuevaOcurrencia = (Button) itemView.findViewById(R.id.btMas);
             btBorrar = (Button) itemView.findViewById(R.id.btBorrar);
             btEditar = (Button) itemView.findViewById(R.id.btEditar);
             btVer = (Button) itemView.findViewById(R.id.btVer);
@@ -86,7 +83,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflador.inflate(R.layout.text_row_item, parent, false);
+        View v = inflador.inflate(R.layout.fila_estudio, parent, false);
 
         return new MiContenedor(v);
     }
@@ -102,10 +99,22 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         holder.botones.setVisibility(GONE);
 
 
-        holder.btMas.setOnClickListener(new View.OnClickListener() {
+        //NUEVA OCURRENCIA
+        holder.btNuevaOcurrencia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Estudio actual = lista.get(holder.getAbsoluteAdapterPosition());
+                Intent i = new Intent(view.getContext(), OcurrenciaActivity.class);
+                i.putExtra("FECHA_OCURRENCIA", LocalDateTime.now());
+                i.putExtra("ES_NUEVA", LocalDateTime.now());
+                i.putExtra("FK_ESTUDIO", estudio.getNombre());
+                int num = holder.getAbsoluteAdapterPosition();
+                i.putExtra("INDEX", num);
+                //view.getContext().startActivity(i);
+
+
+                Activity origin = (Activity)context;
+                origin.startActivityForResult(i, 1);
+
 
             }
         });

@@ -140,7 +140,7 @@ public class EditActivity extends AppCompatActivity
                 db.close();
             }
         } catch (SQLiteDatabaseCorruptException ex){
-            toast("Intentalo en otro momento. ");
+            toast("Inténtalo en otro momento. ");
         }
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorTiposDato);

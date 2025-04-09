@@ -1,8 +1,5 @@
 package com.merlita.diariolab;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.Editable;
@@ -13,33 +10,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.Dato;
-import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.util.ArrayList;
 
-public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor> {
+public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiContenedor> {
 
     private Context context;
-    private ArrayList<TipoDato> lista;
-    String[] ordenSpinner = {"Número", "Texto", "Fecha"};
+    private ArrayList<TipoDato> listaTipos;
+    private ArrayList<Dato> listaDatos;
 
     public interface OnButtonClickListener {
         void onButtonClick(int position);
     }
 
-    private OnButtonClickListener listener;
-    Estudio estudioFila;
-
+    private AdaptadorDatos.OnButtonClickListener listener;
 
 
     SQLiteDatabase db;
@@ -49,15 +43,17 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
-        EditText etNombre, etDescripcion;
-        Spinner spTipoDato;
+        EditText etTexto, etHora;
+        TextView tvNombreTipo;
+        Spinner spTipo;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            etNombre = (EditText) itemView.findViewById(R.id.etNombre);
-            etDescripcion = (EditText) itemView.findViewById(R.id.etDescripcion);
-            spTipoDato = (Spinner) itemView.findViewById(R.id.spTipoDato);
+            etTexto = (EditText) itemView.findViewById(R.id.etDescripcion);
+            etHora = (EditText) itemView.findViewById(R.id.etDatoHora);
+            spTipo = (Spinner) itemView.findViewById(R.id.spTipoDato);
+            tvNombreTipo = (TextView) itemView.findViewById(R.id.tvNombre);
             itemView.setOnCreateContextMenuListener(this);
         }
 
@@ -83,7 +79,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflador.inflate(R.layout.fila_tipo_dato, parent, false);
+        View v = inflador.inflate(R.layout.fila_dato, parent, false);
 
 
         return new MiContenedor(v);
@@ -92,51 +88,52 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        TipoDato tipoDato = lista.get(holder.getAbsoluteAdapterPosition());
-        holder.etDescripcion.setText(tipoDato.getDescripcion());
-        holder.etNombre.setText(tipoDato.getNombre());
+        Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
+        holder.etHora.setText(dato.getValorText());
+        holder.etTexto.setText(dato.getFkTipoDato());
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this.context,
+                //Cambiar tipos:
                 R.array.tipos,
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        holder.spTipoDato.setAdapter(adapter);
+        holder.spTipo.setAdapter(adapter);
 
 
-        holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
+        holder.spTipo.setSelection(adapter.getPosition(dato.getFkTipoDato()));
 
 
         // Establecer listeners
-        holder.etNombre.addTextChangedListener(new TextWatcher() {
+        holder.etTexto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                lista.get(holder.getAbsoluteAdapterPosition()).setNombre(s.toString());
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setFkTipoDato(s.toString());
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
 
-        holder.etDescripcion.addTextChangedListener(new TextWatcher() {
+        holder.etHora.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                lista.get(holder.getAbsoluteAdapterPosition()).setDescripcion(s.toString());
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
 
-        holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        holder.spTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                lista.get(holder.getAbsoluteAdapterPosition()).setTipoDato(
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(
                         parent.getItemAtPosition(pos).toString()
                 );
             }
@@ -152,21 +149,21 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     }
 
 
-    public AdaptadorTiposDato(Context context, ArrayList<TipoDato> lista,
-                              OnButtonClickListener listener) {
+    public AdaptadorDatos(Context context, ArrayList<Dato> lista,
+                          AdaptadorDatos.OnButtonClickListener listener) {
         super();
         this.context = context;
-        this.lista = lista;
+        this.listaDatos = lista;
         this.listener = listener;
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return listaDatos.size();
     }
 
-    public ArrayList<TipoDato> getLista(){
-        return lista;
+    public ArrayList<Dato> getLista(){
+        return listaDatos;
     }
 
 
@@ -201,7 +198,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
 
 
-    public AdaptadorTiposDato(@NonNull Context context) {
+    public AdaptadorDatos(@NonNull Context context) {
         super();
     }
 

@@ -2,9 +2,9 @@ package com.merlita.diariolab;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -12,6 +12,8 @@ import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
+
+import java.util.ArrayList;
 
 
 public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
@@ -28,7 +30,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "CONSTRAINT FK_DA_OC FOREIGN KEY (FK_OCURRENCIA)  " +
             "REFERENCES OCURRENCIA (FECHA), " +
             "PRIMARY KEY  (VALOR_TEXT, FK_OCURRENCIA));";
-    String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE  VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
+    String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
             "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
@@ -52,9 +54,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         long newRowId=0;
 
         ContentValues values = new ContentValues();
-        values.put("FK_TIPO_E", dato.getFkTipoE());
-        values.put("FK_TIPO_N", dato.getFkTipoN());
-        values.put("FK_TIPO_N", dato.getFkTipoN());
+        values.put("FK_TIPO_E", dato.getFkTipoEstudio());
+        values.put("FK_TIPO_N", dato.getFkTipoDato());
+        values.put("FK_TIPO_N", dato.getFkTipoDato());
         values.put("FK_OCURRENCIA", dato.getFkOcurrencia().toString());
         values.put("VALOR_TEXT", dato.getValorText());
 
@@ -88,6 +90,22 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         newRowId = db.insert("DATO_TIPO", null, values);
 
         return newRowId;
+    }
+
+    public ArrayList<TipoDato> getTiposDato(SQLiteDatabase db, String fk_estudio){
+        long suc = 0;
+        ArrayList<TipoDato> tipoDatoRes = new ArrayList<>();
+
+        String sql = "SELECT nombre, tipo_dato, descripcion FROM dato_tipo WHERE fk_estudio = ?";
+
+        Cursor c = db.rawQuery(sql, new String[]{fk_estudio});
+
+        while(c.moveToNext()){
+            tipoDatoRes.add(new TipoDato(c.getString(0), c.getString(1), c.getString(2)));
+        }
+        c.close();
+
+        return tipoDatoRes;
     }
 
     public long editarTipoDato(SQLiteDatabase db, TipoDato datoTipo, TipoDato nuevoDatoTipo) {

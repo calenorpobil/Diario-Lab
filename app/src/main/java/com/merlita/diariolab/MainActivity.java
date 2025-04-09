@@ -48,7 +48,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     static RecyclerView vistaRecycler;
-    public static ArrayList<Estudio> listaEstudios = new ArrayList<Estudio>();
+    public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
+
     TextView tv, tvErrores;
     static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
