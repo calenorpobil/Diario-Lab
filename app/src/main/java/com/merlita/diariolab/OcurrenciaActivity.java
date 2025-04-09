@@ -80,7 +80,7 @@ public class OcurrenciaActivity extends AppCompatActivity
                 listaDatos.add(new Dato(listaTiposDato.get(i).getTipoDato()));
             }
 
-            adaptadorDatos = new AdaptadorDatos(this, listaDatos, this);
+            adaptadorDatos = new AdaptadorDatos(this, listaDatos, this, listaTiposDato);
 
 
             vistaRecycler.setLayoutManager(new LinearLayoutManager(this));

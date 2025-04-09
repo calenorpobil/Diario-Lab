@@ -1,5 +1,7 @@
 package com.merlita.diariolab;
 
+import static android.view.View.GONE;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.Editable;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,16 +46,18 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
-        EditText etTexto, etHora;
+        EditText etTexto, etNumero;
         TextView tvNombreTipo;
         Spinner spTipo;
+        Button btHora;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
             etTexto = (EditText) itemView.findViewById(R.id.etDescripcion);
-            etHora = (EditText) itemView.findViewById(R.id.etDatoHora);
+            btHora = (Button) itemView.findViewById(R.id.etDatoHora);
             spTipo = (Spinner) itemView.findViewById(R.id.spTipoDato);
+            etNumero = (EditText) itemView.findViewById(R.id.etNumero);
             tvNombreTipo = (TextView) itemView.findViewById(R.id.tvNombre);
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -89,8 +94,49 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
-        holder.etHora.setText(dato.getValorText());
-        holder.etTexto.setText(dato.getFkTipoDato());
+        TipoDato tipo = listaTipos.get(position);
+
+
+
+        holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
+
+        switch (tipo.getTipoDato()){
+            case "Número": {
+                holder.btHora.setVisibility(GONE);
+                holder.etTexto.setVisibility(GONE);
+
+                break;
+            }
+            case "Texto": {
+                holder.btHora.setVisibility(GONE);
+                holder.etNumero.setVisibility(GONE);
+
+                holder.etTexto.setHint(dato.getFkTipoDato());
+                break;
+            }
+            case "Fecha": {
+                holder.etTexto.setVisibility(GONE);
+                holder.etNumero.setVisibility(GONE);
+
+                holder.btHora.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder.tvNombreTipo.setText(holder.tvNombreTipo.getText()+"a");
+                        FragmentoFecha newFragment = new FragmentoFecha();
+
+                        newFragment.show(newFragment.getParentFragmentManager(), "FragmentoFecha");
+                    }
+                });
+                break;
+            }
+            case "Hora": {
+                holder.btHora.setText(dato.getValorText());
+                holder.etTexto.setVisibility(GONE);
+                break;
+            }
+
+
+        }
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this.context,
@@ -98,6 +144,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
                 R.array.tipos,
                 android.R.layout.simple_spinner_item
         );
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spTipo.setAdapter(adapter);
 
@@ -118,7 +165,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
 
-        holder.etHora.addTextChangedListener(new TextWatcher() {
+        holder.btHora.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
@@ -150,11 +197,13 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
 
 
     public AdaptadorDatos(Context context, ArrayList<Dato> lista,
-                          AdaptadorDatos.OnButtonClickListener listener) {
+                          AdaptadorDatos.OnButtonClickListener listener,
+                          ArrayList<TipoDato> listaTipos) {
         super();
         this.context = context;
         this.listaDatos = lista;
         this.listener = listener;
+        this.listaTipos = listaTipos;
     }
 
     @Override
