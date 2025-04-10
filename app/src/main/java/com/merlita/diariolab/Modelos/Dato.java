@@ -70,7 +70,7 @@ public class Dato  implements Parcelable {
         fkTipoEstudio = in.readString();
         fkTipoDato = in.readString();
         try {
-            fkOcurrencia = LocalDateTime.parse(in.readString());
+            fkOcurrencia = (LocalDateTime) in.readSerializable();
         } catch (Exception ex){
             System.out.println("Fecha incorrecta en el Parcelable. ");
             System.out.println(ex.getMessage());
@@ -95,7 +95,7 @@ public class Dato  implements Parcelable {
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(fkTipoEstudio);
         parcel.writeString(fkTipoDato);
-        parcel.writeString(fkOcurrencia.toString());
+        parcel.writeSerializable(fkOcurrencia);
         parcel.writeString(valorText);
 
     }

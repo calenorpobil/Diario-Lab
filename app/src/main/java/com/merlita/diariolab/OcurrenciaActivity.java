@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,8 +31,8 @@ import java.util.ArrayList;
 public class OcurrenciaActivity extends AppCompatActivity
         implements AdaptadorDatos.OnButtonClickListener, AdaptadorDatos.DatePickerListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
-    EditText etFecha;
-    TextView tvTitulo;
+
+    TextView tvTitulo, tvFecha, tvReps;
     Button btGuardar;
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
     ArrayList<Dato> listaDatos = new ArrayList<>();
@@ -42,6 +43,8 @@ public class OcurrenciaActivity extends AppCompatActivity
     Estudio estudioActual;
     private String fk_estudio;
     private Boolean esNueva;
+    private String emojiReps = "\uD83D\uDD01\uFE0F";
+    private int reps = 1;
 
 
     private void toast(String e) {
@@ -72,14 +75,20 @@ public class OcurrenciaActivity extends AppCompatActivity
 
         if(fk_estudio!=null){
             tvTitulo = findViewById(R.id.tvTitulo);
-            etFecha = findViewById(R.id.etFecha);
+            tvReps = findViewById(R.id.tvRepeticiones);
+            tvFecha = findViewById(R.id.tvFecha);
             btGuardar = findViewById(R.id.btnGuardar);
             vistaRecycler = findViewById(R.id.rvDatos);
+
 
             listaTiposDato = getTiposDato();
 
             for (int i = 0; i < listaTiposDato.size(); i++) {
-                listaDatos.add(new Dato(listaTiposDato.get(i).getTipoDato()));
+                listaDatos.add(new Dato(
+                        listaTiposDato.get(i).getTipoDato(),
+                        fk_estudio,
+                        fechaOcurrencia,
+                        ""));
             }
 
             adaptadorDatos = new AdaptadorDatos(
@@ -98,10 +107,14 @@ public class OcurrenciaActivity extends AppCompatActivity
                 }
             }
 
+            String repeticiones = reps+" "+emojiReps;
+            tvReps.setText(repeticiones);
 
 
             tvTitulo.setText(estudioActual.getNombre());
-            etFecha.setText(LocalDateTime.now().toString());
+            LocalDateTime hoy = LocalDateTime.now();
+            String hoyString = hoy.getDayOfMonth()+"/"+hoy.getMonthValue()+"/"+hoy.getYear();
+            tvFecha.setText(hoyString);
 
             actualizarDatos();
         }else{
@@ -117,6 +130,23 @@ public class OcurrenciaActivity extends AppCompatActivity
                 actualizarLocal();
             }
         });*/
+
+        tvFecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                // Crea y muestra el DatePicker
+                FragmentoFecha datePicker = new FragmentoFecha();
+                datePicker.setListener((view1, year, month, day) -> {
+
+                    String fecha = day+"/"+(month + 1)+"/"+year;
+                    tvFecha.setText(fecha); // Actualiza directamente la vista
+
+                });
+                datePicker.show(fragmentManager, "datePicker");
+            }
+        });
 
     }
 
@@ -233,45 +263,35 @@ public class OcurrenciaActivity extends AppCompatActivity
 
 
     public void clickGuardar(View v) {
-        boolean correcto = true;
-        if (!tvTitulo.getText().toString().isEmpty() &&
-                !etFecha.getText().toString().isEmpty() &&
-                !listaTiposDato.isEmpty()) {
-            String error = comprobaciones(tvTitulo, etFecha, listaTiposDato, "alta");
+        String error = "";//comprobaciones(tvTitulo, tvFecha, listaTiposDato, "alta");
 
-            if (error.isEmpty()) {
-                Intent i = new Intent();
+        if (error.isEmpty()) {
+            Intent i = new Intent();
 
-                //Valido campos obligatorios (según esquema SQL)
-                try {
-                    // Preparar todos los datos para enviar
-                    ArrayList<String> datosEstudio = new ArrayList<>();
-                    datosEstudio.add(tvTitulo.getText().toString());
-                    datosEstudio.add(etFecha.getText().toString());
+            //Valido campos obligatorios (según esquema SQL)
+            try {
+                // Preparar todos los datos para enviar
+                ArrayList<String> datosEstudio = new ArrayList<>();
+                datosEstudio.add(tvTitulo.getText().toString());
+                datosEstudio.add(tvFecha.getText().toString());
 
-                    AdaptadorDatos a = (AdaptadorDatos) vistaRecycler.getAdapter();
-                    assert a != null;
-                    listaDatos = a.getLista();
+                i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                i.putParcelableArrayListExtra("DATOS", listaDatos);
 
-                    i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                    i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
-
-                    setResult(RESULT_OK, i);
-                } finally {
-                    finish();
-                }
-
-            }else{
-                toast(error);
+                setResult(RESULT_OK, i);
+            } finally {
+                finish();
             }
-        } else {
-            toast("Rellena los datos o añade un Tipo de Dato. ");
+
+        }else{
+            toast(error);
         }
     }
 
     public static String comprobaciones(TextView tvTitulo,
-                EditText etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
+                TextView etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
         String correcto = "";
+/*
 
 
         if(alta.equals("alta")){
@@ -282,6 +302,7 @@ public class OcurrenciaActivity extends AppCompatActivity
                 }
             }
         }
+*/
 
         if (tvTitulo.getText().toString().isEmpty() ||
                 etDescripcion.getText().toString().isEmpty()) {

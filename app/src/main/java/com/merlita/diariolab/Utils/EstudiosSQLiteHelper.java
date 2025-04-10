@@ -20,7 +20,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de Usuarios
     String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, " +
-            "DESCRIPCION VARCHAR(9), EMOJI TEXT)";
+            "DESCRIPCION VARCHAR(9), EMOJI TEXT, REPS INTEGER)";
     String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME PRIMARY KEY, FK_ESTUDIO_N VARCHAR(50), " +
             "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE));";
     String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
@@ -34,7 +34,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
             "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
-            "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha')), " +
+            "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha', 'Tipo')), " +
             "PRIMARY KEY (NOMBRE, FK_ESTUDIO));";
 
     public long insertarEstudio(SQLiteDatabase db, Estudio est){
@@ -49,6 +49,23 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
+
+    public String getNombreTipo(SQLiteDatabase db, String nombre, String fk_estudio){
+        String resp = "";
+        ArrayList<TipoDato> tipoDatoRes = new ArrayList<>();
+
+        String sql = "SELECT descripcion FROM dato_tipo WHERE fk_estudio = ? AND nombre = ?";
+
+        Cursor c = db.rawQuery(sql, new String[]{fk_estudio, nombre});
+
+        while(c.moveToNext()){
+            resp = c.getString(0);
+        }
+        c.close();
+
+        return resp;
+    }
+
 
     public long insertarDato(SQLiteDatabase db, Dato dato){
         long newRowId=0;

@@ -2,9 +2,11 @@ package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.GONE;
 
-import android.app.DatePickerDialog;
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -13,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,10 +22,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 import com.merlita.diariolab.FragmentoFecha;
 import com.merlita.diariolab.Modelos.Dato;
@@ -57,37 +56,19 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         EditText etTexto, etNumero;
         TextView tvNombreTipo;
         Spinner spTipo;
-        Button btHora;
+        TextView tvHora;
 
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
             etTexto = (EditText) itemView.findViewById(R.id.etDescripcion);
-            btHora = (Button) itemView.findViewById(R.id.etDatoHora);
+            tvHora = (TextView) itemView.findViewById(R.id.tvDatoHora);
             spTipo = (Spinner) itemView.findViewById(R.id.spTipoDato);
             etNumero = (EditText) itemView.findViewById(R.id.etNumero);
             tvNombreTipo = (TextView) itemView.findViewById(R.id.tvNombre);
 
-            btHora.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    // Accede al fragment manager desde el contexto
-                    FragmentManager fragmentManager = ((AppCompatActivity) itemView.getContext())
-                            .getSupportFragmentManager();
 
-                    // Crea y muestra el DatePicker
-                    FragmentoFecha datePicker = new FragmentoFecha();
-                    datePicker.setListener((view, year, month, day) -> {
-                        String fecha = String.format("%02d/%02d/%d", day, month + 1, year);
-                        btHora.setText(fecha); // Actualiza directamente la vista
-
-                        // Opcional: Actualiza también el modelo si lo necesitas
-                        // ((AdaptadorTiposDato) getAdapter()).actualizarFecha(position, fecha);
-                    });
-                    datePicker.show(fragmentManager, "datePicker");
-                }
-            });
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -132,42 +113,64 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
 
         switch (tipo.getTipoDato()){
             case "Número": {
-                holder.btHora.setVisibility(GONE);
+                holder.tvHora.setVisibility(GONE);
                 holder.etTexto.setVisibility(GONE);
+                holder.spTipo.setVisibility(GONE);
+
+                holder.etNumero.setHint(tipo.getDescripcion());
 
                 break;
             }
             case "Texto": {
-                holder.btHora.setVisibility(GONE);
+                holder.tvHora.setVisibility(GONE);
                 holder.etNumero.setVisibility(GONE);
+                holder.spTipo.setVisibility(GONE);
 
-                holder.etTexto.setHint(dato.getFkTipoDato());
+                holder.etTexto.setHint(tipo.getDescripcion());
                 break;
             }
             case "Fecha": {
                 holder.etTexto.setVisibility(GONE);
                 holder.etNumero.setVisibility(GONE);
+                holder.spTipo.setVisibility(GONE);
 
-                /*
-                holder.btHora.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listener != null) {
-                            listenerFecha.mostrarDatePicker(holder.getAbsoluteAdapterPosition());
-                        }
 
-                    }
-                });*/
+
+                String nombreTipo = "Escribe una fecha";
+                nombreTipo = tipo.getDescripcion();
+                holder.tvHora.setHint(nombreTipo);
+
                 break;
             }
             case "Hora": {
-                holder.btHora.setText(dato.getValorText());
+                holder.tvHora.setText(dato.getValorText());
                 holder.etTexto.setVisibility(GONE);
+                holder.spTipo.setVisibility(GONE);
                 break;
             }
 
 
         }
+
+
+        holder.tvHora.setOnClickListener(v -> {
+            if (position != RecyclerView.NO_POSITION) {
+                // Accede al fragment manager desde el contexto
+                FragmentManager fragmentManager = ((AppCompatActivity) v.getContext())
+                        .getSupportFragmentManager();
+
+                // Crea y muestra el DatePicker
+                FragmentoFecha datePicker = new FragmentoFecha();
+                datePicker.setListener((view, year, month, day) -> {
+                    String fecha = day+"/"+(month+1)+"/"+year;
+                    holder.tvHora.setText(fecha); // Actualiza directamente la vista
+
+                    // Opcional: Actualiza también el modelo si lo necesitas
+                    // ((AdaptadorTiposDato) getAdapter()).actualizarFecha(position, fecha);
+                });
+                datePicker.show(fragmentManager, "datePicker");
+            }
+        });
 
 
 
@@ -200,7 +203,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
 
-        holder.btHora.addTextChangedListener(new TextWatcher() {
+        holder.tvHora.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override

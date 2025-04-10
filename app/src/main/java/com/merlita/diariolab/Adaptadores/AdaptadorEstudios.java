@@ -117,7 +117,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
 
                 Activity origin = (Activity)context;
-                origin.startActivityForResult(i, 1);
+                origin.startActivityForResult(i, 3);
 
 
             }
@@ -149,8 +149,6 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
                 Activity origin = (Activity)context;
                 origin.startActivityForResult(i, 1);
-
-
 
             }
         });

@@ -40,6 +40,7 @@ import com.merlita.diariolab.Utils.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -47,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
     static RecyclerView vistaRecycler;
     public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
-
     TextView tv, tvErrores;
     static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
 
 
-    public final static int DB_VERSION=5;
+
+    public final static int DB_VERSION=6;
 
 
 
@@ -436,6 +437,31 @@ public class MainActivity extends AppCompatActivity {
         }
         return res;
     }
+    private long[] insertarDato(ArrayList<Dato> datos){
+        long[] res = new long[datos.size()];
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);){
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            for (int i = 0; i < datos.size(); i++) {
+                ContentValues values = new ContentValues();
+                values.put("FK_TIPO_N", datos.get(i).getFkTipoDato());
+                values.put("FK_TIPO_E", datos.get(i).getFkTipoEstudio());
+                values.put("FK_OCURRENCIA", datos.get(i).getFkOcurrencia().toString());
+                values.put("VALOR_TEXT", datos.get(i).getValorText());
+
+                res[i]= db.insert("Dato", null,
+                        values);
+
+            }
+
+            db.close();
+        } catch (SQLiteConstraintException ex){
+            toast(ex.getMessage());
+        }
+        return res;
+    }
     private long insertarTipoDato(TipoDato tipoDato){
         long  res=-1;
         try(EstudiosSQLiteHelper usdbh =
@@ -587,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * RECOGER EDIT ACTIVITY
+     * RECOGER ACTIVITIES DEL RECYCLER VIEW
      *
      * @param requestCode
      * @param resultCode
@@ -596,6 +622,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //RECOGER EDIT ACTIVITY
         if (requestCode == 1) {
             adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
 
@@ -621,8 +649,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        //RECOGER BORRAR DE ADAPTADORESTUDIOS
         } else if (requestCode == 2) {
-            //RECOGER BORRAR DE ADAPTADORESTUDIOS
 
             if (resultCode == RESULT_OK) {
                 assert data != null;
@@ -633,7 +661,24 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+        //RECOGER NUEVA OCURRENCIA
+        } else if (requestCode == 3) {
+            //adaptadorEstudios.onActivityResult(requestCode, resultCode, data);
 
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+                ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
+                ArrayList<Dato> nuevosDatos = data.
+                        getParcelableArrayListExtra("DATOS");
+
+                //INSERTAR EL ESTUDIO:
+                if (datosEstudio != null && nuevosDatos != null) {
+                    nuevosDatos.get(0);
+                    long[] res = insertarDato(nuevosDatos);
+                }
+
+
+            }
         }
         actualizarDatos();
 

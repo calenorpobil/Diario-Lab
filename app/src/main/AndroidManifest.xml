@@ -26,6 +26,7 @@
         <activity android:name=".AltaActivity"/>
         <activity android:name=".EditActivity"/>
         <activity android:name=".OcurrenciaActivity"/>
+        <activity android:name=".EstudioActivity"/>
     </application>
 
 </manifest>
