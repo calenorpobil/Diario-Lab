@@ -5,16 +5,17 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Dato  implements Parcelable {
     private String fkTipoDato;      // VARCHAR(50)
     private String fkTipoEstudio;      // VARCHAR(50)
-    private LocalDateTime fkOcurrencia; // DATETIME
+    private LocalDate fkOcurrencia; // DATETIME
     private String valorText;    // TEXT
 
     // Constructor
-    public Dato(String fkTipoN, String fkTipoE, LocalDateTime fkOcurrencia, String valorText) {
+    public Dato(String fkTipoN, String fkTipoE, LocalDate fkOcurrencia, String valorText) {
         this.fkTipoDato = fkTipoN;
         this.fkTipoEstudio = fkTipoE;
         this.fkOcurrencia = fkOcurrencia;
@@ -45,11 +46,11 @@ public class Dato  implements Parcelable {
         this.fkTipoEstudio = fkTipoEstudio;
     }
 
-    public LocalDateTime getFkOcurrencia() {
+    public LocalDate getFkOcurrencia() {
         return fkOcurrencia;
     }
 
-    public void setFkOcurrencia(LocalDateTime fkOcurrencia) {
+    public void setFkOcurrencia(LocalDate fkOcurrencia) {
         this.fkOcurrencia = fkOcurrencia;
     }
 
@@ -70,7 +71,7 @@ public class Dato  implements Parcelable {
         fkTipoEstudio = in.readString();
         fkTipoDato = in.readString();
         try {
-            fkOcurrencia = (LocalDateTime) in.readSerializable();
+            fkOcurrencia = (LocalDate) in.readSerializable();
         } catch (Exception ex){
             System.out.println("Fecha incorrecta en el Parcelable. ");
             System.out.println(ex.getMessage());

@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTitulo3" />
 
     <View
-        android:id="@+id/divider1"
+        android:id="@+id/dividerTop"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
@@ -105,7 +105,7 @@
         android:hint="@string/fecha_de_la_ocurrencia"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="@+id/tvTitulo"
-        app:layout_constraintTop_toBottomOf="@+id/divider1" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerTop" />
 
     <TextView
         android:id="@+id/tvRepeticiones"
@@ -121,7 +121,7 @@
         app:layout_constraintTop_toTopOf="@+id/tvFecha" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvDatos"
+        android:id="@+id/rvOcurrencias"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"

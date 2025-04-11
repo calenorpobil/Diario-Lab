@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,12 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorDatos;
+import com.merlita.diariolab.Adaptadores.AdaptadorEstudios;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.Ocurrencia;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -38,7 +39,7 @@ public class OcurrenciaActivity extends AppCompatActivity
     ArrayList<Dato> listaDatos = new ArrayList<>();
     AdaptadorDatos adaptadorDatos;
     RecyclerView vistaRecycler;
-    private LocalDateTime fechaOcurrencia;
+    private LocalDate fechaOcurrencia;
     private int posicion;
     Estudio estudioActual;
     private String fk_estudio;
@@ -65,7 +66,7 @@ public class OcurrenciaActivity extends AppCompatActivity
         assert upIntent != null;
 
         try{
-            fechaOcurrencia = LocalDateTime.parse(upIntent.getString("FECHA_OCURRENCIA"));
+            fechaOcurrencia = LocalDate.parse(upIntent.getString("FECHA_OCURRENCIA"));
         } catch(Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -78,7 +79,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             tvReps = findViewById(R.id.tvRepeticiones);
             tvFecha = findViewById(R.id.tvFecha);
             btGuardar = findViewById(R.id.btnGuardar);
-            vistaRecycler = findViewById(R.id.rvDatos);
+            vistaRecycler = findViewById(R.id.rvOcurrencias);
 
 
             listaTiposDato = getTiposDato();
@@ -104,6 +105,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             for(Estudio estudioAux : MainActivity.listaEstudios) {
                 if(estudioAux.getNombre().equals(fk_estudio)) {
                     estudioActual = estudioAux;
+                    break;
                 }
             }
 
@@ -112,9 +114,10 @@ public class OcurrenciaActivity extends AppCompatActivity
 
 
             tvTitulo.setText(estudioActual.getNombre());
-            LocalDateTime hoy = LocalDateTime.now();
+            LocalDate hoy = LocalDate.now();
             String hoyString = hoy.getDayOfMonth()+"/"+hoy.getMonthValue()+"/"+hoy.getYear();
             tvFecha.setText(hoyString);
+            fechaOcurrencia = hoy;
 
             actualizarDatos();
         }else{
@@ -131,28 +134,12 @@ public class OcurrenciaActivity extends AppCompatActivity
             }
         });*/
 
-        tvFecha.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-
-                // Crea y muestra el DatePicker
-                FragmentoFecha datePicker = new FragmentoFecha();
-                datePicker.setListener((view1, year, month, day) -> {
-
-                    String fecha = day+"/"+(month + 1)+"/"+year;
-                    tvFecha.setText(fecha); // Actualiza directamente la vista
-
-                });
-                datePicker.show(fragmentManager, "datePicker");
-            }
-        });
 
     }
 
     @Override
     public void mostrarDatePicker(int position) {
-        FragmentoFecha datePicker = new FragmentoFecha();
+        AdaptadorEstudios.FragmentoFecha datePicker = new AdaptadorEstudios.FragmentoFecha();
         datePicker.setListener((view, year, month, dayOfMonth) -> {
             // Actualizar datos según la posición
             adaptadorDatos.actualizarFecha(position, year, month, dayOfMonth);
@@ -271,11 +258,12 @@ public class OcurrenciaActivity extends AppCompatActivity
             //Valido campos obligatorios (según esquema SQL)
             try {
                 // Preparar todos los datos para enviar
-                ArrayList<String> datosEstudio = new ArrayList<>();
-                datosEstudio.add(tvTitulo.getText().toString());
-                datosEstudio.add(tvFecha.getText().toString());
+                listaDatos.get(0).setFkOcurrencia(fechaOcurrencia);
+                Ocurrencia datosOcurrencia = new Ocurrencia(
+                        fechaOcurrencia, fk_estudio);
 
-                i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                i.putExtra("OCURRENCIA", datosOcurrencia);
+                i.putExtra("ESTUDIO", estudioActual);
                 i.putParcelableArrayListExtra("DATOS", listaDatos);
 
                 setResult(RESULT_OK, i);

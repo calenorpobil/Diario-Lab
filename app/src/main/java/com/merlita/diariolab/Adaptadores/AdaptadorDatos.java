@@ -2,11 +2,8 @@ package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.GONE;
 
-import static com.merlita.diariolab.MainActivity.DB_VERSION;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -25,7 +22,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
-import com.merlita.diariolab.FragmentoFecha;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
@@ -53,7 +49,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
-        EditText etTexto, etNumero;
+        EditText etDescripcion, etNumero;
         TextView tvNombreTipo;
         Spinner spTipo;
         TextView tvHora;
@@ -62,7 +58,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            etTexto = (EditText) itemView.findViewById(R.id.etDescripcion);
+            etDescripcion = (EditText) itemView.findViewById(R.id.etDescripcion);
             tvHora = (TextView) itemView.findViewById(R.id.tvDatoHora);
             spTipo = (Spinner) itemView.findViewById(R.id.spTipoDato);
             etNumero = (EditText) itemView.findViewById(R.id.etNumero);
@@ -114,7 +110,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         switch (tipo.getTipoDato()){
             case "Número": {
                 holder.tvHora.setVisibility(GONE);
-                holder.etTexto.setVisibility(GONE);
+                holder.etDescripcion.setVisibility(GONE);
                 holder.spTipo.setVisibility(GONE);
 
                 holder.etNumero.setHint(tipo.getDescripcion());
@@ -126,11 +122,11 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
                 holder.etNumero.setVisibility(GONE);
                 holder.spTipo.setVisibility(GONE);
 
-                holder.etTexto.setHint(tipo.getDescripcion());
+                holder.etDescripcion.setHint(tipo.getDescripcion());
                 break;
             }
             case "Fecha": {
-                holder.etTexto.setVisibility(GONE);
+                holder.etDescripcion.setVisibility(GONE);
                 holder.etNumero.setVisibility(GONE);
                 holder.spTipo.setVisibility(GONE);
 
@@ -144,7 +140,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             }
             case "Hora": {
                 holder.tvHora.setText(dato.getValorText());
-                holder.etTexto.setVisibility(GONE);
+                holder.etDescripcion.setVisibility(GONE);
                 holder.spTipo.setVisibility(GONE);
                 break;
             }
@@ -160,7 +156,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
                         .getSupportFragmentManager();
 
                 // Crea y muestra el DatePicker
-                FragmentoFecha datePicker = new FragmentoFecha();
+                AdaptadorEstudios.FragmentoFecha datePicker = new AdaptadorEstudios.FragmentoFecha();
                 datePicker.setListener((view, year, month, day) -> {
                     String fecha = day+"/"+(month+1)+"/"+year;
                     holder.tvHora.setText(fecha); // Actualiza directamente la vista
@@ -191,14 +187,14 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
 
 
         // Establecer listeners
-        holder.etTexto.addTextChangedListener(new TextWatcher() {
+        holder.etDescripcion.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setFkTipoDato(s.toString());
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });

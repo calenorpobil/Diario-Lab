@@ -15,12 +15,21 @@ public class Estudio implements Parcelable {
     private String nombre;          // Clave primaria
     private String descripcion;
     private String emoji;
+    private int reps;
 
     // Constructor
+    public Estudio(String nombre, String descripcion, String emoji, int reps) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.emoji = emoji;
+        this.reps  = reps;
+    }
+
     public Estudio(String nombre, String descripcion, String emoji) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.emoji = emoji;
+        this.reps = 0;
     }
 
     // Getters y Setters
@@ -42,6 +51,10 @@ public class Estudio implements Parcelable {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public int getReps() {return reps;}
+
+    public void setReps(int reps) {this.reps = reps;}
 
     @Override
     public boolean equals(Object o) {

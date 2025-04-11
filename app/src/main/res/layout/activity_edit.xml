@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTitulo3" />
 
     <View
-        android:id="@+id/divider1"
+        android:id="@+id/dividerTop"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"

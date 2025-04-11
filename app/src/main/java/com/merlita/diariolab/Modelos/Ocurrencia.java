@@ -1,23 +1,40 @@
 package com.merlita.diariolab.Modelos;
 
-import java.time.LocalDateTime;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Ocurrencia {
-    private LocalDateTime fecha;  // DATETIME
+import androidx.annotation.NonNull;
+
+import java.time.LocalDate;
+
+public class Ocurrencia implements Parcelable {
+    private LocalDate fecha;  // DATETIME
     private String fkEstudioN;   // VARCHAR(50)
 
     // Constructor
-    public Ocurrencia(LocalDateTime fecha, String fkEstudioN) {
+    public Ocurrencia(LocalDate fecha, String fkEstudioN) {
         this.fecha = fecha;
         this.fkEstudioN = fkEstudioN;
     }
 
+    public static final Creator<Ocurrencia> CREATOR = new Creator<Ocurrencia>() {
+        @Override
+        public Ocurrencia createFromParcel(Parcel in) {
+            return new Ocurrencia(in);
+        }
+
+        @Override
+        public Ocurrencia[] newArray(int size) {
+            return new Ocurrencia[size];
+        }
+    };
+
     // Getters y Setters
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
@@ -28,4 +45,44 @@ public class Ocurrencia {
     public void setFkEstudioN(String fkEstudioN) {
         this.fkEstudioN = fkEstudioN;
     }
+
+    protected Ocurrencia(Parcel in){
+        fecha = LocalDate.parse(in.readString());
+        fkEstudioN = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(fecha.toString());
+        dest.writeString(fkEstudioN);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

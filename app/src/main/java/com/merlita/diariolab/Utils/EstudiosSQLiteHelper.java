@@ -5,8 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
@@ -21,8 +23,11 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     //Sentencia SQL para crear la tabla de Usuarios
     String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, " +
             "DESCRIPCION VARCHAR(9), EMOJI TEXT, REPS INTEGER)";
-    String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME PRIMARY KEY, FK_ESTUDIO_N VARCHAR(50), " +
-            "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE));";
+    String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME, FK_ESTUDIO_N VARCHAR(50), " +
+            "FK_REPS_E INTEGER," +
+            "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE), " +
+            "CONSTRAINT FK_RP_ES FOREIGN KEY (FK_REPS_E) REFERENCES ESTUDIO (REPS), " +
+            "PRIMARY KEY (FECHA, FK_REPS_E));";
     String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
             "FK_OCURRENCIA DATETIME, VALOR_TEXT TEXT, " +
             "CONSTRAINT FK_DA_TI FOREIGN KEY (FK_TIPO_N, FK_TIPO_E)  " +
@@ -89,7 +94,11 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         values.put("FECHA", ocurrencia.getFecha().toString()); // DATETIME se convierte a String
         values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
 
-        newRowId = db.insertOrThrow("OCURRENCIA", null, values);
+        try{
+            newRowId = db.insertOrThrow("OCURRENCIA", null, values);
+        } catch (SQLiteException ex){
+            Log.e("DB_ERROR", "Error en transacción: " + ex.getMessage());
+        }
 
         return newRowId;
     }
@@ -108,6 +117,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
+
 
     public ArrayList<TipoDato> getTiposDato(SQLiteDatabase db, String fk_estudio){
         long suc = 0;
@@ -202,7 +212,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         long res=-1;
         SQLiteDatabase db = getWritableDatabase();
 
-        res = db.delete("TIPO_DATO",
+        res = db.delete("DATO_TIPO",
                 null, null);
 
         db.close();

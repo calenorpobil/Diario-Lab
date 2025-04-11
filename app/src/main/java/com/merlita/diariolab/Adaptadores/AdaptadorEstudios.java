@@ -5,19 +5,25 @@ import static android.view.View.VISIBLE;
 
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -27,9 +33,11 @@ import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.OcurrenciaActivity;
 import com.merlita.diariolab.R;
+import com.merlita.diariolab.VerActivity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.MiContenedor> {
 
@@ -135,24 +143,6 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
             }
         });
 
-        holder.btEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), EditActivity.class);
-                i.putExtra("NOMBRE", estudio.getNombre());
-                i.putExtra("EMOJI", estudio.getEmoji());
-                i.putExtra("DESCRIPCION", estudio.getDescripcion());
-                int num = holder.getAbsoluteAdapterPosition();
-                i.putExtra("INDEX", num);
-                //view.getContext().startActivity(i);
-
-
-                Activity origin = (Activity)context;
-                origin.startActivityForResult(i, 1);
-
-            }
-        });
-
 
         holder.btBorrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,6 +169,37 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                 }
             }
         });
+
+        holder.btEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), EditActivity.class);
+                i.putExtra("NOMBRE", estudio.getNombre());
+                i.putExtra("EMOJI", estudio.getEmoji());
+                i.putExtra("DESCRIPCION", estudio.getDescripcion());
+                int num = holder.getAbsoluteAdapterPosition();
+                i.putExtra("INDEX", num);
+                //view.getContext().startActivity(i);
+
+
+                Activity origin = (Activity)context;
+                origin.startActivityForResult(i, 1);
+
+            }
+        });
+        holder.btVer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Estudio actual = lista.get(holder.getAbsoluteAdapterPosition());
+
+                Intent i = new Intent(view.getContext(), VerActivity.class);
+                i.putExtra("ESTUDIO", estudio);
+
+                Activity origin = (Activity) context;
+                origin.startActivityForResult(i, 4);
+
+            }
+        });
     }
 
 
@@ -197,5 +218,48 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
     @Override
     public int getItemCount() {
         return lista.size();
+    }
+
+    public static class FragmentoFecha extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        private DatePickerDialog.OnDateSetListener listener;
+
+        public void setListener(DatePickerDialog.OnDateSetListener listener) {
+            this.listener = listener;
+        }
+        public static FragmentoFecha newInstance(DatePickerDialog.OnDateSetListener listener) {
+            FragmentoFecha fragment = new FragmentoFecha();
+            fragment.setListener(listener);
+            return fragment;
+        }
+
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState)
+        {
+            final Calendar c = Calendar.getInstance();
+            return new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, day) -> {
+                        if (listener != null) {
+                            listener.onDateSet(view, year, month, day);
+                        }
+                    },
+                    c.get(Calendar.YEAR),
+                    c.get(Calendar.MONTH),
+                    c.get(Calendar.DAY_OF_MONTH)
+            );
+        }
+
+
+        @Override
+        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+            if (listener != null) {
+                listener.onDateSet(datePicker, year, month, day);
+            }
+
+        }
+
     }
 }
