@@ -15,6 +15,7 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -23,17 +24,16 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     //Sentencia SQL para crear la tabla de Usuarios
     String sqlCreate = "CREATE TABLE ESTUDIO (NOMBRE VARCHAR(50) PRIMARY KEY, " +
             "DESCRIPCION VARCHAR(9), EMOJI TEXT, REPS INTEGER)";
-    String sqlCreate1 = "CREATE TABLE OCURRENCIA( FECHA DATETIME, FK_ESTUDIO_N VARCHAR(50), " +
-            "FK_REPS_E INTEGER," +
+    String sqlCreate1 = "CREATE TABLE OCURRENCIA(ID VARCHAR(4), FECHA DATETIME, FK_ESTUDIO_N VARCHAR(50), " +
             "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE), " +
-            "CONSTRAINT FK_RP_ES FOREIGN KEY (FK_REPS_E) REFERENCES ESTUDIO (REPS), " +
-            "PRIMARY KEY (FECHA, FK_REPS_E));";
+            "PRIMARY KEY (ID));";
     String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
-            "FK_OCURRENCIA DATETIME, VALOR_TEXT TEXT, " +
+            "FK_OCURRENCIA VARCHAR(4), VALOR_TEXT TEXT, " +
             "CONSTRAINT FK_DA_TI FOREIGN KEY (FK_TIPO_N, FK_TIPO_E)  " +
             "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO), " +
+            "CONSTRAINT FK_ES FOREIGN KEY (FK_TIPO_E) REFERENCES ESTUDIO (NOMBRE), "+
             "CONSTRAINT FK_DA_OC FOREIGN KEY (FK_OCURRENCIA)  " +
-            "REFERENCES OCURRENCIA (FECHA), " +
+            "REFERENCES OCURRENCIA (ID), " +
             "PRIMARY KEY  (VALOR_TEXT, FK_OCURRENCIA));";
     String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
@@ -91,6 +91,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         long newRowId = 0;
 
         ContentValues values = new ContentValues();
+        values.put("ID", ocurrencia.getCod());
         values.put("FECHA", ocurrencia.getFecha().toString()); // DATETIME se convierte a String
         values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
 
@@ -119,6 +120,24 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     }
 
 
+    public ArrayList<Dato> getDatos(SQLiteDatabase db, String fkOcurrencia, String nomEstudio) {
+
+        ArrayList<Dato> datos = new ArrayList<>();
+
+        String sql = "SELECT * FROM dato WHERE fk_ocurrencia = ?";
+        Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia});
+
+        while (c.moveToNext()){
+            datos.add(new Dato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3)));
+        }
+        c.close();
+
+        return datos;
+    }
     public ArrayList<TipoDato> getTiposDato(SQLiteDatabase db, String fk_estudio){
         long suc = 0;
         ArrayList<TipoDato> tipoDatoRes = new ArrayList<>();

@@ -22,10 +22,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.Dato;
-import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.R;
-import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 
@@ -36,7 +34,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     private ArrayList<Dato> listaDatos;
 
     public interface OnButtonClickListener {
-        void onButtonClick(int position);
+        void onButtonClickDatos();
     }
 
     private AdaptadorDatosVer.OnButtonClickListener listener;
@@ -100,91 +98,88 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
-        TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
+        if (position>=0 && position < listaTipos.size()){
+
+            Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
+            TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
+
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                    this.context,
+                    //Cambiar tipos:
+                    R.array.tipos,
+                    android.R.layout.simple_spinner_item
+            );
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            holder.spTipo.setAdapter(adapter);
+
+            holder.spTipo.setSelection(adapter.getPosition(dato.getFkTipoDato()));
+
+            holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
+
+            switch (tipo.getTipoDato()){
+                case "Número": {
+                    holder.tvHora.setVisibility(GONE);
+                    holder.etTexto.setVisibility(GONE);
+                    holder.spTipo.setVisibility(GONE);
+
+                    holder.etNumero.setText(dato.getValorText());
+                    holder.etNumero.setEnabled(false);
+
+                    break;
+                }
+                case "Texto": {
+                    holder.tvHora.setVisibility(GONE);
+                    holder.etNumero.setVisibility(GONE);
+                    holder.spTipo.setVisibility(GONE);
+
+                    holder.etTexto.setText(dato.getValorText());
+                    holder.etTexto.setEnabled(false);
+                    break;
+                }
+                case "Fecha": {
+                    holder.etTexto.setVisibility(GONE);
+                    holder.etNumero.setVisibility(GONE);
+                    holder.spTipo.setVisibility(GONE);
 
 
 
-        holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
+                    String nombreTipo = "Escribe una fecha";
+                    nombreTipo = tipo.getDescripcion();
+                    holder.tvHora.setText(dato.getValorText());
+                    holder.tvHora.setEnabled(false);
 
-        switch (tipo.getTipoDato()){
-            case "Número": {
-                holder.tvHora.setVisibility(GONE);
-                holder.etTexto.setVisibility(GONE);
-                holder.spTipo.setVisibility(GONE);
+                    break;
+                }
+                case "Hora": {
+                    holder.tvHora.setText(dato.getValorText());
+                    holder.tvHora.setEnabled(false);
+                    holder.etTexto.setVisibility(GONE);
+                    holder.spTipo.setVisibility(GONE);
+                    break;
+                }
 
-                holder.etNumero.setHint(tipo.getDescripcion());
 
-                break;
             }
-            case "Texto": {
-                holder.tvHora.setVisibility(GONE);
-                holder.etNumero.setVisibility(GONE);
-                holder.spTipo.setVisibility(GONE);
 
-                holder.etTexto.setHint(tipo.getDescripcion());
-                break;
-            }
-            case "Fecha": {
-                holder.etTexto.setVisibility(GONE);
-                holder.etNumero.setVisibility(GONE);
-                holder.spTipo.setVisibility(GONE);
+            holder.tvHora.setOnClickListener(v -> {
+                if (position != RecyclerView.NO_POSITION) {
+                    // Accede al fragment manager desde el contexto
+                    FragmentManager fragmentManager = ((AppCompatActivity) v.getContext())
+                            .getSupportFragmentManager();
 
+                    // Crea y muestra el DatePicker
+                    AdaptadorEstudios.FragmentoFecha datePicker = new AdaptadorEstudios.FragmentoFecha();
+                    datePicker.setListener((view, year, month, day) -> {
+                        String fecha = day+"/"+(month+1)+"/"+year;
+                        holder.tvHora.setText(fecha); // Actualiza directamente la vista
 
-
-                String nombreTipo = "Escribe una fecha";
-                nombreTipo = tipo.getDescripcion();
-                holder.tvHora.setHint(nombreTipo);
-
-                break;
-            }
-            case "Hora": {
-                holder.tvHora.setText(dato.getValorText());
-                holder.etTexto.setVisibility(GONE);
-                holder.spTipo.setVisibility(GONE);
-                break;
-            }
-
+                    });
+                    datePicker.show(fragmentManager, "datePicker");
+                }
+            });
 
         }
-
-
-        holder.tvHora.setOnClickListener(v -> {
-            if (position != RecyclerView.NO_POSITION) {
-                // Accede al fragment manager desde el contexto
-                FragmentManager fragmentManager = ((AppCompatActivity) v.getContext())
-                        .getSupportFragmentManager();
-
-                // Crea y muestra el DatePicker
-                AdaptadorEstudios.FragmentoFecha datePicker = new AdaptadorEstudios.FragmentoFecha();
-                datePicker.setListener((view, year, month, day) -> {
-                    String fecha = day+"/"+(month+1)+"/"+year;
-                    holder.tvHora.setText(fecha); // Actualiza directamente la vista
-
-                    // Opcional: Actualiza también el modelo si lo necesitas
-                    // ((AdaptadorTiposDato) getAdapter()).actualizarFecha(position, fecha);
-                });
-                datePicker.show(fragmentManager, "datePicker");
-            }
-        });
-
-
-
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this.context,
-                //Cambiar tipos:
-                R.array.tipos,
-                android.R.layout.simple_spinner_item
-        );
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        holder.spTipo.setAdapter(adapter);
-
-
-        holder.spTipo.setSelection(adapter.getPosition(dato.getFkTipoDato()));
-
-
 
         // Establecer listeners
         holder.etTexto.addTextChangedListener(new TextWatcher() {
@@ -214,9 +209,9 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         holder.spTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(
+                /*listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(
                         parent.getItemAtPosition(pos).toString()
-                );
+                );*/
             }
 
             @Override
@@ -224,10 +219,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                 // No se seleccionó nada
             }
         });
-
-
-
-
     }
 
     public void actualizarFecha(int position, int year, int month, int day) {
@@ -264,39 +255,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     public ArrayList<Dato> getLista(){
         return listaDatos;
     }
-
-
-    private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.context,
-                arrayResId, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        if (value != null) {
-            int position = adapter.getPosition(value);
-            if (position >= 0) {
-                spinner.setSelection(position);
-            }
-        }
-    }
-
-
-    private long editarSQL(Estudio nuevo, int nuevaCuenta){
-        long res=-1;
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this.context,
-                            "DBEstudios", null, 1);){
-            db = usdbh.getWritableDatabase();
-
-            res = usdbh.editarSQL(db, nuevo, nuevaCuenta);
-
-
-        }
-        return res;
-    }
-
-
-
     public AdaptadorDatosVer(@NonNull Context context) {
         super();
     }

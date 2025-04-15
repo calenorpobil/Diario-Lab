@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +38,7 @@ public class OcurrenciaActivity extends AppCompatActivity
     ArrayList<Dato> listaDatos = new ArrayList<>();
     AdaptadorDatos adaptadorDatos;
     RecyclerView vistaRecycler;
+    private String idOcurrencia;
     private LocalDate fechaOcurrencia;
     private int posicion;
     Estudio estudioActual;
@@ -66,7 +66,7 @@ public class OcurrenciaActivity extends AppCompatActivity
         assert upIntent != null;
 
         try{
-            fechaOcurrencia = LocalDate.parse(upIntent.getString("FECHA_OCURRENCIA"));
+            idOcurrencia = upIntent.getString("FECHA_OCURRENCIA");
         } catch(Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -88,7 +88,7 @@ public class OcurrenciaActivity extends AppCompatActivity
                 listaDatos.add(new Dato(
                         listaTiposDato.get(i).getTipoDato(),
                         fk_estudio,
-                        fechaOcurrencia,
+                        idOcurrencia,
                         ""));
             }
 
@@ -258,7 +258,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             //Valido campos obligatorios (según esquema SQL)
             try {
                 // Preparar todos los datos para enviar
-                listaDatos.get(0).setFkOcurrencia(fechaOcurrencia);
+                listaDatos.get(0).setFkOcurrencia(idOcurrencia);
                 Ocurrencia datosOcurrencia = new Ocurrencia(
                         fechaOcurrencia, fk_estudio);
 

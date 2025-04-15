@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 public class Dato  implements Parcelable {
     private String fkTipoDato;      // VARCHAR(50)
     private String fkTipoEstudio;      // VARCHAR(50)
-    private LocalDate fkOcurrencia; // DATETIME
+    private String fkOcurrencia; // DATETIME
     private String valorText;    // TEXT
 
     // Constructor
-    public Dato(String fkTipoN, String fkTipoE, LocalDate fkOcurrencia, String valorText) {
+    public Dato(String fkTipoN, String fkTipoE, String fkOcurrencia, String valorText) {
         this.fkTipoDato = fkTipoN;
         this.fkTipoEstudio = fkTipoE;
         this.fkOcurrencia = fkOcurrencia;
@@ -46,11 +46,11 @@ public class Dato  implements Parcelable {
         this.fkTipoEstudio = fkTipoEstudio;
     }
 
-    public LocalDate getFkOcurrencia() {
+    public String getFkOcurrencia() {
         return fkOcurrencia;
     }
 
-    public void setFkOcurrencia(LocalDate fkOcurrencia) {
+    public void setFkOcurrencia(String fkOcurrencia) {
         this.fkOcurrencia = fkOcurrencia;
     }
 
@@ -71,7 +71,7 @@ public class Dato  implements Parcelable {
         fkTipoEstudio = in.readString();
         fkTipoDato = in.readString();
         try {
-            fkOcurrencia = (LocalDate) in.readSerializable();
+            fkOcurrencia = in.readString();
         } catch (Exception ex){
             System.out.println("Fecha incorrecta en el Parcelable. ");
             System.out.println(ex.getMessage());

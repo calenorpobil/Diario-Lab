@@ -8,11 +8,16 @@ import androidx.annotation.NonNull;
 import java.time.LocalDate;
 
 public class Ocurrencia implements Parcelable {
+    private final String id = "OC";
+    private static int num=0;
+    private String cod;
     private LocalDate fecha;  // DATETIME
     private String fkEstudioN;   // VARCHAR(50)
 
     // Constructor
     public Ocurrencia(LocalDate fecha, String fkEstudioN) {
+        num++;
+        this.cod = id+num;
         this.fecha = fecha;
         this.fkEstudioN = fkEstudioN;
     }
@@ -30,6 +35,11 @@ public class Ocurrencia implements Parcelable {
     };
 
     // Getters y Setters
+
+    public String getCod() {return cod;}
+
+    public void setCod(String cod) {this.cod = cod;}
+
     public LocalDate getFecha() {
         return fecha;
     }

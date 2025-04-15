@@ -1,36 +1,22 @@
 package com.merlita.diariolab.Adaptadores;
 
-import static android.view.View.GONE;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
-import com.merlita.diariolab.Modelos.TipoDato;
-import com.merlita.diariolab.OcurrenciaActivity;
 import com.merlita.diariolab.R;
-import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -40,9 +26,8 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
     private ArrayList<Ocurrencia> listaOcurrencias;
     private Estudio estudio;
 
-
     public interface OnButtonClickListener {
-        void onButtonClick(int position);
+        void onButtonClickOcurrencia(String codOcurrencia, String codEstudio);
     }
 
     private AdaptadorOcurrencias.OnButtonClickListener listener;
@@ -57,6 +42,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
 
         TextView tvRepeticiones, tvFecha;
         Button btEditar;
+        ConstraintLayout clFila;
 
 
         public MiContenedor(@NonNull View itemView) {
@@ -65,6 +51,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
             tvFecha = (TextView) itemView.findViewById(R.id.tvFecha);
             tvRepeticiones = (TextView) itemView.findViewById(R.id.tvRepeticiones);
             btEditar = (Button) itemView.findViewById(R.id.btEditar);
+            clFila = (ConstraintLayout) itemView.findViewById(R.id.clFila);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -97,7 +84,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
         Ocurrencia ocurrencia = listaOcurrencias.get(holder.getAbsoluteAdapterPosition());
 
         String reps = (position+1)+"";
-        holder.tvRepeticiones.setText(reps);
+        holder.tvRepeticiones.setText("🔁 "+reps);
         LocalDate date = ocurrencia.getFecha();
         String fecha = date.getDayOfMonth()+"/"+date.getMonthValue()+"/"+date.getYear();
         holder.tvFecha.setText(fecha);
@@ -108,7 +95,14 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
             }
         });
 
+        holder.clFila.setOnClickListener(new View.OnClickListener() {
+            @Override
 
+            public void onClick(View v) {
+                listener.onButtonClickOcurrencia(ocurrencia.getCod(), estudio.getNombre());
+            }
+
+        });
     }
 
 
@@ -136,11 +130,13 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
         return size;
     }
 
-    public AdaptadorOcurrencias(Context context, Estudio estudio, ArrayList<Ocurrencia> lista) {
+    public AdaptadorOcurrencias(Context context, Estudio estudio, ArrayList<Ocurrencia> lista,
+                                OnButtonClickListener listener) {
         super();
         this.context = context;
         this.estudio = estudio;
         this.listaOcurrencias = lista;
+        this.listener = listener;
     }
 
 

@@ -198,6 +198,17 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
+        holder.etNumero.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+            }
+            // ... (métodos onTextChanged y beforeTextChanged vacíos)
+        });
 
         holder.tvHora.addTextChangedListener(new TextWatcher() {
             @Override

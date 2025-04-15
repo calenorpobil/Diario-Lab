@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public final static int DB_VERSION=7;
+    public final static int DB_VERSION=11;
 
 
 
@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
-
-
 
         borrarTodo();
 
@@ -351,37 +349,38 @@ public class MainActivity extends AppCompatActivity {
 
                 // Insertar datos para "Tomar Café"
                 // Datos para "Tomar Café"
-                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDate.parse("2024-03-01"), "2"));
-                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDate.parse("2024-03-01"), "2024-03-01T08:30:00"));
-                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDate.parse("2024-03-01"), "Espresso"));
-                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDate.parse("2024-03-02"), "1"));
-                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDate.parse("2024-03-02"), "2024-03-02T09:15:00"));
-                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDate.parse("2024-03-02"), "Latte"));
-                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDate.parse("2024-03-03"), "3"));
-                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", LocalDate.parse("2024-03-03"), "2024-03-03"));
-                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", LocalDate.parse("2024-03-03"), "Americano"));
+                /*usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", LocalDate.parse("2024-03-01"), "2"));*/
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", "OC7", "2"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", "OC7", "2024-03-01T08:30:00"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", "OC7", "Espresso"));
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", "OC8", "1"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", "OC8", "2024-03-02T09:15:00"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", "OC8", "Latte"));
+                usdbh. insertarDato(db,new Dato("Tazas", "Tomar Café", "OC9", "3"));
+                usdbh. insertarDato(db,new Dato("Hora", "Tomar Café", "OC9", "2024-03-03"));
+                usdbh. insertarDato(db,new Dato("Tipo de café", "Tomar Café", "OC9", "Americano"));
 
                 // Datos para "Ir al gimnasio"
-                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDate.parse("2024-03-01"), "60"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDate.parse("2024-03-01"), "2024-03-01"));
-                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDate.parse("2024-03-01"), "Cardio"));
-                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDate.parse("2024-03-03"), "45"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDate.parse("2024-03-03"), "2024-03-03"));
-                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDate.parse("2024-03-03"), "Pesas"));
-                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", LocalDate.parse("2024-03-05"), "90"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", LocalDate.parse("2024-03-05"), "2024-03-05"));
-                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", LocalDate.parse("2024-03-05"), "Yoga"));
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", "OC10", "60"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", "OC10", "2024-03-01"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", "OC10", "Cardio"));
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", "OC11", "45"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", "OC11", "2024-03-03"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", "OC11", "Pesas"));
+                usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", "OC12", "90"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", "OC12", "2024-03-05"));
+                usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", "OC12", "Yoga"));
 
                 // Datos para "Diario"
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDate.parse("2024-03-01"), "Feliz"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDate.parse("2024-03-01"), "2024-03-01"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDate.parse("2024-03-01"), "Reunión con amigos"));
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDate.parse("2024-03-02"), "Cansado"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDate.parse("2024-03-02"), "2024-03-02"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDate.parse("2024-03-02"), "Trabajo intenso"));
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", LocalDate.parse("2024-03-03"), "Relajado"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", LocalDate.parse("2024-03-03"), "2024-03-03"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", LocalDate.parse("2024-03-03"), "Día de descanso"));
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC13", "Feliz"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC13", "2024-03-01"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC13", "Reunión con amigos"));
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC14", "Cansado"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC14", "2024-03-02"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC14", "Trabajo intenso"));
+                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC15", "Relajado"));
+                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC15", "2024-03-03"));
+                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC15", "Día de descanso"));
 
                 // Marcar la transacción como exitosa
             /*}catch (SQLiteException e){
@@ -719,7 +718,6 @@ public class MainActivity extends AppCompatActivity {
                 int reps = datosEstudio.getReps()+1;
                 datosEstudio.setReps(reps);
 
-                //INSERTAR EL ESTUDIO:
                 if (nuevosDatos != null) {
                     //nuevosDatos.get(0).;
                     long[] res = insertarDatos(nuevosDatos);

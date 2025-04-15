@@ -1,6 +1,5 @@
 package com.merlita.diariolab;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.Adaptadores.AdaptadorDatos;
 import com.merlita.diariolab.Adaptadores.AdaptadorDatosVer;
 import com.merlita.diariolab.Adaptadores.AdaptadorEstudios;
 import com.merlita.diariolab.Adaptadores.AdaptadorOcurrencias;
@@ -31,7 +29,8 @@ import java.util.ArrayList;
 
 
 public class VerActivity extends AppCompatActivity
-        implements AdaptadorDatosVer.OnButtonClickListener, AdaptadorDatosVer.DatePickerListener {
+        implements AdaptadorDatosVer.OnButtonClickListener, AdaptadorDatosVer.DatePickerListener,
+        AdaptadorOcurrencias.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     TextView tvTitulo;
@@ -66,7 +65,6 @@ public class VerActivity extends AppCompatActivity
         Bundle upIntent = this.getIntent().getExtras();
         assert upIntent != null;
 
-
         estudioOcurrencia = upIntent.getParcelable("ESTUDIO");
         fk_estudio = estudioOcurrencia.getNombre();
 
@@ -81,20 +79,19 @@ public class VerActivity extends AppCompatActivity
 
             tvTitulo.setText(estudioOcurrencia.getNombre());
 
-
             listaTipos = getTiposDato();
             for (int i = 0; i < listaTipos.size(); i++) {
                 listaDatos.add(new Dato(
                         listaTipos.get(i).getTipoDato(),
                         fk_estudio,
-                        fechaOcurrencia,
+                        "",
                         ""));
             }
 
 
 
             adaptadorOcurrencias = new AdaptadorOcurrencias(
-                    this, estudioOcurrencia, listaOcurrencias);
+                    this, estudioOcurrencia, listaOcurrencias, this);
             adaptadorDatos = new AdaptadorDatosVer(
                     this, listaDatos, this, listaTipos, this);
 
@@ -106,14 +103,13 @@ public class VerActivity extends AppCompatActivity
             rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
             rvOcurrencias.setAdapter(adaptadorOcurrencias);
 
-            rvDatos.setLayoutManager(new LinearLayoutManager(this));
-            rvDatos.setAdapter(adaptadorDatos);
+            actualizarRvDatos();
 
         }else{
             //NO HA FUNCIONADO EL CODIGO
         }
 
-        actualizarDatos();
+        actualizarListas();
 
 
 /*
@@ -126,6 +122,11 @@ public class VerActivity extends AppCompatActivity
         });*/
 
 
+    }
+
+    private void actualizarRvDatos() {
+        rvDatos.setLayoutManager(new LinearLayoutManager(this));
+        rvDatos.setAdapter(adaptadorDatos);
     }
 
     @Override
@@ -163,7 +164,7 @@ public class VerActivity extends AppCompatActivity
     }
 
 
-    public void actualizarDatos() {
+    public void actualizarListas() {
         try{
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this,
@@ -186,8 +187,43 @@ public class VerActivity extends AppCompatActivity
     }
 
 
+
+    private ArrayList<Dato> getDatos(String codOcurrencia, String nomEstudio) {
+        ArrayList<Dato> tiposResultado=null;
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                tiposResultado = usdbh.getDatos(db, codOcurrencia, nomEstudio);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+        return tiposResultado;
+    }
+
+
+    private void verDatosOcurrencia(String codOcurrencia, String nomEstudio) {
+        listaDatos = getDatos(codOcurrencia, nomEstudio);
+        listaTipos = getTiposDato();
+
+        adaptadorDatos = new AdaptadorDatosVer(
+                this, listaDatos, this, listaTipos, this);
+
+        rvDatos.setAdapter(adaptadorDatos);
+
+        //actualizarListas();
+        actualizarRvDatos();
+    }
     private void rellenarLista(SQLiteDatabase db) {
         LocalDate fecha=null;
+
+
         Cursor c = db.rawQuery("select * from ocurrencia " +
                 "where FK_ESTUDIO_N = ?",
                 new String[]{estudioOcurrencia.getNombre()});
@@ -221,7 +257,7 @@ public class VerActivity extends AppCompatActivity
                 datosEstudio.add(tvTitulo.getText().toString());
                 //datosEstudio.add(tvFecha.getText().toString());
 
-                listaDatos.get(0).setFkOcurrencia(fechaOcurrencia);
+                //listaDatos.get(0).setFkOcurrencia(fechaOcurrencia);
 
 
                 i.putStringArrayListExtra("ESTUDIO", datosEstudio);
@@ -270,10 +306,14 @@ public class VerActivity extends AppCompatActivity
         return correcto;
     }
 
-
-
+    //Click en Dato
     @Override
-    public void onButtonClick(int position) {
+    public void onButtonClickDatos() {
+    }
 
+    //Click en Ocurrencia
+    @Override
+    public void onButtonClickOcurrencia(String codOcurrencia, String nomEstudio) {
+        verDatosOcurrencia(codOcurrencia, nomEstudio);
     }
 }
