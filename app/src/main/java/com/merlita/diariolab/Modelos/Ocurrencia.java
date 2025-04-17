@@ -57,6 +57,7 @@ public class Ocurrencia implements Parcelable {
     }
 
     protected Ocurrencia(Parcel in){
+        cod = in.readString();
         fecha = LocalDate.parse(in.readString());
         fkEstudioN = in.readString();
     }
@@ -68,6 +69,7 @@ public class Ocurrencia implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(cod);
         dest.writeString(fecha.toString());
         dest.writeString(fkEstudioN);
     }

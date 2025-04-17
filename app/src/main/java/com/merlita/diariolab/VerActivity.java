@@ -200,6 +200,8 @@ public class VerActivity extends AppCompatActivity
                 tiposResultado = usdbh.getDatos(db, codOcurrencia, nomEstudio);
 
                 db.close();
+            } catch (Exception ex){
+                toast("Juan");
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
@@ -233,8 +235,15 @@ public class VerActivity extends AppCompatActivity
             index = c.getColumnIndex("FECHA");
             String par = c.getString(index);
             fecha = LocalDate.parse(par);
+            index = c.getColumnIndex("ID");
+            String id = c.getString(index);
 
-            listaOcurrencias.add(new Ocurrencia(fecha, fk_estudio));
+            Ocurrencia ver = new Ocurrencia(fecha, fk_estudio);
+            ver.setCod(id);
+
+            listaOcurrencias.add(ver);
+
+
 
             tvTitulo.setText(fecha.toString()+" "+fk_estudio);
 

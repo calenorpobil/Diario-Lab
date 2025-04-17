@@ -124,7 +124,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         ArrayList<Dato> datos = new ArrayList<>();
 
-        String sql = "SELECT * FROM dato WHERE fk_ocurrencia = ?";
+        String sql = "SELECT * FROM dato WHERE fk_ocurrencia = ?;";
         Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia});
 
         while (c.moveToNext()){
