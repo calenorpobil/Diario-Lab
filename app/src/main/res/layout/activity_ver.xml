@@ -66,6 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDatos"
         android:layout_width="0dp"
@@ -75,11 +76,33 @@
 
         android:orientation="vertical"
 
-        app:layout_constraintBottom_toTopOf="@id/dividerOcu"
+        app:layout_constraintBottom_toTopOf="@+id/btModificar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerTop"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btModificar"
+        style="@style/IconColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="156dp"
+        android:text="@string/modificar"
+        app:layout_constraintStart_toStartOf="@+id/rvDatos"
         app:layout_constraintTop_toBottomOf="@+id/dividerTop" />
 
+    <Button
+        android:id="@+id/btConfirmar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/IconColor"
+        android:text="@string/confirmar"
+        app:layout_constraintBottom_toBottomOf="@+id/btModificar"
+        app:layout_constraintEnd_toEndOf="@+id/rvDatos"
+        app:layout_constraintTop_toTopOf="@+id/btModificar" />
 
     <View
         android:id="@+id/dividerOcu"
@@ -94,7 +117,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvDatos" />
+        app:layout_constraintTop_toBottomOf="@+id/btModificar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOcurrencias"
@@ -136,5 +159,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dividerDatos" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

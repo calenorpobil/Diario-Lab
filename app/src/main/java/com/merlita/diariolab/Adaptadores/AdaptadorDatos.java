@@ -194,7 +194,11 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                if(s.toString()!=null){
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                }else{
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText("");
+                }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
@@ -205,7 +209,11 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                if(s.toString()!=null){
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                }else{
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText("");
+                }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
@@ -217,7 +225,11 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                if(s.toString()!=null){
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                }else{
+                    listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText("");
+                }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });

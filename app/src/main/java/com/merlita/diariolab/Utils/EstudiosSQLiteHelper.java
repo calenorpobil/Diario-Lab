@@ -28,13 +28,14 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE), " +
             "PRIMARY KEY (ID));";
     String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
+            "ID_DATO INTEGER, "+
             "FK_OCURRENCIA VARCHAR(4), VALOR_TEXT TEXT, " +
             "CONSTRAINT FK_DA_TI FOREIGN KEY (FK_TIPO_N, FK_TIPO_E)  " +
             "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO), " +
             "CONSTRAINT FK_ES FOREIGN KEY (FK_TIPO_E) REFERENCES ESTUDIO (NOMBRE), "+
             "CONSTRAINT FK_DA_OC FOREIGN KEY (FK_OCURRENCIA)  " +
             "REFERENCES OCURRENCIA (ID), " +
-            "PRIMARY KEY  (VALOR_TEXT, FK_OCURRENCIA));";
+            "PRIMARY KEY  (ID_DATO));";
     String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
@@ -124,7 +125,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         ArrayList<Dato> datos = new ArrayList<>();
 
-        String sql = "SELECT * FROM dato WHERE fk_ocurrencia = ?;";
+        String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
+                "valor_text FROM dato WHERE fk_ocurrencia = ?;";
         Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia});
 
         while (c.moveToNext()){

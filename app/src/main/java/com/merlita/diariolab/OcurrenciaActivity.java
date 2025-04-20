@@ -258,9 +258,11 @@ public class OcurrenciaActivity extends AppCompatActivity
             //Valido campos obligatorios (según esquema SQL)
             try {
                 // Preparar todos los datos para enviar
-                listaDatos.get(0).setFkOcurrencia(idOcurrencia);
                 Ocurrencia datosOcurrencia = new Ocurrencia(
                         fechaOcurrencia, fk_estudio);
+                listaDatos.get(0).setFkOcurrencia(datosOcurrencia.getCod());
+
+
 
                 i.putExtra("OCURRENCIA", datosOcurrencia);
                 i.putExtra("ESTUDIO", estudioActual);

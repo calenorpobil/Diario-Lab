@@ -76,4 +76,6 @@
     <string name="a_adir_la_ocurrencia">Añadir la ocurrencia</string>
     <string name="fecha_de_la_ocurrencia">Fecha</string>
     <string name="editarEmoji">🖍</string>
+    <string name="modificar">Modificar</string>
+    <string name="confirmar">Confirmar</string>
 </resources>

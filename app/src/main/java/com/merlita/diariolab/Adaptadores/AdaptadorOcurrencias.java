@@ -88,6 +88,8 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
         LocalDate date = ocurrencia.getFecha();
         String fecha = date.getDayOfMonth()+"/"+date.getMonthValue()+"/"+date.getYear();
         holder.tvFecha.setText(fecha);
+
+
         holder.btEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -311,25 +311,41 @@ public class MainActivity extends AppCompatActivity {
 
             //Iniciar una transacción para mejorar el rendimiento
             try {
-                // Insertar estudios
-                usdbh.insertarEstudio(db, new Estudio("Tomar Café", "Registro de consumo diario de café", "☕", 0));
-                usdbh. insertarEstudio(db,new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento", "\uD83C\uDFCB\uFE0F", 0));
-                usdbh. insertarEstudio(db,new Estudio("Diario", "Registro personal diario", "\uD83D\uDCD4", 0));
+                ArrayList<Estudio> estudios = new ArrayList<>();
+                estudios.add(new Estudio("Tomar Café", "Registro de consumo diario de café", "☕", 0));
+                estudios.add(new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento", "\uD83C\uDFCB\uFE0F", 0));
+                estudios.add(new Estudio("Diario", "Registro personal diario", "\uD83D\uDCD4", 0));
 
                 // Insertar tipos de datos para "Tomar Café"
-                usdbh.insertarTipoDato(db,new TipoDato("Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
-                usdbh.insertarTipoDato(db,new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
-                usdbh.insertarTipoDato(db,new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
-
+                ArrayList<TipoDato>[] a = new ArrayList[estudios.size()];
+                ArrayList<TipoDato> tiposDato1 = new ArrayList<>();
+                tiposDato1.add(new TipoDato("Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
+                tiposDato1.add(new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                tiposDato1.add(new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
+                a[0] = tiposDato1;
                 // Tipos para "Ir al gimnasio"
-                usdbh.insertarTipoDato(db,new TipoDato("Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
-                usdbh.insertarTipoDato(db,new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
-                usdbh.insertarTipoDato(db,new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
-
+                ArrayList<TipoDato> tiposDato2 = new ArrayList<>();
+                tiposDato2.add(new TipoDato("Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
+                tiposDato2.add(new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
+                tiposDato2.add(new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
+                a[1] = tiposDato2;
                 // Tipos para "Diario"
-                usdbh.insertarTipoDato(db,new TipoDato("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
-                usdbh.insertarTipoDato(db,new TipoDato("Fecha", "Fecha", "Fecha del registro", "Diario"));
-                usdbh.insertarTipoDato(db,new TipoDato("Evento destacado", "Texto", "Evento importante del día", "Diario"));
+                ArrayList<TipoDato> tiposDato3 = new ArrayList<>();
+                tiposDato3.add(new TipoDato("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
+                tiposDato3.add(new TipoDato("Fecha", "Fecha", "Fecha del registro", "Diario"));
+                tiposDato3.add(new TipoDato("Evento destacado", "Texto", "Evento importante del día", "Diario"));
+                a[2] = tiposDato3;
+
+                // Insertar estudios
+                for (int i = 0; i < estudios.size(); i++) {
+                    usdbh.insertarEstudio(db, estudios.get(i));
+
+                    //Tipos de cada Estudio:
+                    ArrayList<TipoDato> aux = a[i];
+                    for (int j = 0; j < aux.size(); j++) {
+                        usdbh.insertarTipoDato(db, aux.get(j));
+                    }
+                }
 
                 // Insertar ocurrencias para "Tomar Café"
                 Ocurrencia aux = new Ocurrencia(LocalDate.parse("2024-03-01"), "Tomar Café");
@@ -373,24 +389,32 @@ public class MainActivity extends AppCompatActivity {
 
 
                 // Ocurrencias para "Diario"
-                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDate.parse("2024-03-01"), "Diario"));
-                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDate.parse("2024-03-02"), "Diario"));
-                usdbh. insertarOcurrencia(db,new Ocurrencia(LocalDate.parse("2024-03-03"), "Diario"));
+                aux = new Ocurrencia(LocalDate.parse("2024-03-01"), "Diario");
+                usdbh. insertarOcurrencia(db, aux);
+                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Feliz"));
+                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-01"));
+                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Reunión con amigos"));
+
+
+                aux = new Ocurrencia(LocalDate.parse("2024-03-02"), "Diario");
+                usdbh. insertarOcurrencia(db, aux);
+                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Cansado"));
+                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-02"));
+                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Trabajo intenso"));
+
+
+                aux = new Ocurrencia(LocalDate.parse("2024-03-03"), "Diario");
+                usdbh. insertarOcurrencia(db, aux);
+                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Relajado"));
+                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-03"));
+                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Día de descanso"));
+
 
                 // Insertar datos para "Tomar Café"
 
                 // Datos para "Ir al gimnasio"
 
                 // Datos para "Diario"
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC13", "Feliz"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC13", "2024-03-01"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC13", "Reunión con amigos"));
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC14", "Cansado"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC14", "2024-03-02"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC14", "Trabajo intenso"));
-                usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", "OC15", "Relajado"));
-                usdbh. insertarDato(db,new Dato("Fecha", "Diario", "OC15", "2024-03-03"));
-                usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", "OC15", "Día de descanso"));
 
                 // Marcar la transacción como exitosa
             /*}catch (SQLiteException e){
@@ -445,8 +469,8 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    //No entiendo qué hace este código
-    private int addOcurrencia(Estudio antiguo){
+    //Añade repetición al estudio:
+    private int addRepsEstudio(Estudio antiguo){
         int res=-1;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -481,10 +505,38 @@ public class MainActivity extends AppCompatActivity {
                 values.put("FK_TIPO_N", datos.get(i).getFkTipoDato());
                 values.put("FK_TIPO_E", datos.get(i).getFkTipoEstudio());
                 values.put("FK_OCURRENCIA", datos.get(0).getFkOcurrencia());
-                values.put("VALOR_TEXT", datos.get(i).getValorText());
+                String valor = datos.get(i).getValorText();
+                if(valor.equals("")){
+                    values.put("VALOR_TEXT", " ");
+                }else{
+                    values.put("VALOR_TEXT", valor);
+                }
 
                 res[i]= db.insert("Dato", null,
                         values);
+
+            }
+
+            db.close();
+        } catch (SQLiteConstraintException ex){
+            toast(ex.getMessage());
+        } catch (SQLiteException ex){
+            toast(ex.getMessage());
+        }
+        return res;
+    }
+    private long[] borrarDatos(ArrayList<Dato> datos){
+        long[] res = new long[datos.size()];
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);){
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            for (int i = 0; i < datos.size(); i++) {
+
+                res[i]= db.delete("Dato",
+                        "fk_ocurrencia = ?",
+                        new String[]{datos.get(0).getFkOcurrencia()});
 
             }
 
@@ -731,10 +783,20 @@ public class MainActivity extends AppCompatActivity {
                 datosEstudio.setReps(reps);
 
                 if (nuevosDatos != null) {
-                    //nuevosDatos.get(0).;
+                    nuevosDatos.get(0).setFkOcurrencia(datosOcurrencia.getCod());
                     long[] res = insertarDatos(nuevosDatos);
-                    insertarOcurrencia(datosOcurrencia);
-                    addOcurrencia(datosEstudio);
+                    boolean algoFallo = false;
+                    for (int i = 0; i < res.length; i++) {
+                        if(res[i]==0 || res[i]==-1){
+                            algoFallo = true;
+                        }
+                    }
+                    if(!algoFallo){
+                        insertarOcurrencia(datosOcurrencia);
+                        addRepsEstudio(datosEstudio);
+                    } else {
+                        borrarDatos(nuevosDatos);
+                    }
                 }
             }
         }

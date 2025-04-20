@@ -21,6 +21,11 @@ public class Ocurrencia implements Parcelable {
         this.fecha = fecha;
         this.fkEstudioN = fkEstudioN;
     }
+    public Ocurrencia(LocalDate fecha, String fkEstudio, String id) {
+        this.cod = id;
+        this.fecha = fecha;
+        this.fkEstudioN = fkEstudioN;
+    }
 
     public static final Creator<Ocurrencia> CREATOR = new Creator<Ocurrencia>() {
         @Override
@@ -33,6 +38,7 @@ public class Ocurrencia implements Parcelable {
             return new Ocurrencia[size];
         }
     };
+
 
     // Getters y Setters
 

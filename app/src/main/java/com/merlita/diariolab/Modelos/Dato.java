@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Dato  implements Parcelable {
+
+    private static int id_dato=0;            // INTEGER
     private String fkTipoDato;      // VARCHAR(50)
     private String fkTipoEstudio;      // VARCHAR(50)
     private String fkOcurrencia; // DATETIME
@@ -16,18 +18,18 @@ public class Dato  implements Parcelable {
 
     // Constructor
     public Dato(String fkTipoN, String fkTipoE, String fkOcurrencia, String valorText) {
+        this.id_dato = id_dato+1;
         this.fkTipoDato = fkTipoN;
         this.fkTipoEstudio = fkTipoE;
         this.fkOcurrencia = fkOcurrencia;
         this.valorText = valorText;
     }
 
-    public Dato() {
-
-    }
     public Dato(String fkTipoN) {
         setFkTipoDato(fkTipoN);
     }
+
+
 
     // Getters y Setters
     public String getFkTipoDato() {
@@ -68,14 +70,10 @@ public class Dato  implements Parcelable {
     }
     // Método para crear un objeto TipoDato desde un Parcel
     protected Dato(Parcel in) {
-        fkTipoEstudio = in.readString();
+        id_dato = in.readInt();
         fkTipoDato = in.readString();
-        try {
-            fkOcurrencia = in.readString();
-        } catch (Exception ex){
-            System.out.println("Fecha incorrecta en el Parcelable. ");
-            System.out.println(ex.getMessage());
-        }
+        fkTipoEstudio = in.readString();
+        fkOcurrencia = in.readString();
         valorText = in.readString();
     }
 
@@ -94,9 +92,10 @@ public class Dato  implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id_dato);
         parcel.writeString(fkTipoEstudio);
         parcel.writeString(fkTipoDato);
-        parcel.writeSerializable(fkOcurrencia);
+        parcel.writeString(fkOcurrencia);
         parcel.writeString(valorText);
 
     }

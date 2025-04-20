@@ -125,7 +125,9 @@ public class VerActivity extends AppCompatActivity
     }
 
     private void actualizarRvDatos() {
-        rvDatos.setLayoutManager(new LinearLayoutManager(this));
+        rvDatos.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL,
+                false));
         rvDatos.setAdapter(adaptadorDatos);
     }
 
@@ -189,7 +191,7 @@ public class VerActivity extends AppCompatActivity
 
 
     private ArrayList<Dato> getDatos(String codOcurrencia, String nomEstudio) {
-        ArrayList<Dato> tiposResultado=null;
+        ArrayList<Dato> datosResultado=null;
         try{
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this,
@@ -197,7 +199,7 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                tiposResultado = usdbh.getDatos(db, codOcurrencia, nomEstudio);
+                datosResultado = usdbh.getDatos(db, codOcurrencia, nomEstudio);
 
                 db.close();
             } catch (Exception ex){
@@ -206,7 +208,7 @@ public class VerActivity extends AppCompatActivity
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
         }
-        return tiposResultado;
+        return datosResultado;
     }
 
 
@@ -238,14 +240,13 @@ public class VerActivity extends AppCompatActivity
             index = c.getColumnIndex("ID");
             String id = c.getString(index);
 
-            Ocurrencia ver = new Ocurrencia(fecha, fk_estudio);
-            ver.setCod(id);
+            Ocurrencia ver = new Ocurrencia(fecha, fk_estudio, id);
 
             listaOcurrencias.add(ver);
 
 
 
-            tvTitulo.setText(fecha.toString()+" "+fk_estudio);
+            tvTitulo.setText(estudioOcurrencia.getEmoji()+" "+fk_estudio);
 
         }
 

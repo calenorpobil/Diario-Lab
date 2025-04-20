@@ -125,7 +125,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
                     holder.etNumero.setText(dato.getValorText());
                     holder.etNumero.setEnabled(false);
-
                     break;
                 }
                 case "Texto": {

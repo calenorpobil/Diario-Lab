@@ -50,24 +50,24 @@
 
     <Button
         android:id="@+id/btAlta"
+        style="@style/IconColor"
         android:layout_width="93dp"
         android:layout_height="88dp"
-        android:layout_marginBottom="32dp"
         android:background="@drawable/round_button"
         android:drawablePadding="0dp"
         android:includeFontPadding="false"
-        style="@style/IconColor"
 
         android:padding="0dp"
         android:text="@string/bt_NuevoEstudio"
         android:textSize="50sp"
         app:iconPadding="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvAnyadir"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btCopia"
+        style="@style/IconColor"
         android:layout_width="69dp"
         android:layout_height="68dp"
         android:background="@drawable/round_button"
@@ -76,8 +76,8 @@
         android:padding="0dp"
         android:text="@string/bt_dev"
         android:textSize="30sp"
+        android:visibility="invisible"
         app:iconPadding="0dp"
-        style="@style/IconColor"
         app:layout_constraintBottom_toBottomOf="@+id/btAlta"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btAlta"
@@ -85,6 +85,7 @@
 
     <Button
         android:id="@+id/btRevert"
+        style="@style/IconColor"
         android:layout_width="69dp"
         android:layout_height="68dp"
         android:background="@drawable/round_button"
@@ -93,8 +94,8 @@
         android:padding="0dp"
         android:text="@string/bt_revert"
         android:textSize="30sp"
+        android:visibility="invisible"
         app:iconPadding="0dp"
-        style="@style/IconColor"
         app:layout_constraintBottom_toBottomOf="@+id/btAlta"
         app:layout_constraintEnd_toStartOf="@+id/btAlta"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,5 +108,15 @@
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/btAlta"
         tools:layout_editor_absoluteX="176dp" />
+
+    <TextView
+        android:id="@+id/tvAnyadir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Añadir un nuevo estudio"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
