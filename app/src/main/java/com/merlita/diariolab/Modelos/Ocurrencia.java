@@ -1,26 +1,34 @@
 package com.merlita.diariolab.Modelos;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
+
 import java.time.LocalDate;
 
 public class Ocurrencia implements Parcelable {
     private final String id = "OC";
-    private static int num=0;
     private String cod;
     private LocalDate fecha;  // DATETIME
     private String fkEstudioN;   // VARCHAR(50)
 
     // Constructor
-    public Ocurrencia(LocalDate fecha, String fkEstudioN) {
-        num++;
+    public Ocurrencia(int num, LocalDate fecha, String fkEstudioN) {
         this.cod = id+num;
         this.fecha = fecha;
         this.fkEstudioN = fkEstudioN;
     }
+
+
     public Ocurrencia(LocalDate fecha, String fkEstudio, String id) {
         this.cod = id;
         this.fecha = fecha;

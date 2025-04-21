@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     static RecyclerView vistaRecycler;
     public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
+    private ArrayList<Integer> cuenta = new ArrayList<>();
     TextView tv, tvErrores;
     static AdaptadorEstudios adaptadorEstudios;
     Button btAlta, btDev, btRevert;
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        borrarTodo();
+        //borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -273,6 +274,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private ArrayList<Integer> getOcurrencia(ArrayList<Estudio> estudios) {
+        ArrayList<Integer> res = new ArrayList<>();
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            for (int i = 0; i < estudios.size(); i++) {
+                res.add(usdbh.getOcurrencia(db, estudios.get(i).getNombre()));
+            }
+
+            db.close();
+        }
+
+        return res;
+    }
+
+
     public void actualizarDatos() {
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -285,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                 listaEstudios.clear();
 
                 rellenarLista(db);
-
+                cuenta = getOcurrencia(listaEstudios);
                 db.close();
             }
         } catch (SQLiteDatabaseCorruptException ex){
@@ -315,108 +338,125 @@ public class MainActivity extends AppCompatActivity {
                 estudios.add(new Estudio("Tomar Café", "Registro de consumo diario de café", "☕", 0));
                 estudios.add(new Estudio("Ir al gimnasio", "Seguimiento de sesiones de entrenamiento", "\uD83C\uDFCB\uFE0F", 0));
                 estudios.add(new Estudio("Diario", "Registro personal diario", "\uD83D\uDCD4", 0));
-
-                // Insertar tipos de datos para "Tomar Café"
                 ArrayList<TipoDato>[] a = new ArrayList[estudios.size()];
                 ArrayList<TipoDato> tiposDato1 = new ArrayList<>();
-                tiposDato1.add(new TipoDato("Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
-                tiposDato1.add(new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
-                tiposDato1.add(new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
-                a[0] = tiposDato1;
-                // Tipos para "Ir al gimnasio"
-                ArrayList<TipoDato> tiposDato2 = new ArrayList<>();
-                tiposDato2.add(new TipoDato("Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
-                tiposDato2.add(new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
-                tiposDato2.add(new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
-                a[1] = tiposDato2;
-                // Tipos para "Diario"
-                ArrayList<TipoDato> tiposDato3 = new ArrayList<>();
-                tiposDato3.add(new TipoDato("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
-                tiposDato3.add(new TipoDato("Fecha", "Fecha", "Fecha del registro", "Diario"));
-                tiposDato3.add(new TipoDato("Evento destacado", "Texto", "Evento importante del día", "Diario"));
-                a[2] = tiposDato3;
 
-                // Insertar estudios
-                for (int i = 0; i < estudios.size(); i++) {
-                    usdbh.insertarEstudio(db, estudios.get(i));
+                Ocurrencia aux;
+                int esteEstudio=0, numOcurrencia=-1;
+                if(!usdbh.estudioExiste(db, "Tomar Café")){
+                    // Insertar tipos de datos para "Tomar Café"
+                    tiposDato1.add(new TipoDato("Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
+                    tiposDato1.add(new TipoDato("Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                    tiposDato1.add(new TipoDato("Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
+                    a[0] = tiposDato1;
 
-                    //Tipos de cada Estudio:
-                    ArrayList<TipoDato> aux = a[i];
-                    for (int j = 0; j < aux.size(); j++) {
-                        usdbh.insertarTipoDato(db, aux.get(j));
+                    usdbh.insertarEstudio(db, estudios.get(esteEstudio));
+                    ArrayList<TipoDato> tiposAux = a[esteEstudio];
+                    for (int j = 0; j < tiposAux.size(); j++) {
+                        usdbh.insertarTipoDato(db, tiposAux.get(j));
                     }
-                }
 
-                // Insertar ocurrencias para "Tomar Café"
-                Ocurrencia aux = new Ocurrencia(LocalDate.parse("2024-03-01"), "Tomar Café");
-                usdbh. insertarOcurrencia(db,aux);
+                    // Insertar ocurrencias para "Tomar Café"
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Tomar Café");
+                    usdbh. insertarOcurrencia(db,aux);
                     usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "2"));
                     usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-01T08:30:00"));
                     usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Espresso"));
 
-                aux = new Ocurrencia(LocalDate.parse("2024-03-02"), "Tomar Café");
-                usdbh. insertarOcurrencia(db, aux);
-                usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "1"));
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-02"), "Tomar Café");
+                    usdbh. insertarOcurrencia(db, aux);
+                    usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "1"));
                     usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-02T09:15:00"));
                     usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Latte"));
 
-                aux = new Ocurrencia(LocalDate.parse("2024-03-03"), "Tomar Café");
-                usdbh. insertarOcurrencia(db, aux);
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Tomar Café");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "3"));
                     usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-03"));
                     usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Americano"));
 
+                }
 
-                // Ocurrencias para "Ir al gimnasio"
-                aux = new Ocurrencia(LocalDate.parse("2024-03-01"), "Ir al gimnasio");
-                usdbh. insertarOcurrencia(db, aux);
+                esteEstudio=1;
+                numOcurrencia=-1;
+                if(!usdbh.estudioExiste(db, "Ir al gimnasio")){
+                    // Tipos para "Ir al gimnasio"
+                    ArrayList<TipoDato> tiposDato2 = new ArrayList<>();
+                    tiposDato2.add(new TipoDato("Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
+                    tiposDato2.add(new TipoDato("Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
+                    tiposDato2.add(new TipoDato("Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
+                    a[1] = tiposDato2;
+
+                    usdbh.insertarEstudio(db, estudios.get(esteEstudio));
+                    ArrayList<TipoDato> tiposAux = a[esteEstudio];
+                    for (int j = 0; j < tiposAux.size(); j++) {
+                        usdbh.insertarTipoDato(db, tiposAux.get(j));
+                    }
+                    // Ocurrencias para "Ir al gimnasio"
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Ir al gimnasio");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "60"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-01"));
                     usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Cardio"));
 
-                aux = new Ocurrencia(LocalDate.parse("2024-03-03"), "Ir al gimnasio");
-                usdbh. insertarOcurrencia(db, aux);
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Ir al gimnasio");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "45"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-03"));
                     usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Pesas"));
 
-                aux = new Ocurrencia(LocalDate.parse("2024-03-05"), "Ir al gimnasio");
-                usdbh. insertarOcurrencia(db, aux);
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-05"), "Ir al gimnasio");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "90"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-05"));
                     usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Yoga"));
+                }
 
+                esteEstudio=2;
+                numOcurrencia=-1;
+                if(!usdbh.estudioExiste(db, "Diario")){
+                    // Tipos para "Diario"
+                    ArrayList<TipoDato> tiposDato3 = new ArrayList<>();
+                    tiposDato3.add(new TipoDato("Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
+                    tiposDato3.add(new TipoDato("Fecha", "Fecha", "Fecha del registro", "Diario"));
+                    tiposDato3.add(new TipoDato("Evento destacado", "Texto", "Evento importante del día", "Diario"));
+                    a[2] = tiposDato3;
 
+                    usdbh.insertarEstudio(db, estudios.get(2));
+                    ArrayList<TipoDato> tiposAux = a[2];
+                    for (int j = 0; j < tiposAux.size(); j++) {
+                        usdbh.insertarTipoDato(db, tiposAux.get(j));
+                    }
 
-                // Ocurrencias para "Diario"
-                aux = new Ocurrencia(LocalDate.parse("2024-03-01"), "Diario");
-                usdbh. insertarOcurrencia(db, aux);
+                    // Ocurrencias para "Diario"
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Diario");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Feliz"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-01"));
                     usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Reunión con amigos"));
 
-
-                aux = new Ocurrencia(LocalDate.parse("2024-03-02"), "Diario");
-                usdbh. insertarOcurrencia(db, aux);
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-02"), "Diario");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Cansado"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-02"));
                     usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Trabajo intenso"));
 
-
-                aux = new Ocurrencia(LocalDate.parse("2024-03-03"), "Diario");
-                usdbh. insertarOcurrencia(db, aux);
+                    numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
+                    aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Diario");
+                    usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Relajado"));
                     usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-03"));
                     usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Día de descanso"));
+                }
 
-
-                // Insertar datos para "Tomar Café"
-
-                // Datos para "Ir al gimnasio"
-
-                // Datos para "Diario"
-
-                // Marcar la transacción como exitosa
             /*}catch (SQLiteException e){
                 tvErrores.setError(e.getMessage());*/
             }catch (Exception e) {

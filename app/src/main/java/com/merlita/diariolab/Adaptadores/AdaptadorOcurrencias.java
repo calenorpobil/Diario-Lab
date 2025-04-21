@@ -33,6 +33,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
     private AdaptadorOcurrencias.OnButtonClickListener listener;
 
 
+
     SQLiteDatabase db;
 
 

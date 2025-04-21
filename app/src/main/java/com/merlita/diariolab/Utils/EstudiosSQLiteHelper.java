@@ -1,8 +1,11 @@
 package com.merlita.diariolab.Utils;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
@@ -26,7 +29,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "DESCRIPCION VARCHAR(9), EMOJI TEXT, REPS INTEGER)";
     String sqlCreate1 = "CREATE TABLE OCURRENCIA(ID VARCHAR(4), FECHA DATETIME, FK_ESTUDIO_N VARCHAR(50), " +
             "CONSTRAINT  FK_OC_ES FOREIGN KEY (FK_ESTUDIO_N)  REFERENCES  ESTUDIO (NOMBRE), " +
-            "PRIMARY KEY (ID));";
+            "PRIMARY KEY (ID, FK_ESTUDIO_N));";
     String sqlCreate2 = "CREATE TABLE DATO (FK_TIPO_N VARCHAR(50), FK_TIPO_E VARCHAR(50), " +
             "ID_DATO INTEGER, "+
             "FK_OCURRENCIA VARCHAR(4), VALOR_TEXT TEXT, " +
@@ -88,6 +91,34 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return newRowId;
     }
 
+    public int getOcurrencia(SQLiteDatabase db, String fkEstudioN) {
+        int res=-1;
+
+        Cursor mCount= db.rawQuery("select count(*) from ocurrencia where fk_estudio_n = ?",
+                new String[]{fkEstudioN});
+        mCount.moveToFirst();
+        res = mCount.getInt(0);
+        mCount.close();
+
+        return res;
+    }
+
+    public boolean estudioExiste(SQLiteDatabase db, String estudio){
+        boolean res=false;
+
+        String sql = "SELECT nombre FROM estudio WHERE nombre = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{estudio});
+
+        while (c.moveToNext()){
+            String nombre =
+                    c.getString(0);
+            if (nombre!=null) res=true;
+        }
+        c.close();
+
+        return res;
+    }
+
     public long insertarOcurrencia(SQLiteDatabase db, Ocurrencia ocurrencia) throws SQLiteException{
         long newRowId = 0;
 
@@ -126,8 +157,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         ArrayList<Dato> datos = new ArrayList<>();
 
         String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
-                "valor_text FROM dato WHERE fk_ocurrencia = ?;";
-        Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia});
+                "valor_text FROM dato WHERE fk_ocurrencia = ? AND FK_TIPO_E = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia, nomEstudio});
 
         while (c.moveToNext()){
             datos.add(new Dato(
@@ -244,6 +275,24 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         res = db.delete("DATO_TIPO",
                 "FK_ESTUDIO = ?",
+                new String[]{fkEstudio});
+
+        return res;
+    }
+    public long borrarDatos_PorFK(SQLiteDatabase db, String fkEstudio) {
+        long res=-1;
+
+        res = db.delete("DATO",
+                "FK_TIPO_E = ?",
+                new String[]{fkEstudio});
+
+        return res;
+    }
+    public long borrarOcurrencia_PorFK(SQLiteDatabase db, String fkEstudio) {
+        long res=-1;
+
+        res = db.delete("OCURRENCIA",
+                "FK_ESTUDIO_N = ?",
                 new String[]{fkEstudio});
 
         return res;

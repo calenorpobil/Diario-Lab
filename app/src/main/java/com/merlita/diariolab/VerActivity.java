@@ -34,18 +34,23 @@ public class VerActivity extends AppCompatActivity
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     TextView tvTitulo;
-    Button btGuardar;
+    Button btGuardar, btConfirmar, btModificar;
     ArrayList<Ocurrencia> listaOcurrencias = new ArrayList<>();
     ArrayList<Dato> listaDatos = new ArrayList<>();
     ArrayList<TipoDato> listaTipos = new ArrayList<>();
     AdaptadorOcurrencias adaptadorOcurrencias;
     AdaptadorDatosVer adaptadorDatos;
     RecyclerView rvOcurrencias, rvDatos;
+    private String codOcurrencia;
     private LocalDate fechaOcurrencia;
     private int posicion;
     Estudio estudioOcurrencia;
     private String fk_estudio;
     private int reps = 1;
+    boolean enabled;
+
+
+
 
 
     private void toast(String e) {
@@ -71,6 +76,8 @@ public class VerActivity extends AppCompatActivity
         if(fk_estudio!=null){
             tvTitulo = findViewById(R.id.tvTitulo);
             btGuardar = findViewById(R.id.btnGuardar);
+            btModificar = findViewById(R.id.btModificar);
+            btConfirmar = findViewById(R.id.btConfirmar);
             rvOcurrencias = findViewById(R.id.rvOcurrencias);
             rvDatos = findViewById(R.id.rvDatos);
 
@@ -93,7 +100,7 @@ public class VerActivity extends AppCompatActivity
             adaptadorOcurrencias = new AdaptadorOcurrencias(
                     this, estudioOcurrencia, listaOcurrencias, this);
             adaptadorDatos = new AdaptadorDatosVer(
-                    this, listaDatos, this, listaTipos, this);
+                    this, listaDatos, this, listaTipos, this, false);
 
             //Invertir el orden de las Ocurrencias:
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -112,14 +119,15 @@ public class VerActivity extends AppCompatActivity
         actualizarListas();
 
 
-/*
-        btNuevoTipo.setOnClickListener(new View.OnClickListener() {
+        btModificar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                listaDatos.add(new Dato());
-                actualizarLocal();
+            public void onClick(View v) {
+                if(codOcurrencia!=null){
+                    verDatosOcurrencia(codOcurrencia, fk_estudio, true);
+                    enabled = !enabled;
+                }
             }
-        });*/
+        });
 
 
     }
@@ -212,12 +220,12 @@ public class VerActivity extends AppCompatActivity
     }
 
 
-    private void verDatosOcurrencia(String codOcurrencia, String nomEstudio) {
+    private void verDatosOcurrencia(String codOcurrencia, String nomEstudio, boolean enabled) {
         listaDatos = getDatos(codOcurrencia, nomEstudio);
         listaTipos = getTiposDato();
 
         adaptadorDatos = new AdaptadorDatosVer(
-                this, listaDatos, this, listaTipos, this);
+                this, listaDatos, this, listaTipos, this, enabled);
 
         rvDatos.setAdapter(adaptadorDatos);
 
@@ -316,14 +324,17 @@ public class VerActivity extends AppCompatActivity
         return correcto;
     }
 
-    //Click en Dato
-    @Override
-    public void onButtonClickDatos() {
-    }
 
-    //Click en Ocurrencia
+    // Click en Ocurrencia
     @Override
     public void onButtonClickOcurrencia(String codOcurrencia, String nomEstudio) {
-        verDatosOcurrencia(codOcurrencia, nomEstudio);
+        this.codOcurrencia = codOcurrencia;
+        verDatosOcurrencia(codOcurrencia, nomEstudio, false);
+    }
+
+    // Click en Datos
+    @Override
+    public void onButtonClickDatos() {
+
     }
 }

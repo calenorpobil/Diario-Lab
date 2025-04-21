@@ -93,8 +93,8 @@ public class Dato  implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeInt(id_dato);
-        parcel.writeString(fkTipoEstudio);
         parcel.writeString(fkTipoDato);
+        parcel.writeString(fkTipoEstudio);
         parcel.writeString(fkOcurrencia);
         parcel.writeString(valorText);
 

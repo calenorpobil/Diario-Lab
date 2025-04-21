@@ -258,11 +258,10 @@ public class OcurrenciaActivity extends AppCompatActivity
             //Valido campos obligatorios (según esquema SQL)
             try {
                 // Preparar todos los datos para enviar
-                Ocurrencia datosOcurrencia = new Ocurrencia(
+                int numOcurrencia = getOcurrencia();
+                Ocurrencia datosOcurrencia = new Ocurrencia(numOcurrencia,
                         fechaOcurrencia, fk_estudio);
                 listaDatos.get(0).setFkOcurrencia(datosOcurrencia.getCod());
-
-
 
                 i.putExtra("OCURRENCIA", datosOcurrencia);
                 i.putExtra("ESTUDIO", estudioActual);
@@ -276,6 +275,24 @@ public class OcurrenciaActivity extends AppCompatActivity
         }else{
             toast(error);
         }
+    }
+
+    private int getOcurrencia() {
+        int res=-1;
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res =usdbh.getOcurrencia(db, fk_estudio);
+
+            db.close();
+        }
+
+        return res;
     }
 
     public static String comprobaciones(TextView tvTitulo,

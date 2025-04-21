@@ -33,6 +33,8 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     private ArrayList<TipoDato> listaTipos;
     private ArrayList<Dato> listaDatos;
 
+    boolean enabled;
+
     public interface OnButtonClickListener {
         void onButtonClickDatos();
     }
@@ -42,6 +44,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     protected DatePickerListener listenerFecha;
 
     SQLiteDatabase db;
+
 
 
     public static class MiContenedor extends RecyclerView.ViewHolder
@@ -117,6 +120,11 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
             holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
 
+
+            holder.etNumero.setEnabled(enabled);
+            holder.etTexto.setEnabled(enabled);
+            holder.tvHora.setEnabled(enabled);
+
             switch (tipo.getTipoDato()){
                 case "Número": {
                     holder.tvHora.setVisibility(GONE);
@@ -124,7 +132,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.spTipo.setVisibility(GONE);
 
                     holder.etNumero.setText(dato.getValorText());
-                    holder.etNumero.setEnabled(false);
                     break;
                 }
                 case "Texto": {
@@ -133,7 +140,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.spTipo.setVisibility(GONE);
 
                     holder.etTexto.setText(dato.getValorText());
-                    holder.etTexto.setEnabled(false);
                     break;
                 }
                 case "Fecha": {
@@ -146,13 +152,11 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     String nombreTipo = "Escribe una fecha";
                     nombreTipo = tipo.getDescripcion();
                     holder.tvHora.setText(dato.getValorText());
-                    holder.tvHora.setEnabled(false);
 
                     break;
                 }
                 case "Hora": {
                     holder.tvHora.setText(dato.getValorText());
-                    holder.tvHora.setEnabled(false);
                     holder.etTexto.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
                     break;
@@ -220,6 +224,10 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         });
     }
 
+    public void enableEditTexts(){
+
+    }
+
     public void actualizarFecha(int position, int year, int month, int day) {
         Dato item = listaDatos.get(position);
         String fecha =  String.format("%02d/%02d/%d", day, month + 1, year);
@@ -237,13 +245,15 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     public AdaptadorDatosVer(Context context, ArrayList<Dato> lista,
                              AdaptadorDatosVer.OnButtonClickListener listener,
                              ArrayList<TipoDato> listaTipos,
-                             DatePickerListener listenerFecha) {
+                             DatePickerListener listenerFecha, boolean enabled) {
         super();
         this.context = context;
         this.listaDatos = lista;
         this.listener = listener;
         this.listenerFecha = listenerFecha;
         this.listaTipos = listaTipos;
+        this.enabled = enabled;
+
     }
 
     @Override
@@ -253,9 +263,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
     public ArrayList<Dato> getLista(){
         return listaDatos;
-    }
-    public AdaptadorDatosVer(@NonNull Context context) {
-        super();
     }
 
 

@@ -108,6 +108,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         holder.tvTitulo.setText(estudio.getNombre());
         holder.tvDescripcion.setText(estudio.getDescripcion());
         holder.tvEmoji.setText(estudio.getEmoji());
+        holder.tvCuenta.setText(getOcurrencia(estudio.getNombre())+"");
         holder.botones.setVisibility(GONE);
 
 
@@ -154,8 +155,11 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
                     db=usdbh.getWritableDatabase();
 
+                    String nombreEstudio = actual.getNombre();
                     if (usdbh.borrarEstudio(actual, db) != -1 &&
-                            usdbh.borrarTiposDatos_PorFK(db, actual.getNombre())!=-1) {
+                            usdbh.borrarTiposDatos_PorFK(db, nombreEstudio) != -1 &&
+                            usdbh.borrarDatos_PorFK(db, nombreEstudio) != -1 &&
+                            usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1) {
                         lista.remove(actual);
                         MainActivity.actualizarLocal();
 
@@ -202,6 +206,23 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
         });
     }
 
+    private int getOcurrencia(String estudios) {
+        int res = -1;
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(context,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getOcurrencia(db, estudios);
+
+            db.close();
+        }
+
+        return res;
+    }
 
 
     public  void onActivityResult(int requestCode, int resultCode, Intent data) {
