@@ -297,6 +297,16 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+
+    public long borrarocurrencia_PorID(SQLiteDatabase db, String cod) {
+        long res=-1;
+
+        res = db.delete("OCURRENCIA",
+                "ID = ?",
+                new String[]{cod});
+
+        return res;
+    }
     public long borrarOcurrencias() {
         long res=-1;
         SQLiteDatabase db = getWritableDatabase();

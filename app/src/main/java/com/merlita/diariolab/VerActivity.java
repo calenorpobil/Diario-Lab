@@ -5,11 +5,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -171,6 +173,46 @@ public class VerActivity extends AppCompatActivity
     private void actualizarLocal() {
         rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
         rvOcurrencias.setAdapter(adaptadorOcurrencias);
+    }
+
+
+    //MENU CONTEXTUAL
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item){
+        int position = item.getGroupId();
+        switch(item.getItemId())
+        {
+            case 121:
+                //MENU --> BORRAR
+                listaOcurrencias.remove(position);
+                adaptadorOcurrencias.notifyItemRemoved(position);
+                borrarOcurrencia();
+            case 122:
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private int borrarOcurrencia() {
+        int res = -1;
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                usdbh.borrarocurrencia_PorID(db, listaOcurrencias.get(posicion).getCod());
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+        rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
+        rvOcurrencias.setAdapter(adaptadorOcurrencias);
+
+        return res;
     }
 
 
