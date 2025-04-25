@@ -124,7 +124,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put("ID", ocurrencia.getCod());
-        values.put("FECHA", ocurrencia.getFecha().toString()); // DATETIME se convierte a String
+        values.put("FECHA", ocurrencia.getFecha().toString());  // DATETIME se convierte a String
         values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
 
         try{
@@ -298,12 +298,12 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public long borrarocurrencia_PorID(SQLiteDatabase db, String cod) {
-        long res=-1;
+    public int borrarocurrencia_PorID(SQLiteDatabase db, String cod, String fk_estudio_n) {
+        int res=-1;
 
         res = db.delete("OCURRENCIA",
-                "ID = ?",
-                new String[]{cod});
+                "id = ? AND FK_ESTUDIO_N = ?",
+                new String[]{cod, fk_estudio_n});
 
         return res;
     }

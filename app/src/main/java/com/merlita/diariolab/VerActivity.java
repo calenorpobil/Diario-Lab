@@ -184,16 +184,17 @@ public class VerActivity extends AppCompatActivity
         {
             case 121:
                 //MENU --> BORRAR
+                Ocurrencia oc = listaOcurrencias.get(position);
                 listaOcurrencias.remove(position);
                 adaptadorOcurrencias.notifyItemRemoved(position);
-                borrarOcurrencia();
+                borrarOcurrencia(oc);
             case 122:
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
-    private int borrarOcurrencia() {
+    private int borrarOcurrencia(Ocurrencia oc) {
         int res = -1;
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -202,15 +203,13 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                usdbh.borrarocurrencia_PorID(db, listaOcurrencias.get(posicion).getCod());
+                res = usdbh.borrarocurrencia_PorID(db, oc.getCod(), oc.getFkEstudioN());
 
                 db.close();
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
         }
-        rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
-        rvOcurrencias.setAdapter(adaptadorOcurrencias);
 
         return res;
     }
@@ -290,7 +289,7 @@ public class VerActivity extends AppCompatActivity
             index = c.getColumnIndex("ID");
             String id = c.getString(index);
 
-            Ocurrencia ver = new Ocurrencia(fecha, fk_estudio, id);
+            Ocurrencia ver = new Ocurrencia(id, fecha, estudioOcurrencia.getNombre());
 
             listaOcurrencias.add(ver);
 

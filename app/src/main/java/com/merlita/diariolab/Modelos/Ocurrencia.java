@@ -29,10 +29,10 @@ public class Ocurrencia implements Parcelable {
     }
 
 
-    public Ocurrencia(LocalDate fecha, String fkEstudio, String id) {
+    public Ocurrencia(String id, LocalDate fecha, String fkEstudio) {
         this.cod = id;
         this.fecha = fecha;
-        this.fkEstudioN = fkEstudioN;
+        this.fkEstudioN = fkEstudio;
     }
 
     public static final Creator<Ocurrencia> CREATOR = new Creator<Ocurrencia>() {
