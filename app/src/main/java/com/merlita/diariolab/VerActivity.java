@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 public class VerActivity extends AppCompatActivity
         implements AdaptadorDatosVer.OnButtonClickListener, AdaptadorDatosVer.DatePickerListener,
-        AdaptadorOcurrencias.OnButtonClickListener {
+        AdaptadorOcurrencias.OnButtonClickListener, AdaptadorTiposGrafico.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     TextView tvTitulo;
@@ -42,7 +42,10 @@ public class VerActivity extends AppCompatActivity
     ArrayList<TipoDato> listaTipos = new ArrayList<>();
     AdaptadorOcurrencias adaptadorOcurrencias;
     AdaptadorDatosVer adaptadorDatos;
-    RecyclerView rvOcurrencias, rvDatos;
+    AdaptadorGrafico adaptadorGrafico;
+    AdaptadorTiposGrafico adaptadorTipos;
+    //AdaptadorMedidas adaptadorMedidas;
+    RecyclerView rvOcurrencias, rvDatos, rvTipos, rvMedidas, rvGrafico;
     private String codOcurrencia;
     private LocalDate fechaOcurrencia;
     private int posicion;
@@ -82,9 +85,16 @@ public class VerActivity extends AppCompatActivity
             btConfirmar = findViewById(R.id.btConfirmar);
             rvOcurrencias = findViewById(R.id.rvOcurrencias);
             rvDatos = findViewById(R.id.rvDatos);
+            rvGrafico = findViewById(R.id.rvGrafico);
+            rvTipos = findViewById(R.id.rvTipos);
+            rvMedidas = findViewById(R.id.rvInfo);
 
-            rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
-            rvOcurrencias.setAdapter(adaptadorOcurrencias);
+
+            /*rvGrafico.setLayoutManager(new LinearLayoutManager(this));
+            rvOcurrencias.setAdapter(adaptadorGrafico);
+
+            rvMedidas.setLayoutManager(new LinearLayoutManager(this));
+            rvOcurrencias.setAdapter(adaptadorMedidas);*/
 
             tvTitulo.setText(estudioOcurrencia.getNombre());
 
@@ -103,6 +113,7 @@ public class VerActivity extends AppCompatActivity
                     this, estudioOcurrencia, listaOcurrencias, this);
             adaptadorDatos = new AdaptadorDatosVer(
                     this, listaDatos, this, listaTipos, this, false);
+            adaptadorTipos = new AdaptadorTiposGrafico(this, listaTipos, this);
 
             //Invertir el orden de las Ocurrencias:
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -111,6 +122,10 @@ public class VerActivity extends AppCompatActivity
             rvOcurrencias.setLayoutManager(linearLayoutManager);
             rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
             rvOcurrencias.setAdapter(adaptadorOcurrencias);
+
+            rvTipos.setLayoutManager(new LinearLayoutManager(this));
+            rvTipos.setAdapter(adaptadorTipos);
+
 
             actualizarRvDatos();
 
@@ -377,5 +392,10 @@ public class VerActivity extends AppCompatActivity
     @Override
     public void onButtonClickDatos() {
 
+    }
+
+    @Override
+    public void onButtonClickTipo() {
+        tvTitulo.setText(tvTitulo.getText()+"1");
     }
 }

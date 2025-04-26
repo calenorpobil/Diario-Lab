@@ -586,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return res;
     }
-    private long insertarOcurrencia(Ocurrencia ocurrencia){
+    private long insertarOcurrencia(Ocurrencia ocurrencia) throws SQLiteException {
         long res = 0;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -598,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
             values.put("FK_ESTUDIO_N", ocurrencia.getFkEstudioN());
             values.put("ID", ocurrencia.getCod());
 
-            res = db.insert("Ocurrencia", null,
+            res = db.insertOrThrow("Ocurrencia", null,
                     values);
 
 
@@ -832,7 +832,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if(!algoFallo){
-                        insertarOcurrencia(datosOcurrencia);
+                        long resOcurrencia = insertarOcurrencia(datosOcurrencia);
                         addRepsEstudio(datosEstudio);
                     } else {
                         borrarDatos(nuevosDatos);

@@ -288,12 +288,23 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+    public long borrarDatos_PorOcurrencia(SQLiteDatabase db, String fk_ocurrencia) {
+        long res=-1;
+
+        res = db.delete("DATO",
+                "FK_OCURRENCIA = ?",
+                new String[]{fk_ocurrencia});
+
+        return res;
+    }
     public long borrarOcurrencia_PorFK(SQLiteDatabase db, String fkEstudio) {
         long res=-1;
 
         res = db.delete("OCURRENCIA",
                 "FK_ESTUDIO_N = ?",
                 new String[]{fkEstudio});
+
+        borrarDatos_PorFK(db, fkEstudio);
 
         return res;
     }
@@ -304,6 +315,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         res = db.delete("OCURRENCIA",
                 "id = ? AND FK_ESTUDIO_N = ?",
                 new String[]{cod, fk_estudio_n});
+
+
+        borrarDatos_PorOcurrencia(db, cod);
 
         return res;
     }
