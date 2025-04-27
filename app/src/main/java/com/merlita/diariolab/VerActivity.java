@@ -104,13 +104,7 @@ public class VerActivity extends AppCompatActivity
             tvTitulo.setText(estudioOcurrencia.getNombre());
 
             listaTipos = getTiposDato();
-            for (int i = 0; i < listaTipos.size(); i++) {
-                listaDatos.add(new Dato(
-                        listaTipos.get(i),
-                        fk_estudio,
-                        "",
-                        ""));
-            }
+            listaDatos = getDatos(fk_estudio);
 
 
 
@@ -274,7 +268,7 @@ public class VerActivity extends AppCompatActivity
 
 
 
-    private ArrayList<Dato> getDatos(String codOcurrencia, String nomEstudio) {
+    private ArrayList<Dato> getDatosOcurrencia(String codOcurrencia, String nomEstudio) {
         ArrayList<Dato> datosResultado=null;
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -283,7 +277,28 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                datosResultado = usdbh.getDatos(db, codOcurrencia, nomEstudio);
+                datosResultado = usdbh.getDatosPorOcurrencia(db, codOcurrencia, nomEstudio);
+
+                db.close();
+            } catch (Exception ex){
+                toast("Juan");
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+        return datosResultado;
+    }
+
+    private ArrayList<Dato> getDatos(String nomEstudio) {
+        ArrayList<Dato> datosResultado=null;
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                datosResultado = usdbh.getDatos(db, nomEstudio);
 
                 db.close();
             } catch (Exception ex){
@@ -297,7 +312,7 @@ public class VerActivity extends AppCompatActivity
 
 
     private void verDatosOcurrencia(String codOcurrencia, String nomEstudio, boolean enabled) {
-        listaDatos = getDatos(codOcurrencia, nomEstudio);
+        listaDatos = getDatosOcurrencia(codOcurrencia, nomEstudio);
         listaTipos = getTiposDato();
 
         adaptadorDatos = new AdaptadorDatosVer(

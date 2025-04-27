@@ -1,14 +1,10 @@
 package com.merlita.diariolab.Utils;
 
-import static com.merlita.diariolab.MainActivity.DB_VERSION;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -18,7 +14,6 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -178,13 +173,34 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList<Dato> getDatos(SQLiteDatabase db, String fkOcurrencia, String nomEstudio) {
+    public ArrayList<Dato> getDatosPorOcurrencia(SQLiteDatabase db, String fkOcurrencia, String nomEstudio) {
 
         ArrayList<Dato> datos = new ArrayList<>();
 
         String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
                 "valor_text FROM dato WHERE fk_ocurrencia = ? AND FK_TIPO_E = ?;";
         Cursor c = db.rawQuery(sql, new String[]{fkOcurrencia, nomEstudio});
+
+        while (c.moveToNext()){
+            datos.add(new Dato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3)));
+        }
+        c.close();
+
+        return datos;
+    }
+
+
+    public ArrayList<Dato> getDatos(SQLiteDatabase db, String nomEstudio) {
+
+        ArrayList<Dato> datos = new ArrayList<>();
+
+        String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
+                "valor_text FROM dato WHERE FK_TIPO_E = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{nomEstudio});
 
         while (c.moveToNext()){
             datos.add(new Dato(

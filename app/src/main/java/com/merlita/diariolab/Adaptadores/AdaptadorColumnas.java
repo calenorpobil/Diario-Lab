@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,8 +67,8 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
         ArrayList<Dato> listaDatosUtiles = new ArrayList<>();
 
         //Solo mostrará la longitud de los datos de texto de momento:
-        int max = 0;
-        int longitud = 0;
+        Double max = 0.0;
+        Double longitud = 0.0;
         //for (int i = 0; i < listaDatos.size(); i++) {
         Dato dato = listaDatos.get(0);
         int index = listaTipos.indexOf(
@@ -79,16 +80,44 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
 
         if(listaDatosUtiles.size()>0){
             String texto = listaDatosUtiles.get(0).getValorText();
-            longitud = texto.length();
-            max = tipoCorrespondiente.getMaximaLongitud();
+            longitud = new Double(texto.length());
+            max = new Double(tipoCorrespondiente.getMaximaLongitud());
         }
 
         //}
 
+        View columna = holder.columnaDato;
 
+        double porcentaje = 1;
+        if(longitud !=0 && max !=0)
+            porcentaje = longitud/max;
 
-        holder.columnaDato.setLayoutParams(new ViewGroup.LayoutParams(1, longitud/max));
+        ViewGroup.LayoutParams params = columna.getLayoutParams();
+        int height = columna.getHeight();
+        int res = (int) (Math.round(height*porcentaje));
+        params.height = res;
+        columna.setLayoutParams(params);
 
+        double finalPorcentaje = porcentaje;
+        columna.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                /*
+                columna.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                columna.getMeasuredHeight();
+                ViewGroup.LayoutParams params = columna.getLayoutParams();
+                int height = columna.getRootView().getHeight();
+                int res = (int) (height* finalPorcentaje);
+                params.height = res;
+                columna.setLayoutParams(params);*/
+            }
+        });
+        holder.columnaDato.post(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
 
         holder.columnaDato.setOnClickListener(new View.OnClickListener() {
             @Override
