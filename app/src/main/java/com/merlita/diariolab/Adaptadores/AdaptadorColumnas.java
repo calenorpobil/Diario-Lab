@@ -1,10 +1,12 @@
 package com.merlita.diariolab.Adaptadores;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -70,7 +72,7 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
         Double max = 0.0;
         Double longitud = 0.0;
         //for (int i = 0; i < listaDatos.size(); i++) {
-        Dato dato = listaDatos.get(0);
+        Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
         int index = listaTipos.indexOf(
                 new TipoDato(dato.getFkTipoDato(), dato.getFkTipoEstudio()));
         TipoDato tipoCorrespondiente = listaTipos.get(index);
@@ -88,30 +90,33 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
 
         View columna = holder.columnaDato;
 
-        double porcentaje = 1;
+        double porcentaje;
         if(longitud !=0 && max !=0)
             porcentaje = longitud/max;
+        else {
+            porcentaje = 1;
+        }
 
         ViewGroup.LayoutParams params = columna.getLayoutParams();
         int height = columna.getHeight();
         int res = (int) (Math.round(height*porcentaje));
-        params.height = res;
         columna.setLayoutParams(params);
 
-        double finalPorcentaje = porcentaje;
-        columna.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                /*
-                columna.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                columna.getMeasuredHeight();
-                ViewGroup.LayoutParams params = columna.getLayoutParams();
-                int height = columna.getRootView().getHeight();
-                int res = (int) (height* finalPorcentaje);
-                params.height = res;
-                columna.setLayoutParams(params);*/
-            }
+        columna.post(() -> {
+            int alturaActual = columna.getHeight();
+
+            int alturaNueva = (int) (Math.floor(alturaActual *porcentaje));
+            int margenNuevo = (int) (Math.floor(alturaActual *(1-porcentaje)));
+            ViewGroup.LayoutParams existingLayoutParams = columna.getLayoutParams();
+            LinearLayout.LayoutParams newLayoutParams = new LinearLayout.LayoutParams(
+                    existingLayoutParams.width,
+                    alturaNueva);
+            newLayoutParams.height = alturaNueva;
+            newLayoutParams.topMargin = margenNuevo;
+            newLayoutParams.leftMargin = 16;
+            columna.setLayoutParams(newLayoutParams);
         });
+
         holder.columnaDato.post(new Runnable() {
             @Override
             public void run() {
