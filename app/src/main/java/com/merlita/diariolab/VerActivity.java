@@ -19,7 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorDatosVer;
 import com.merlita.diariolab.Adaptadores.AdaptadorEstudios;
+import com.merlita.diariolab.Adaptadores.AdaptadorColumnas;
+import com.merlita.diariolab.Adaptadores.AdaptadorMedidas;
 import com.merlita.diariolab.Adaptadores.AdaptadorOcurrencias;
+import com.merlita.diariolab.Adaptadores.AdaptadorTiposGrafico;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
@@ -32,7 +35,8 @@ import java.util.ArrayList;
 
 public class VerActivity extends AppCompatActivity
         implements AdaptadorDatosVer.OnButtonClickListener, AdaptadorDatosVer.DatePickerListener,
-        AdaptadorOcurrencias.OnButtonClickListener, AdaptadorTiposGrafico.OnButtonClickListener {
+        AdaptadorOcurrencias.OnButtonClickListener, AdaptadorTiposGrafico.OnButtonClickListener,
+        AdaptadorColumnas.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     TextView tvTitulo;
@@ -42,10 +46,11 @@ public class VerActivity extends AppCompatActivity
     ArrayList<TipoDato> listaTipos = new ArrayList<>();
     AdaptadorOcurrencias adaptadorOcurrencias;
     AdaptadorDatosVer adaptadorDatos;
-    AdaptadorGrafico adaptadorGrafico;
+    AdaptadorColumnas adaptadorColumnas;
+    AdaptadorMedidas adaptadorMedidas;
     AdaptadorTiposGrafico adaptadorTipos;
     //AdaptadorMedidas adaptadorMedidas;
-    RecyclerView rvOcurrencias, rvDatos, rvTipos, rvMedidas, rvGrafico;
+    RecyclerView rvOcurrencias, rvDatos, rvTipos, rvMedidas, rvColumnas;
     private String codOcurrencia;
     private LocalDate fechaOcurrencia;
     private int posicion;
@@ -85,7 +90,7 @@ public class VerActivity extends AppCompatActivity
             btConfirmar = findViewById(R.id.btConfirmar);
             rvOcurrencias = findViewById(R.id.rvOcurrencias);
             rvDatos = findViewById(R.id.rvDatos);
-            rvGrafico = findViewById(R.id.rvGrafico);
+            rvColumnas = findViewById(R.id.rvGrafico);
             rvTipos = findViewById(R.id.rvTipos);
             rvMedidas = findViewById(R.id.rvInfo);
 
@@ -101,7 +106,7 @@ public class VerActivity extends AppCompatActivity
             listaTipos = getTiposDato();
             for (int i = 0; i < listaTipos.size(); i++) {
                 listaDatos.add(new Dato(
-                        listaTipos.get(i).getTipoDato(),
+                        listaTipos.get(i),
                         fk_estudio,
                         "",
                         ""));
@@ -109,11 +114,17 @@ public class VerActivity extends AppCompatActivity
 
 
 
+
             adaptadorOcurrencias = new AdaptadorOcurrencias(
                     this, estudioOcurrencia, listaOcurrencias, this);
             adaptadorDatos = new AdaptadorDatosVer(
-                    this, listaDatos, this, listaTipos, this, false);
+                    this, listaDatos, this, listaTipos,
+                    this, false);
             adaptadorTipos = new AdaptadorTiposGrafico(this, listaTipos, this);
+            adaptadorColumnas = new AdaptadorColumnas(this,
+                    listaOcurrencias,
+                    listaDatos,
+                    listaTipos, this);
 
             //Invertir el orden de las Ocurrencias:
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -125,6 +136,11 @@ public class VerActivity extends AppCompatActivity
 
             rvTipos.setLayoutManager(new LinearLayoutManager(this));
             rvTipos.setAdapter(adaptadorTipos);
+
+            rvColumnas.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.HORIZONTAL,
+                    false));
+            rvColumnas.setAdapter(adaptadorColumnas);
 
 
             actualizarRvDatos();
@@ -231,6 +247,8 @@ public class VerActivity extends AppCompatActivity
 
 
     public void actualizarListas() {
+        int sizeOcurrencias = listaOcurrencias.size();
+        int added=0;
         try{
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this,
@@ -240,15 +258,17 @@ public class VerActivity extends AppCompatActivity
 
                 listaOcurrencias.clear();
 
-                rellenarLista(db);
+                added = rellenarLista(db);
 
                 db.close();
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
         }
-        rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
-        rvOcurrencias.setAdapter(adaptadorOcurrencias);
+        //rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
+        //rvOcurrencias.setAdapter(adaptadorOcurrencias);
+        adaptadorOcurrencias.notifyItemRangeChanged(sizeOcurrencias, added);
+        adaptadorColumnas.notifyItemRangeChanged(sizeOcurrencias, added);
 
     }
 
@@ -288,7 +308,8 @@ public class VerActivity extends AppCompatActivity
         //actualizarListas();
         actualizarRvDatos();
     }
-    private void rellenarLista(SQLiteDatabase db) {
+    private int rellenarLista(SQLiteDatabase db) {
+        int res = 0;
         LocalDate fecha=null;
 
 
@@ -297,6 +318,7 @@ public class VerActivity extends AppCompatActivity
                 new String[]{estudioOcurrencia.getNombre()});
 
         while (c.moveToNext()) {
+            res++;
             int index=0;
             index = c.getColumnIndex("FECHA");
             String par = c.getString(index);
@@ -315,6 +337,7 @@ public class VerActivity extends AppCompatActivity
         }
 
         c.close();
+        return res;
     }
 
 

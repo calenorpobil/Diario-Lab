@@ -78,4 +78,6 @@
     <string name="editarEmoji">🖍</string>
     <string name="modificar">Modificar</string>
     <string name="confirmar">Confirmar</string>
+    <string name="medida">Medida</string>
+    <string name="tipo">Tipo</string>
 </resources>

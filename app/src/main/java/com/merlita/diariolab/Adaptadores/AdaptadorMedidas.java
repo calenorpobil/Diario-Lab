@@ -1,4 +1,4 @@
-package com.merlita.diariolab;
+package com.merlita.diariolab.Adaptadores;
 
 import android.content.Context;
 import android.view.ContextMenu;
@@ -6,29 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.Adaptadores.AdaptadorOcurrencias;
-import com.merlita.diariolab.Modelos.Ocurrencia;
 import com.merlita.diariolab.Modelos.TipoDato;
+import com.merlita.diariolab.R;
 
 import java.util.ArrayList;
 
-public class AdaptadorTiposGrafico extends RecyclerView.Adapter<AdaptadorTiposGrafico.MiContenedor> {
-
+public class AdaptadorMedidas extends RecyclerView.Adapter<AdaptadorMedidas.MiContenedor> {
 
     private Context context;
     private ArrayList<TipoDato> listaTiposDato;
-    private AdaptadorTiposGrafico.OnButtonClickListener listener;
+    private AdaptadorMedidas.OnButtonClickListener listener;
 
 
-    public AdaptadorTiposGrafico(Context context,
+    public AdaptadorMedidas(Context context,
                                  ArrayList<TipoDato> listaTiposDato,
-                                 OnButtonClickListener listener){
+                                 AdaptadorMedidas.OnButtonClickListener listener){
         this.context = context;
         this.listaTiposDato = listaTiposDato;
         this.listener = listener;
@@ -59,17 +55,17 @@ public class AdaptadorTiposGrafico extends RecyclerView.Adapter<AdaptadorTiposGr
 
     @NonNull
     @Override
-    public AdaptadorTiposGrafico.MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdaptadorMedidas.MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflador.inflate(R.layout.fila_tipos_grafico, parent, false);
 
 
-        return new AdaptadorTiposGrafico.MiContenedor(v);
+        return new AdaptadorMedidas.MiContenedor(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdaptadorTiposGrafico.MiContenedor holder, int position) {
+    public void onBindViewHolder(@NonNull AdaptadorMedidas.MiContenedor holder, int position) {
         TipoDato tipoDato = listaTiposDato.get(holder.getAbsoluteAdapterPosition());
 
         holder.btTipo.setText(tipoDato.getNombre());
@@ -97,6 +93,5 @@ public class AdaptadorTiposGrafico extends RecyclerView.Adapter<AdaptadorTiposGr
     public interface OnButtonClickListener {
         void onButtonClickTipo();
     }
-
 
 }

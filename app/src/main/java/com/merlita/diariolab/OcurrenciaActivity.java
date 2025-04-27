@@ -86,7 +86,7 @@ public class OcurrenciaActivity extends AppCompatActivity
 
             for (int i = 0; i < listaTiposDato.size(); i++) {
                 listaDatos.add(new Dato(
-                        listaTiposDato.get(i).getTipoDato(),
+                        listaTiposDato.get(i),
                         fk_estudio,
                         idOcurrencia,
                         ""));

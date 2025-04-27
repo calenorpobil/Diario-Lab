@@ -5,11 +5,17 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class TipoDato implements Parcelable {
     private String nombre;       // VARCHAR(20)
     private String tipoDato;     // VARCHAR(20)
     private String descripcion;  // VARCHAR(100)
     private String fkEstudio;    // NVARCHAR(50)
+
+    //Variable auxiliar para medir las demás longitudes en el gráfico:
+    private static int maximaLongitud = 0;
 
     // Constructor
     public TipoDato(String nombre, String tipoDato, String descripcion, String fkEstudio) {
@@ -34,6 +40,16 @@ public class TipoDato implements Parcelable {
         this.fkEstudio = "";
     }
 
+    /**
+     * CONSTRUCTOR PARA BUSCAR
+     * @param fkTipoDato
+     * @param fkTipoEstudio
+     */
+    public TipoDato(String fkTipoDato, String fkTipoEstudio) {
+        this.nombre = fkTipoDato;
+        this.fkEstudio = fkTipoEstudio;
+    }
+
     // Getters y Setters
     public String getNombre() {
         return nombre;
@@ -47,6 +63,14 @@ public class TipoDato implements Parcelable {
         return tipoDato;
     }
 
+    public void setMaximaLongitud(int siguienteLongitud){
+        if(siguienteLongitud > this.maximaLongitud){
+            this.maximaLongitud = siguienteLongitud;
+        }
+    }
+    public int getMaximaLongitud(){
+        return maximaLongitud;
+    }
     public void setTipoDato(String tipoDato) {
         this.tipoDato = tipoDato;
     }
@@ -99,5 +123,17 @@ public class TipoDato implements Parcelable {
         parcel.writeString(tipoDato);
         parcel.writeString(descripcion);
         parcel.writeString(fkEstudio);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TipoDato tipoDato = (TipoDato) o;
+        return Objects.equals(nombre, tipoDato.nombre) && Objects.equals(fkEstudio, tipoDato.fkEstudio);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre, fkEstudio);
     }
 }

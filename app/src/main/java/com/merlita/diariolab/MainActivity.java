@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        //borrarTodo();
+        borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -360,23 +360,23 @@ public class MainActivity extends AppCompatActivity {
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Tomar Café");
                     usdbh. insertarOcurrencia(db,aux);
-                    usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "2"));
-                    usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-01T08:30:00"));
-                    usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Espresso"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "2"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-01T08:30:00"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Espresso"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-02"), "Tomar Café");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "1"));
-                    usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-02T09:15:00"));
-                    usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Latte"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "1"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-02T09:15:00"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Latte"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Tomar Café");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db, new Dato("Tazas", "Tomar Café", aux.getCod(), "3"));
-                    usdbh. insertarDato(db, new Dato("Hora", "Tomar Café", aux.getCod(), "2024-03-03"));
-                    usdbh. insertarDato(db, new Dato("Tipo de café", "Tomar Café", aux.getCod(), "Americano"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "3"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-03"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Americano"));
 
                 }
 
@@ -399,23 +399,23 @@ public class MainActivity extends AppCompatActivity {
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Ir al gimnasio");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "60"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-01"));
-                    usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Cardio"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(0), "Ir al gimnasio", aux.getCod(), "60"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(1), "Ir al gimnasio", aux.getCod(), "2024-03-01"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(2), "Ir al gimnasio", aux.getCod(), "Cardio"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Ir al gimnasio");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "45"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-03"));
-                    usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Pesas"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(0), "Ir al gimnasio", aux.getCod(), "45"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(1), "Ir al gimnasio", aux.getCod(), "2024-03-03"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(2), "Ir al gimnasio", aux.getCod(), "Pesas"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-05"), "Ir al gimnasio");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Duración", "Ir al gimnasio", aux.getCod(), "90"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Ir al gimnasio", aux.getCod(), "2024-03-05"));
-                    usdbh. insertarDato(db,new Dato("Actividad", "Ir al gimnasio", aux.getCod(), "Yoga"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(0), "Ir al gimnasio", aux.getCod(), "90"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(1), "Ir al gimnasio", aux.getCod(), "2024-03-05"));
+                    usdbh. insertarDato(db,new Dato(tiposDato2.get(2), "Ir al gimnasio", aux.getCod(), "Yoga"));
                 }
 
                 esteEstudio=2;
@@ -438,23 +438,23 @@ public class MainActivity extends AppCompatActivity {
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Diario");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Feliz"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-01"));
-                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Reunión con amigos"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(0), "Diario", aux.getCod(), "Feliz"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(1), "Diario", aux.getCod(), "2024-03-01"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(2), "Diario", aux.getCod(), "Reunión con amigos"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-02"), "Diario");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Cansado"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-02"));
-                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Trabajo intenso"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(0), "Diario", aux.getCod(), "Cansado"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(1), "Diario", aux.getCod(), "2024-03-02"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(2), "Diario", aux.getCod(), "Trabajo intenso"));
 
                     numOcurrencia = usdbh.getOcurrencia(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Diario");
                     usdbh. insertarOcurrencia(db, aux);
-                    usdbh. insertarDato(db,new Dato("Estado de ánimo", "Diario", aux.getCod(), "Relajado"));
-                    usdbh. insertarDato(db,new Dato("Fecha", "Diario", aux.getCod(), "2024-03-03"));
-                    usdbh. insertarDato(db,new Dato("Evento destacado", "Diario", aux.getCod(), "Día de descanso"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(0), "Diario", aux.getCod(), "Relajado"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(1), "Diario", aux.getCod(), "2024-03-03"));
+                    usdbh. insertarDato(db,new Dato(tiposDato3.get(2), "Diario", aux.getCod(), "Día de descanso"));
                 }
 
             /*}catch (SQLiteException e){

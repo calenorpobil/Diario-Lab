@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.merlita.diariolab.Modelos.TipoDato;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,10 +18,34 @@ public class Dato  implements Parcelable {
     private String fkOcurrencia; // DATETIME
     private String valorText;    // TEXT
 
-    // Constructor
-    public Dato(String fkTipoN, String fkTipoE, String fkOcurrencia, String valorText) {
+    /**
+     * CONSTRUCTOR PARA INSERTAR EN LA SQL
+     * @param tipoDato
+     * @param fkTipoE
+     * @param fkOcurrencia
+     * @param valorText
+     */
+    public Dato(TipoDato tipoDato, String fkTipoE, String fkOcurrencia, String valorText) {
         this.id_dato = id_dato+1;
-        this.fkTipoDato = fkTipoN;
+        this.fkTipoDato = tipoDato.getNombre();
+        this.fkTipoEstudio = fkTipoE;
+        this.fkOcurrencia = fkOcurrencia;
+        this.valorText = valorText;
+        int longitud = valorText.length();
+
+        tipoDato.setMaximaLongitud(longitud);
+    }
+
+    /**
+     * CONSTRUCTOR PARA LEER SÓLO
+     * @param tipoDato
+     * @param fkTipoE
+     * @param fkOcurrencia
+     * @param valorText
+     */
+    public Dato(String tipoDato, String fkTipoE, String fkOcurrencia, String valorText) {
+        this.id_dato = id_dato+1;
+        this.fkTipoDato = tipoDato;
         this.fkTipoEstudio = fkTipoE;
         this.fkOcurrencia = fkOcurrencia;
         this.valorText = valorText;

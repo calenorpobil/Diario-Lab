@@ -41,10 +41,17 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "PRIMARY KEY  (ID_DATO));";
     String sqlCreate3 = "CREATE TABLE DATO_TIPO (NOMBRE VARCHAR(20), TIPO_DATO  VARCHAR(20), " +
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
+            "FK_MAXLONG INTEGER, " +
+            "CONSTRAINT FK_MAX FOREIGN KEY (FK_MAXLONG) " +
+                "REFERENCES MAXLONG_TIPO(ID), "+
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
-            "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
+                "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
             "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha', 'Tipo')), " +
             "PRIMARY KEY (NOMBRE, FK_ESTUDIO));";
+
+    String sqlCreate4 = "CREATE TABLE MAXLONG_TIPO (LONG INTEGER, ID INTEGER);";
+    private static int idMax = 0;
+
 
     public long insertarEstudio(SQLiteDatabase db, Estudio est){
         long newRowId=0;
@@ -140,6 +147,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     public long insertarTipoDato(SQLiteDatabase db, TipoDato datoTipo)  {
         long newRowId = 0;
 
+        insertarMaxLong(db,
+                datoTipo.getMaximaLongitud());
+
         ContentValues values = new ContentValues();
         values.put("NOMBRE", datoTipo.getNombre());
         values.put("TIPO_DATO", datoTipo.getTipoDato());
@@ -148,8 +158,24 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         newRowId = db.insert("DATO_TIPO", null, values);
 
+
         return newRowId;
     }
+
+
+    public long insertarMaxLong(SQLiteDatabase db,
+                                int maxlong)  {
+        long newRowId = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("ID", ++idMax);
+        values.put("LONG", maxlong);
+
+        newRowId = db.insert("MAXLONG_TIPO", null, values);
+
+        return newRowId;
+    }
+
 
 
     public ArrayList<Dato> getDatos(SQLiteDatabase db, String fkOcurrencia, String nomEstudio) {
@@ -180,7 +206,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql, new String[]{fk_estudio});
 
         while(c.moveToNext()){
-            tipoDatoRes.add(new TipoDato(c.getString(0), c.getString(1), c.getString(2)));
+            tipoDatoRes.add(new TipoDato(c.getString(0), c.getString(1), c.getString(2), fk_estudio));
         }
         c.close();
 
