@@ -29,6 +29,7 @@
         <activity android:name=".EstudioActivity"/>
         <activity android:name=".VerActivity"/>
         <activity android:name=".ElegirActivity"/>
+        <activity android:name=".AnalisisActivity"/>
     </application>
 
 </manifest>

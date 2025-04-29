@@ -23,10 +23,10 @@ import java.util.ArrayList;
 
 public class AnalisisActivity extends AppCompatActivity {
 
-    static RecyclerView vistaRecycler;
+    static RecyclerView rvAnalisis;
     public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
     static AdaptadorEstudiosElegir adaptadorEstudios;
-    Button btAnalizar;
+    Button btHome;
 
 
     private Uri selectedFileUri;
@@ -35,10 +35,10 @@ public class AnalisisActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_elegir);
+        setContentView(R.layout.activity_analisis);
 
-        btAnalizar = findViewById(R.id.btHome);
-        vistaRecycler = findViewById(R.id.rvEstudios);
+        btHome = findViewById(R.id.btHome);
+        rvAnalisis = findViewById(R.id.rvAnalisis);
         adaptadorEstudios = new AdaptadorEstudiosElegir(this, listaEstudios);
 
 
@@ -47,11 +47,11 @@ public class AnalisisActivity extends AppCompatActivity {
         lm.setOrientation(VERTICAL);
         lm.setReverseLayout(true);
 
-        vistaRecycler.setLayoutManager(lm);
-        vistaRecycler.setAdapter(adaptadorEstudios);
+        rvAnalisis.setLayoutManager(lm);
+        rvAnalisis.setAdapter(adaptadorEstudios);
         actualizarDatos();
 
-        btAnalizar.setOnClickListener(new View.OnClickListener(){
+        btHome.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
             }
@@ -59,7 +59,7 @@ public class AnalisisActivity extends AppCompatActivity {
     }
 
     public static void actualizarLocal(){
-        vistaRecycler.setAdapter(adaptadorEstudios);
+        rvAnalisis.setAdapter(adaptadorEstudios);
 
     }
 
@@ -101,8 +101,8 @@ public class AnalisisActivity extends AppCompatActivity {
             }
         } catch (SQLiteDatabaseCorruptException ex){
         }
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorEstudios);
+        rvAnalisis.setLayoutManager(new LinearLayoutManager(this));
+        rvAnalisis.setAdapter(adaptadorEstudios);
 
     }
 

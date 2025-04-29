@@ -52,7 +52,7 @@ public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstud
 
             main = (ConstraintLayout) itemView.findViewById(R.id.main);
 
-            tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio1);
+            tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio2);
             tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
             tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
             tvCheck = (TextView) itemView.findViewById(R.id.tvCheck);

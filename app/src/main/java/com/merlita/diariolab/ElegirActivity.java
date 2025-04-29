@@ -43,7 +43,7 @@ public class ElegirActivity extends AppCompatActivity {
         setContentView(R.layout.activity_elegir);
 
         btAnalizar = findViewById(R.id.btHome);
-        vistaRecycler = findViewById(R.id.rvEstudios);
+        vistaRecycler = findViewById(R.id.rvAnalisis);
         adaptadorEstudios = new AdaptadorEstudiosElegir(this, listaEstudios);
 
 

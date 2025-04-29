@@ -65,7 +65,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
             main = (ConstraintLayout) itemView.findViewById(R.id.main);
             botones = (ConstraintLayout) itemView.findViewById(R.id.botones);
 
-            tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio1);
+            tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio2);
             tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
             tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
             tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);

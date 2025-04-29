@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/fondo_fila_analisis"
     android:layout_marginBottom="16dp"
     android:orientation="vertical">
 
@@ -17,6 +18,8 @@
             android:id="@+id/tvEmoji"
             android:layout_width="46dp"
             android:layout_height="43dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:contentDescription="@string/imagen"
             android:includeFontPadding="false"
             android:padding="0dp"
@@ -32,6 +35,8 @@
             android:id="@+id/tvEmoji2"
             android:layout_width="46dp"
             android:layout_height="43dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:contentDescription="@string/imagen"
             android:includeFontPadding="false"
             android:padding="0dp"
@@ -41,13 +46,13 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/tvEstudio1"
+            android:id="@+id/tvEstudio2"
             style="@style/TextColor1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:maxLines="2"
-            android:text="Primer Estudio"
+            android:text="Segundo Estudio"
             android:textAlignment="textStart"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -58,7 +63,7 @@
             app:layout_constraintTop_toTopOf="@+id/tvEmoji2" />
 
         <TextView
-            android:id="@+id/tvEstudio"
+            android:id="@+id/tvEstudio1"
             style="@style/TextColor1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

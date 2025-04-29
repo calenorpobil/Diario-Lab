@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //EdgeToEdge.enable(this);
 
-        tv = findViewById(R.id.tvEstudio1);
+        tv = findViewById(R.id.tvEstudio2);
         btAlta = findViewById(R.id.btAlta);
         btDev = findViewById(R.id.btCopia);
         btRevert = findViewById(R.id.btRevert);

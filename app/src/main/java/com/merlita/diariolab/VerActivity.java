@@ -90,13 +90,13 @@ public class VerActivity extends AppCompatActivity
         fk_estudio = estudioOcurrencia.getNombre();
 
         if(fk_estudio!=null){
-            tvTitulo = findViewById(R.id.tvEstudio1);
+            tvTitulo = findViewById(R.id.tvEstudio2);
             btGuardar = findViewById(R.id.btnGuardar);
             btModificar = findViewById(R.id.btModificar);
             btConfirmar = findViewById(R.id.btConfirmar);
             btAnalizar = findViewById(R.id.btHome);
             rvOcurrencias = findViewById(R.id.rvOcurrencias);
-            rvDatos = findViewById(R.id.rvEstudios);
+            rvDatos = findViewById(R.id.rvAnalisis);
             rvColumnas = findViewById(R.id.rvGrafico);
             rvTipos = findViewById(R.id.rvTipos);
             rvMedidas = findViewById(R.id.rvInfo);

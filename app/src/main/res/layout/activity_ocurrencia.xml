@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="@+id/tvTitulo3" />
 
     <TextView
-        android:id="@+id/tvEstudio1"
+        android:id="@+id/tvEstudio2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -63,7 +63,7 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEstudio1" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudio2" />
 
 
     <!-- Autor -->
@@ -104,7 +104,7 @@
         android:ems="10"
         android:hint="@string/fecha_de_la_ocurrencia"
         android:textSize="22sp"
-        app:layout_constraintStart_toStartOf="@+id/tvEstudio1"
+        app:layout_constraintStart_toStartOf="@+id/tvEstudio2"
         app:layout_constraintTop_toBottomOf="@+id/dividerTop" />
 
     <TextView
@@ -115,7 +115,7 @@
         android:text="@string/repeticiones"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@+id/tvFecha"
-        app:layout_constraintEnd_toEndOf="@+id/tvEstudio1"
+        app:layout_constraintEnd_toEndOf="@+id/tvEstudio2"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tvFecha"
         app:layout_constraintTop_toTopOf="@+id/tvFecha" />
