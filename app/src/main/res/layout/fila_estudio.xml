@@ -27,7 +27,7 @@
 
 
         <TextView
-            android:id="@+id/tvTitulo"
+            android:id="@+id/tvEstudio1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -54,11 +54,11 @@
             android:text="@string/desc_estudio"
             android:textAlignment="textStart"
             style="@style/TextColor1"
-            app:layout_constraintEnd_toEndOf="@+id/tvTitulo"
+            app:layout_constraintEnd_toEndOf="@+id/tvEstudio1"
             app:layout_constraintEnd_toStartOf="@+id/tvCuenta"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tvTitulo"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
+            app:layout_constraintStart_toStartOf="@+id/tvEstudio1"
+            app:layout_constraintTop_toBottomOf="@+id/tvEstudio1" />
 
 
         <TextView
@@ -68,11 +68,11 @@
             android:paddingEnd="16sp"
             android:text="@string/numOcurrencias"
             app:layout_constraintBottom_toBottomOf="@id/tvDescripcion"
-            app:layout_constraintEnd_toStartOf="@+id/btMas"
+            app:layout_constraintEnd_toStartOf="@+id/tvCheck"
             app:layout_constraintTop_toTopOf="@id/tvEmoji" />
 
         <Button
-            android:id="@+id/btMas"
+            android:id="@+id/tvCheck"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:background="@drawable/round_button"

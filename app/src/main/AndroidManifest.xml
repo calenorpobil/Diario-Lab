@@ -28,6 +28,7 @@
         <activity android:name=".OcurrenciaActivity"/>
         <activity android:name=".EstudioActivity"/>
         <activity android:name=".VerActivity"/>
+        <activity android:name=".ElegirActivity"/>
     </application>
 
 </manifest>

@@ -83,7 +83,7 @@ public class EditActivity extends AppCompatActivity
         String desc = upIntent.getString("DESCRIPCION");
         String emoji = upIntent.getString("EMOJI");
         posicion = upIntent.getInt("INDEX");
-        etTitulo = findViewById(R.id.tvTitulo);
+        etTitulo = findViewById(R.id.tvEstudio1);
         etEmoji = findViewById(R.id.etEmoji);
         etDescripcion = findViewById(R.id.etDescripcion);
         bt = findViewById(R.id.btnGuardar);

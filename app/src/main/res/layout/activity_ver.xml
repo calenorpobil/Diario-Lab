@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="@+id/tvTitulo3" />
 
     <TextView
-        android:id="@+id/tvTitulo"
+        android:id="@+id/tvEstudio1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -63,11 +63,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudio1" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvDatos"
+        android:id="@+id/rvEstudios"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -88,9 +88,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="136dp"
         android:text="@string/modificar"
-        app:layout_constraintStart_toStartOf="@+id/rvDatos"
+        app:layout_constraintStart_toStartOf="@+id/rvEstudios"
         app:layout_constraintTop_toBottomOf="@+id/dividerTop" />
 
     <Button
@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:text="@string/confirmar"
         app:layout_constraintBottom_toBottomOf="@+id/btModificar"
-        app:layout_constraintEnd_toEndOf="@+id/rvDatos"
+        app:layout_constraintEnd_toEndOf="@+id/rvEstudios"
         app:layout_constraintTop_toTopOf="@+id/btModificar" />
 
     <View
@@ -127,7 +127,7 @@
         app:layout_constraintBottom_toTopOf="@id/dividerDatos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dividerOcu"></androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@id/dividerOcu" />
 
 
     <View
@@ -150,8 +150,9 @@
         android:id="@+id/rvGrafico"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tvMes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/rvInfo"
@@ -162,7 +163,7 @@
         android:layout_width="90dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/rvGrafico"
+        app:layout_constraintBottom_toBottomOf="@+id/rvInfo"
         app:layout_constraintEnd_toStartOf="@+id/rvInfo"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -172,12 +173,42 @@
         android:id="@+id/rvInfo"
         android:layout_width="90dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/rvGrafico"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/btHome"
         app:layout_constraintEnd_toStartOf="@+id/rvGrafico"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/rvTipos"
         app:layout_constraintTop_toTopOf="@+id/rvGrafico" />
 
+    <TextView
+        android:id="@+id/tvAnyo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025"
+        app:layout_constraintBottom_toBottomOf="@+id/rvInfo"
+        app:layout_constraintEnd_toEndOf="@+id/rvGrafico"
+        app:layout_constraintStart_toStartOf="@+id/rvGrafico" />
+
+    <TextView
+        android:id="@+id/tvMes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Junio"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvAnyo"
+        app:layout_constraintEnd_toEndOf="@+id/rvGrafico"
+        app:layout_constraintStart_toStartOf="@+id/rvGrafico" />
+
+    <Button
+        android:id="@+id/btHome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/IconColor"
+        android:layout_marginBottom="24dp"
+        android:text="🌟 Analizar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/rvGrafico"
+        app:layout_constraintStart_toStartOf="@+id/rvTipos" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="@+id/tvTitulo3" />
 
     <EditText
-        android:id="@+id/tvTitulo"
+        android:id="@+id/tvEstudio1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -62,7 +62,7 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudio1" />
 
 
     <!-- Autor -->
@@ -85,7 +85,7 @@
         android:textSize="70sp"
         app:layout_constraintDimensionRatio="w,1:1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudio1" />
 
     <!-- CUENTA -->
 

@@ -1,5 +1,6 @@
 package com.merlita.diariolab;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,8 +44,9 @@ public class VerActivity extends AppCompatActivity
         AdaptadorColumnas.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
+    private Context context = this.getBaseContext();
     TextView tvTitulo;
-    Button btGuardar, btConfirmar, btModificar;
+    Button btGuardar, btConfirmar, btModificar, btAnalizar;
     ArrayList<Ocurrencia> listaOcurrencias = new ArrayList<>();
     ArrayList<Dato> listaDatos = new ArrayList<>();
     ArrayList<TipoDato> listaTipos = new ArrayList<>();
@@ -84,12 +90,13 @@ public class VerActivity extends AppCompatActivity
         fk_estudio = estudioOcurrencia.getNombre();
 
         if(fk_estudio!=null){
-            tvTitulo = findViewById(R.id.tvTitulo);
+            tvTitulo = findViewById(R.id.tvEstudio1);
             btGuardar = findViewById(R.id.btnGuardar);
             btModificar = findViewById(R.id.btModificar);
             btConfirmar = findViewById(R.id.btConfirmar);
+            btAnalizar = findViewById(R.id.btHome);
             rvOcurrencias = findViewById(R.id.rvOcurrencias);
-            rvDatos = findViewById(R.id.rvDatos);
+            rvDatos = findViewById(R.id.rvEstudios);
             rvColumnas = findViewById(R.id.rvGrafico);
             rvTipos = findViewById(R.id.rvTipos);
             rvMedidas = findViewById(R.id.rvInfo);
@@ -153,6 +160,18 @@ public class VerActivity extends AppCompatActivity
                     verDatosOcurrencia(codOcurrencia, fk_estudio, true);
                     enabled = !enabled;
                 }
+
+
+            }
+        });
+
+
+        btAnalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(VerActivity.this, ElegirActivity.class);
+                lanzadorAlta.launch(i);
+
             }
         });
 
@@ -416,6 +435,37 @@ public class VerActivity extends AppCompatActivity
             }
         }
         return correcto;
+    }
+
+    ActivityResultLauncher<Intent>
+            lanzadorAlta = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult resultado) {
+                    if(resultado.getResultCode()==RESULT_OK) {
+
+                    }else{
+                        //SIN DATOS
+                    }
+                }
+            });
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+
+            if (resultCode == RESULT_OK) {
+
+            }
+        } else if (requestCode == 2) {
+
+            if (resultCode == RESULT_OK) {
+
+            }
+        } else if (requestCode == 3) {
+        }
     }
 
 

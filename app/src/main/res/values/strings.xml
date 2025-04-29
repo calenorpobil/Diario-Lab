@@ -80,4 +80,6 @@
     <string name="confirmar">Confirmar</string>
     <string name="medida">Medida</string>
     <string name="tipo">Tipo</string>
+    <string name="numero_columna_grafico">99</string>
+    <string name="botonCheck">✔</string>
 </resources>

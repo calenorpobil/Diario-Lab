@@ -48,7 +48,7 @@ public class AltaActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alta);
 
-        etTitulo = findViewById(R.id.tvTitulo);
+        etTitulo = findViewById(R.id.tvEstudio1);
         etDescripcion = findViewById(R.id.etDescripcion);
         etEmoji = findViewById(R.id.etEmoji);
         btGuardar = findViewById(R.id.btnGuardar);
