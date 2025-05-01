@@ -67,7 +67,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
             tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio2);
             tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
-            tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji);
+            tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvCuenta = (TextView) itemView.findViewById(R.id.tvCuenta);
             btNuevaOcurrencia = (Button) itemView.findViewById(R.id.tvCheck);
             btBorrar = (Button) itemView.findViewById(R.id.btBorrar);

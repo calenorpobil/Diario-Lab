@@ -24,40 +24,43 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.MainActivity;
+import com.merlita.diariolab.Modelos.Analisis;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.R;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
-public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstudiosElegir.MiContenedor> {
+public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
 
     private Context context;
-    private ArrayList<Estudio> lista;
-
+    private Estudio estudio1, estudio2;
     SQLiteDatabase db;
     private final int DB_VERSION= MainActivity.DB_VERSION;
-
+    private ArrayList<Analisis> lista;
 
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
         ConstraintLayout main;
-        boolean visible = false;
-        TextView tvTitulo, tvDescripcion, tvEmoji, tvCheck;
+        TextView tvEstudio2, tvEstudio1, tvEmoji1, tvEmoji2;
+        RecyclerView rvEstuio1, rvEstudio2;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
             main = (ConstraintLayout) itemView.findViewById(R.id.main);
 
-            tvTitulo = (TextView) itemView.findViewById(R.id.tvEstudio2);
-            tvDescripcion = (TextView) itemView.findViewById(R.id.tvDescripcion);
-            tvEmoji = (TextView) itemView.findViewById(R.id.tvEmoji1);
-            tvCheck = (TextView) itemView.findViewById(R.id.tvCheck);
-            itemView.setOnCreateContextMenuListener(this);
+            tvEstudio2 = (TextView) itemView.findViewById(R.id.tvEstudio2);
+            tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
+            tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
+            tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);
+            rvEstudio2 = (RecyclerView) itemView.findViewById(R.id.rvSegundo);
+            rvEstuio1 = (RecyclerView) itemView.findViewById(R.id.rvPrimero);
 
+            itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -78,7 +81,7 @@ public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstud
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflador.inflate(R.layout.fila_estudios_elegir, parent, false);
+        View v = inflador.inflate(R.layout.fila_analisis, parent, false);
 
         return new MiContenedor(v);
     }
@@ -86,19 +89,18 @@ public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstud
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        int reverseIndex = lista.size() -1 -position;
-        Estudio estudio = lista.get(holder.getAbsoluteAdapterPosition());
-        holder.tvTitulo.setText(estudio.getNombre());
-        holder.tvDescripcion.setText(estudio.getDescripcion());
-        holder.tvEmoji.setText(estudio.getEmoji());
+        holder.tvEstudio2.setText(estudio2.getNombre());
+        holder.tvEmoji2.setText(estudio2.getEmoji());
+        holder.tvEstudio1.setText(estudio1.getNombre());
+        holder.tvEmoji1.setText(estudio1.getEmoji());
 
         holder.main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if((holder.tvCheck.getVisibility() == VISIBLE)){
-                    holder.tvCheck.setVisibility(INVISIBLE);
+                if((holder.tvEmoji2.getVisibility() == VISIBLE)){
+                    holder.tvEmoji2.setVisibility(INVISIBLE);
                 }else{
-                    holder.tvCheck.setVisibility(VISIBLE);
+                    holder.tvEmoji2.setVisibility(VISIBLE);
                 }
             }
         });
@@ -128,10 +130,15 @@ public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstud
     }
 
 
-    public AdaptadorEstudiosElegir(Context context, ArrayList<Estudio> lista) {
+    public AdaptadorAnalisis(Context context,
+                             Estudio estudio1,
+                             Estudio estudio2,
+                             ArrayList<Analisis> lista) {
         super();
         this.context = context;
         this.lista = lista;
+        this.estudio1 = estudio1;
+        this.estudio2 = estudio2;
     }
 
     @Override

@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.Adaptadores.AdaptadorEstudiosElegir;
+import com.merlita.diariolab.Adaptadores.AdaptadorAnalisis;
+import com.merlita.diariolab.Modelos.Analisis;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
@@ -24,8 +25,8 @@ import java.util.ArrayList;
 public class AnalisisActivity extends AppCompatActivity {
 
     static RecyclerView rvAnalisis;
-    public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
-    static AdaptadorEstudiosElegir adaptadorEstudios;
+    public static ArrayList<Analisis> listaAnalisis = new ArrayList<>();
+    private AdaptadorAnalisis adaptadorAnalisis;
     Button btHome;
 
 
@@ -39,7 +40,15 @@ public class AnalisisActivity extends AppCompatActivity {
 
         btHome = findViewById(R.id.btHome);
         rvAnalisis = findViewById(R.id.rvAnalisis);
-        adaptadorEstudios = new AdaptadorEstudiosElegir(this, listaEstudios);
+        listaAnalisis.add(new Analisis());
+        listaAnalisis.add(new Analisis());
+        listaAnalisis.add(new Analisis());
+        listaAnalisis.add(new Analisis());
+        listaAnalisis.add(new Analisis());
+        adaptadorAnalisis = new AdaptadorAnalisis(this,
+                new Estudio("estudio 1", "desc", "😙", 0),
+                new Estudio("estudio 2", "desc", "😲", 0),
+                listaAnalisis);
 
 
 
@@ -48,7 +57,7 @@ public class AnalisisActivity extends AppCompatActivity {
         lm.setReverseLayout(true);
 
         rvAnalisis.setLayoutManager(lm);
-        rvAnalisis.setAdapter(adaptadorEstudios);
+        rvAnalisis.setAdapter(adaptadorAnalisis);
         actualizarDatos();
 
         btHome.setOnClickListener(new View.OnClickListener(){
@@ -59,7 +68,7 @@ public class AnalisisActivity extends AppCompatActivity {
     }
 
     public static void actualizarLocal(){
-        rvAnalisis.setAdapter(adaptadorEstudios);
+        rvAnalisis.setAdapter(MainActivity.adaptadorEstudios);
 
     }
 
@@ -93,8 +102,7 @@ public class AnalisisActivity extends AppCompatActivity {
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                //usdbh.onUpgrade(db, 4, DB_VERSION);
-                listaEstudios.clear();
+                //listaAnalisis.clear();
 
                 rellenarLista(db);
                 db.close();
@@ -102,7 +110,7 @@ public class AnalisisActivity extends AppCompatActivity {
         } catch (SQLiteDatabaseCorruptException ex){
         }
         rvAnalisis.setLayoutManager(new LinearLayoutManager(this));
-        rvAnalisis.setAdapter(adaptadorEstudios);
+        rvAnalisis.setAdapter(adaptadorAnalisis);
 
     }
 
@@ -120,7 +128,7 @@ public class AnalisisActivity extends AppCompatActivity {
             String descripcion = c.getString(index);
             index = c.getColumnIndex("EMOJI");
             String emoji = c.getString(index);
-            listaEstudios.add(new Estudio(nombre, descripcion, emoji));
+            //listaAnalisis.add(new Estudio(nombre, descripcion, emoji));
         }
         c.close();
     }

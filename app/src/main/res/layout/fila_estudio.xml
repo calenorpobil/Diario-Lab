@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
-            android:id="@+id/tvEmoji"
+            android:id="@+id/tvEmoji1"
             android:layout_width="46dp"
             android:layout_height="43dp"
             android:contentDescription="@string/imagen"
@@ -40,7 +40,7 @@
             android:textStyle="bold"
             style="@style/TextColor1"
             app:layout_constraintEnd_toStartOf="@+id/tvCuenta"
-            app:layout_constraintStart_toEndOf="@id/tvEmoji"
+            app:layout_constraintStart_toEndOf="@id/tvEmoji1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -69,7 +69,7 @@
             android:text="@string/numOcurrencias"
             app:layout_constraintBottom_toBottomOf="@id/tvDescripcion"
             app:layout_constraintEnd_toStartOf="@+id/tvCheck"
-            app:layout_constraintTop_toTopOf="@id/tvEmoji" />
+            app:layout_constraintTop_toTopOf="@id/tvEmoji1" />
 
         <Button
             android:id="@+id/tvCheck"
@@ -82,7 +82,7 @@
             android:text="@string/MasBoton"
             android:textSize="20sp"
             app:iconPadding="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEmoji"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEmoji1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
