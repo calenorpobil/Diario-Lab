@@ -9,6 +9,7 @@ import com.merlita.diariolab.Modelos.TipoDato;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Dato  implements Parcelable {
 
@@ -55,6 +56,10 @@ public class Dato  implements Parcelable {
         setFkTipoDato(fkTipoN);
     }
 
+
+    public Dato(Ocurrencia ocurrencia) {
+        this.fkOcurrencia = ocurrencia.getCod();
+    }
 
 
     // Getters y Setters
@@ -123,6 +128,17 @@ public class Dato  implements Parcelable {
         parcel.writeString(fkTipoEstudio);
         parcel.writeString(fkOcurrencia);
         parcel.writeString(valorText);
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Dato dato = (Dato) o;
+        return Objects.equals(fkOcurrencia, dato.fkOcurrencia);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(fkOcurrencia);
     }
 }

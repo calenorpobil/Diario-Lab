@@ -40,15 +40,13 @@ public class AnalisisActivity extends AppCompatActivity {
 
         btHome = findViewById(R.id.btHome);
         rvAnalisis = findViewById(R.id.rvAnalisis);
-        listaAnalisis.add(new Analisis());
-        listaAnalisis.add(new Analisis());
-        listaAnalisis.add(new Analisis());
-        listaAnalisis.add(new Analisis());
-        listaAnalisis.add(new Analisis());
-        adaptadorAnalisis = new AdaptadorAnalisis(this,
+        listaAnalisis.add(new Analisis(this,
+                "Tomar Café",
+                "Tomar Café",
+                "Hora",
+                "Tipo de café"));
+        adaptadorAnalisis = new AdaptadorAnalisis(this, this,
                 listaAnalisis);
-
-
 
         LinearLayoutManager lm = new LinearLayoutManager(this);
         lm.setOrientation(VERTICAL);

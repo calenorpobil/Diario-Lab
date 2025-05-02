@@ -1,8 +1,6 @@
 package com.merlita.diariolab.Adaptadores;
 
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
-
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,15 +24,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Analisis;
+import com.merlita.diariolab.Modelos.CircleItem;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.R;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
 
+    private static final int GRID_SIZE = 5;
+    private final Activity activity;
     private Context context;
     private Estudio estudio1, estudio2;
     SQLiteDatabase db;
@@ -45,7 +48,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     {
         ConstraintLayout main;
         TextView tvEstudio2, tvEstudio1, tvEmoji1, tvEmoji2;
-        RecyclerView rvEstuio1, rvEstudio2;
+        GridView gvGrafico;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -56,8 +59,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
             tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);
-            rvEstudio2 = (RecyclerView) itemView.findViewById(R.id.rvSegundo);
-            rvEstuio1 = (RecyclerView) itemView.findViewById(R.id.rvPrimero);
+            gvGrafico = (GridView) itemView.findViewById(R.id.gvGrafico);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -88,19 +90,33 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
+        Analisis actual = lista.get(holder.getAbsoluteAdapterPosition());
+        Estudio estudio1 = actual.getEstudio1();
+        Estudio estudio2 = actual.getEstudio2();
         holder.tvEstudio2.setText(estudio2.getNombre());
         holder.tvEmoji2.setText(estudio2.getEmoji());
         holder.tvEstudio1.setText(estudio1.getNombre());
         holder.tvEmoji1.setText(estudio1.getEmoji());
 
+        holder.gvGrafico.setNumColumns(GRID_SIZE);
+        ArrayList<CircleItem> items = new ArrayList<>();
+        for (int y = 0; y < GRID_SIZE; y++) {
+            for (int x = 0; x < GRID_SIZE; x++) {
+                int diameter = 20 + (int)(Math.random() * 81); // 20-100
+                items.add(new CircleItem(diameter, x, y));
+            }
+        }
+        AdaptadorGridAnalisis adapter;
+        adapter = new AdaptadorGridAnalisis(activity, items);
+
+        holder.gvGrafico.setAdapter(adapter);
+
+
+
+
         holder.main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if((holder.tvEmoji2.getVisibility() == VISIBLE)){
-                    holder.tvEmoji2.setVisibility(INVISIBLE);
-                }else{
-                    holder.tvEmoji2.setVisibility(VISIBLE);
-                }
             }
         });
     }
@@ -129,9 +145,10 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     }
 
 
-    public AdaptadorAnalisis(Context context,
+    public AdaptadorAnalisis(Context context, Activity activity,
                              ArrayList<Analisis> lista) {
         super();
+        this.activity = activity;
         this.context = context;
         this.lista = lista;
     }

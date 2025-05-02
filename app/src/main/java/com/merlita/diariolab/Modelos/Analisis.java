@@ -1,35 +1,73 @@
 package com.merlita.diariolab.Modelos;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Analisis {
 
+    private Context context;
     private Estudio estudio1, estudio2;
     private TipoDato tipo1, tipo2;
     private ArrayList<Dato> datos1, datos2;
-    private ArrayList<ArrayList<Integer>> resuldatos;
+    private HashMap<Pareja<String, String>, Integer> resulDatos;
 
-    public Analisis(Estudio estudio1, Estudio estudio2,
-                    TipoDato tipo1, TipoDato tipo2) {
-        this.estudio1 = estudio1;
-        this.estudio2 = estudio2;
-        this.tipo1 = tipo1;
-        this.tipo2 = tipo2;
-        this.datos1 = recuperarDatos(tipo1);
-        this.datos2 = recuperarDatos(tipo2);
-        this.resuldatos = calcularResultados();
+    public Analisis(Context context, String estudio1, String estudio2,
+                    String tipo1, String tipo2) {
+        this.context = context;
+        this.estudio1 = recuperarEstudio(estudio1);
+        this.estudio2 = recuperarEstudio(estudio2);
+        this.tipo1 = recuperarTipo(estudio1, tipo1);
+        this.tipo2 = recuperarTipo(estudio2, tipo2);
+        this.datos1 = recuperarDatos(this.tipo1);
+        this.datos2 = recuperarDatos(this.tipo2);
+        this.resulDatos = calcularResultados();
+    }
+
+    private TipoDato recuperarTipo(String estudio, String nombreTipo) {
+        TipoDato res = null;
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(context,
+                            "DBEstudios", null,  MainActivity.DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getTipoDato(db, estudio, nombreTipo);
+
+            db.close();
+        }
+
+        return res;
+    }
+
+    private Estudio recuperarEstudio(String nombreEstudio) {
+        Estudio res = null;
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(context,
+                            "DBEstudios", null,  MainActivity.DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getEstudio(db, nombreEstudio);
+
+            db.close();
+        }
+
+        return res;
     }
 
     private ArrayList<Dato> recuperarDatos(TipoDato tipo) {
         ArrayList<Dato> res = new ArrayList<>();
 
         try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(null,
+                    new EstudiosSQLiteHelper(context,
                             "DBEstudios", null,  MainActivity.DB_VERSION);){
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
@@ -45,8 +83,8 @@ public class Analisis {
     }
 
 
-    private ArrayList<ArrayList<Integer>> calcularResultados() {
-        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+    private HashMap<Pareja<String, String>, Integer> calcularResultados() {
+        HashMap<Pareja<String, String>, Integer> res = new HashMap<>();
 
         //MISMO ESTUDIO
         if(estudio1.getNombre().equals(estudio2.getNombre())){
@@ -60,48 +98,52 @@ public class Analisis {
                 datos2 = aux;
             }
 
+            // CADA OCURRENCIA:
+            ArrayList<Pareja<String, String>> ocurrencias = new ArrayList<>();
+            HashMap<Pareja<String, String>, Integer> ocurrenciasC = new HashMap<>();
             for (int i = 0; i < datos2.size(); i++) {
+                Dato explorado = datos2.get(i);
+                Ocurrencia ocurrencia = getOcurrenciaDeDato(explorado.getFkOcurrencia());
+                // Busca el otro dato con la misma ocurrencia:
+                int index = datos1.indexOf(new Dato(ocurrencia));
+                Dato correspondiente = datos1.get(index);
 
-                String fecha = getFecha(datos2.get(0).getFkOcurrencia());
-
-
-
-
+                ocurrencias.add(new Pareja(explorado.getValorText(), correspondiente.getValorText()));
+                // Colocar un 0 o la cuenta
+                Pareja pareja = new Pareja(
+                        explorado.getValorText(),
+                        correspondiente.getValorText());
+                int cuenta = ocurrenciasC.getOrDefault(pareja,0)+1;
+                ocurrenciasC.put(
+                        new Pareja(explorado.getValorText(), correspondiente.getValorText()),
+                        cuenta);
             }
+            res = ocurrenciasC;
 
 
 
-
-
-
-
-            //DISTINTOS ESTUDIOS
+        // ESTUDIOS DISTINTOS
         }else{
-
-
-
-
 
         }
 
         return res;
     }
 
-    private String getFecha(String fkOcurrencia) {
-        String res="";
+    private Ocurrencia getOcurrenciaDeDato(String fkOcurrencia) {
+        Ocurrencia res;
 
 
         try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(null,
+                    new EstudiosSQLiteHelper(context,
                             "DBEstudios", null,  MainActivity.DB_VERSION);){
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            Ocurrencia aux = usdbh.getOcurrencia(db, estudio1.getNombre());
+            res = usdbh.getOcurrenciaPorId(db, fkOcurrencia);
 
             db.close();
         }
-
 
         return res;
     }
@@ -154,11 +196,11 @@ public class Analisis {
         this.datos2 = datos2;
     }
 
-    public ArrayList<ArrayList<Integer>> getResuldatos() {
-        return resuldatos;
+    public HashMap<Pareja<String, String>, Integer> getResulDatos() {
+        return resulDatos;
     }
 
-    public void setResuldatos(ArrayList<ArrayList<Integer>> resuldatos) {
-        this.resuldatos = resuldatos;
+    public void setResulDatos(HashMap<Pareja<String, String>, Integer> resulDatos) {
+        this.resulDatos = resulDatos;
     }
 }

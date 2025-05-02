@@ -17,7 +17,6 @@ import com.merlita.diariolab.Modelos.Ocurrencia;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-
 public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de Usuarios
@@ -105,6 +104,22 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+    public Estudio getEstudio(SQLiteDatabase db, String nombreEstudio) {
+        Estudio res=null;
+
+        Cursor c= db.rawQuery("select * from estudio where nombre = ?",
+                new String[]{nombreEstudio});
+        c.moveToFirst();
+        res = new Estudio(
+                c.getString(0),
+                c.getString(1),
+                c.getString(2),
+                c.getInt(3)
+        );
+        c.close();
+
+        return res;
+    }
     public Ocurrencia getOcurrencia(SQLiteDatabase db, String fkEstudioN) {
         Ocurrencia res=null;
 
@@ -115,6 +130,21 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
                 c.getString(0),
                 LocalDate.parse(c.getString(0)),
                 c.getString(0)
+        );
+        c.close();
+
+        return res;
+    }
+    public Ocurrencia getOcurrenciaPorId(SQLiteDatabase db, String id) {
+        Ocurrencia res=null;
+
+        Cursor c= db.rawQuery("select * from ocurrencia where id = ?",
+                new String[]{id});
+        c.moveToFirst();
+        res = new Ocurrencia(
+                c.getString(0),
+                LocalDate.parse(c.getString(1)),
+                c.getString(2)
         );
         c.close();
 
@@ -235,7 +265,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         ArrayList<Dato> datos = new ArrayList<>();
 
         String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
-                "valor_text FROM dato WHERE FK_TIPO_E = ? AND nombre = ?;";
+                "valor_text FROM dato WHERE FK_TIPO_E = ? AND fk_tipo_n = ?;";
         Cursor c = db.rawQuery(sql, new String[]{nomEstudio, nomTipo});
 
         while (c.moveToNext()){
@@ -251,6 +281,28 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     }
 
 
+    public TipoDato getTipoDato(SQLiteDatabase db,
+                                           String fkEstudio,
+                                           String nombreTipo){
+        long suc = 0;
+        TipoDato tipoDatoRes = null;
+
+        String sql = "SELECT nombre, tipo_dato, descripcion FROM dato_tipo WHERE " +
+                "fk_estudio = ? AND nombre = ?";
+
+        Cursor c = db.rawQuery(sql, new String[]{fkEstudio, nombreTipo});
+
+        while(c.moveToNext()){
+            tipoDatoRes = new TipoDato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    fkEstudio);
+        }
+        c.close();
+
+        return tipoDatoRes;
+    }
     public ArrayList<TipoDato> getTiposDato(SQLiteDatabase db, String fk_estudio){
         long suc = 0;
         ArrayList<TipoDato> tipoDatoRes = new ArrayList<>();

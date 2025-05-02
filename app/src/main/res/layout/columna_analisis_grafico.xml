@@ -9,7 +9,7 @@
     <View
         android:id="@+id/vwPunto"
         android:layout_width="12sp"
-        android:layout_height="wrap_content"
+        android:layout_height="12sp"
         android:background="@drawable/columna_drawable"
         android:visibility="visible">
     </View>

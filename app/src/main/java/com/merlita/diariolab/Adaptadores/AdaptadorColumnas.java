@@ -1,11 +1,9 @@
 package com.merlita.diariolab.Adaptadores;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -46,7 +44,7 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            columnaDato = (View) itemView.findViewById(R.id.vwColumna);
+            columnaDato = (View) itemView.findViewById(R.id.vwPunto);
         }
 
 
