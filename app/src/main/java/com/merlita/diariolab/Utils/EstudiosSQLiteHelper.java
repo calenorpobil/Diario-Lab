@@ -14,6 +14,7 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -93,7 +94,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return newRowId;
     }
 
-    public int getOcurrencia(SQLiteDatabase db, String fkEstudioN) {
+    public int getCuentaOcurrencias(SQLiteDatabase db, String fkEstudioN) {
         int res=-1;
 
         Cursor mCount= db.rawQuery("select count(*) from ocurrencia where fk_estudio_n = ?",
@@ -101,6 +102,21 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         mCount.moveToFirst();
         res = mCount.getInt(0);
         mCount.close();
+
+        return res;
+    }
+    public Ocurrencia getOcurrencia(SQLiteDatabase db, String fkEstudioN) {
+        Ocurrencia res=null;
+
+        Cursor c= db.rawQuery("select * from ocurrencia where fk_estudio_n = ?",
+                new String[]{fkEstudioN});
+        c.moveToFirst();
+        res = new Ocurrencia(
+                c.getString(0),
+                LocalDate.parse(c.getString(0)),
+                c.getString(0)
+        );
+        c.close();
 
         return res;
     }
@@ -213,6 +229,28 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return datos;
     }
+
+    public ArrayList<Dato> getDatosDeTipo(SQLiteDatabase db, String nomEstudio, String nomTipo) {
+
+        ArrayList<Dato> datos = new ArrayList<>();
+
+        String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
+                "valor_text FROM dato WHERE FK_TIPO_E = ? AND nombre = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{nomEstudio, nomTipo});
+
+        while (c.moveToNext()){
+            datos.add(new Dato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3)));
+        }
+        c.close();
+
+        return datos;
+    }
+
+
     public ArrayList<TipoDato> getTiposDato(SQLiteDatabase db, String fk_estudio){
         long suc = 0;
         ArrayList<TipoDato> tipoDatoRes = new ArrayList<>();

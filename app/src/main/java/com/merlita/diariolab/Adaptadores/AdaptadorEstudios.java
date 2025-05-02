@@ -162,7 +162,8 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                             usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1) {
                         lista.remove(actual);
                         MainActivity.actualizarLocal();
-
+                    }else{
+                        // BORRADO INCORRECTO
                     }
 
                 } catch (Exception e) {
@@ -216,7 +217,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            res = usdbh.getOcurrencia(db, estudios);
+            res = usdbh.getCuentaOcurrencias(db, estudios);
 
             db.close();
         }

@@ -114,7 +114,7 @@ public class AdaptadorEstudiosElegir extends RecyclerView.Adapter<AdaptadorEstud
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            res = usdbh.getOcurrencia(db, estudios);
+            res = usdbh.getCuentaOcurrencias(db, estudios);
 
             db.close();
         }

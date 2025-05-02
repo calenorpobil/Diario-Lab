@@ -84,7 +84,7 @@ public class ElegirActivity extends AppCompatActivity {
             db = usdbh.getWritableDatabase();
 
             for (int i = 0; i < estudios.size(); i++) {
-                res.add(usdbh.getOcurrencia(db, estudios.get(i).getNombre()));
+                res.add(usdbh.getCuentaOcurrencias(db, estudios.get(i).getNombre()));
             }
 
             db.close();

@@ -31,7 +31,6 @@ import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
 
@@ -116,7 +115,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            res = usdbh.getOcurrencia(db, estudios);
+            res = usdbh.getCuentaOcurrencias(db, estudios);
 
             db.close();
         }
@@ -131,14 +130,10 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
 
 
     public AdaptadorAnalisis(Context context,
-                             Estudio estudio1,
-                             Estudio estudio2,
                              ArrayList<Analisis> lista) {
         super();
         this.context = context;
         this.lista = lista;
-        this.estudio1 = estudio1;
-        this.estudio2 = estudio2;
     }
 
     @Override

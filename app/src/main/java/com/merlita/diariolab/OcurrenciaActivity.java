@@ -287,7 +287,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            res =usdbh.getOcurrencia(db, fk_estudio);
+            res =usdbh.getCuentaOcurrencias(db, fk_estudio);
 
             db.close();
         }

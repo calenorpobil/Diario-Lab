@@ -46,8 +46,6 @@ public class AnalisisActivity extends AppCompatActivity {
         listaAnalisis.add(new Analisis());
         listaAnalisis.add(new Analisis());
         adaptadorAnalisis = new AdaptadorAnalisis(this,
-                new Estudio("estudio 1", "desc", "😙", 0),
-                new Estudio("estudio 2", "desc", "😲", 0),
                 listaAnalisis);
 
 
@@ -84,7 +82,7 @@ public class AnalisisActivity extends AppCompatActivity {
             db = usdbh.getWritableDatabase();
 
             for (int i = 0; i < estudios.size(); i++) {
-                res.add(usdbh.getOcurrencia(db, estudios.get(i).getNombre()));
+                res.add(usdbh.getCuentaOcurrencias(db, estudios.get(i).getNombre()));
             }
 
             db.close();
