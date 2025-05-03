@@ -79,8 +79,8 @@
             app:layout_constraintStart_toEndOf="@id/tvEmoji1"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <GridView
-            android:id="@+id/gvGrafico"
+        <GridLayout
+            android:id="@+id/glGrafico"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

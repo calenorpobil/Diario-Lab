@@ -11,6 +11,10 @@ public class CircleItem {
         this.gridY = gridY;
     }
 
+    public CircleItem(int diameter) {
+        this.diameter = Math.max(10, Math.min(diameter, 100)); // Mínimo 10dp, máximo 100dp
+    }
+
     // Getters
     public int getDiameter() { return diameter; }
     public int getGridX() { return gridX; }

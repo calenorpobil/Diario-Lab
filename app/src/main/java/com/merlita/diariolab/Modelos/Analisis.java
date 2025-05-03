@@ -16,6 +16,9 @@ public class Analisis {
     private TipoDato tipo1, tipo2;
     private ArrayList<Dato> datos1, datos2;
     private HashMap<Pareja<String, String>, Integer> resulDatos;
+    private ArrayList<Pareja<String, String>> parejas = new ArrayList<>();
+    private String[] tiposFilas, tiposColumnas;
+    int repesMax=0, repesMin=0;
 
     public Analisis(Context context, String estudio1, String estudio2,
                     String tipo1, String tipo2) {
@@ -76,9 +79,6 @@ public class Analisis {
 
             db.close();
         }
-
-
-
         return res;
     }
 
@@ -114,9 +114,21 @@ public class Analisis {
                         explorado.getValorText(),
                         correspondiente.getValorText());
                 int cuenta = ocurrenciasC.getOrDefault(pareja,0)+1;
+                if (cuenta == 1) parejas.add(pareja);
                 ocurrenciasC.put(
                         new Pareja(explorado.getValorText(), correspondiente.getValorText()),
                         cuenta);
+
+                // MÁXIMAS Y MÍNIMAS REPETICIONES DEL ESTUDIO
+                if (repesMax == 0) {
+                    repesMax = cuenta;
+                    repesMin = cuenta;
+                }else{
+                    if(cuenta>repesMax) repesMax = cuenta;
+                    if(cuenta>repesMin) repesMin = cuenta;
+                }
+
+
             }
             res = ocurrenciasC;
 
@@ -150,6 +162,14 @@ public class Analisis {
 
     public Estudio getEstudio1() {
         return estudio1;
+    }
+
+    public ArrayList<Pareja<String, String>> getParejas() {
+        return parejas;
+    }
+
+    public void setParejas(ArrayList<Pareja<String, String>> parejas) {
+        this.parejas = parejas;
     }
 
     public void setEstudio1(Estudio estudio1) {

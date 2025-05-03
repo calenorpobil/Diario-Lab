@@ -6,14 +6,19 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.GridView;
+import android.widget.GridLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,12 +31,17 @@ import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Analisis;
 import com.merlita.diariolab.Modelos.CircleItem;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.Pareja;
 import com.merlita.diariolab.R;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
 
@@ -42,13 +52,16 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     SQLiteDatabase db;
     private final int DB_VERSION= MainActivity.DB_VERSION;
     private ArrayList<Analisis> lista;
+    private Point p;
+    int anchoPantalla, altoPantalla;
+    private ArrayList<CircleItem> colores = new ArrayList<>();
 
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
         ConstraintLayout main;
         TextView tvEstudio2, tvEstudio1, tvEmoji1, tvEmoji2;
-        GridView gvGrafico;
+        GridLayout glGrafico;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -59,7 +72,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
             tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);
-            gvGrafico = (GridView) itemView.findViewById(R.id.gvGrafico);
+            glGrafico = (GridLayout) itemView.findViewById(R.id.glGrafico);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -68,12 +81,66 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         public void onCreateContextMenu(ContextMenu contextMenu, View view,
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
-            contextMenu.add(getAdapterPosition(), 121, 0, "EDITAR");
-            contextMenu.add(getAdapterPosition(), 122, 1, "BORRAR");
+            contextMenu.add(getAbsoluteAdapterPosition(), 121, 0, "EDITAR");
+            contextMenu.add(getAbsoluteAdapterPosition(), 122, 1, "BORRAR");
         }
     }
 
 
+    //PONER VALORES
+    @Override
+    public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
+        Analisis actual = lista.get(holder.getAbsoluteAdapterPosition());
+        Estudio estudio1 = actual.getEstudio1();
+        Estudio estudio2 = actual.getEstudio2();
+        holder.tvEstudio2.setText(estudio2.getNombre());
+        holder.tvEmoji2.setText(estudio2.getEmoji());
+        holder.tvEstudio1.setText(estudio1.getNombre());
+        holder.tvEmoji1.setText(estudio1.getEmoji());
+
+        p = new Point();
+        Display pantallaDisplay = activity.getWindowManager().getDefaultDisplay();
+        pantallaDisplay.getSize(p);
+        anchoPantalla = p.x;
+        altoPantalla = p.y;
+        int filas = actual.getDatos1().size(), columnas = actual.getDatos2().size();
+        int[] ids = new int[columnas*filas];
+
+
+        ViewGroup.LayoutParams lp =
+                new ViewGroup.LayoutParams(
+                        anchoPantalla / columnas-200, altoPantalla / filas-1000);
+        holder.glGrafico.setRowCount(filas);
+        holder.glGrafico.setColumnCount(columnas);
+
+        HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
+        ArrayList<Pareja<String, String>> parejas = actual.getParejas();
+        for (int i = 0; i < filas * columnas; i++) {
+
+            TextView b = new TextView(this.context);
+
+            b.setLayoutParams(lp);
+            b.setBackgroundResource(R.drawable.circle_shape);
+
+            colores.add(new CircleItem(30));
+            //b.setSize(colores.get(i));
+            ids[i] = ViewGroup.generateViewId();
+            b.setText(i+"");
+            b.setTextSize(18);
+            b.setId(ids[i]);
+            holder.glGrafico.setUseDefaultMargins(false);
+            holder.glGrafico.addView(b);
+        }
+
+
+
+
+        holder.main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+    }
 
 
 
@@ -87,39 +154,6 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         return new MiContenedor(v);
     }
 
-    //PONER VALORES
-    @Override
-    public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Analisis actual = lista.get(holder.getAbsoluteAdapterPosition());
-        Estudio estudio1 = actual.getEstudio1();
-        Estudio estudio2 = actual.getEstudio2();
-        holder.tvEstudio2.setText(estudio2.getNombre());
-        holder.tvEmoji2.setText(estudio2.getEmoji());
-        holder.tvEstudio1.setText(estudio1.getNombre());
-        holder.tvEmoji1.setText(estudio1.getEmoji());
-
-        holder.gvGrafico.setNumColumns(GRID_SIZE);
-        ArrayList<CircleItem> items = new ArrayList<>();
-        for (int y = 0; y < GRID_SIZE; y++) {
-            for (int x = 0; x < GRID_SIZE; x++) {
-                int diameter = 20 + (int)(Math.random() * 81); // 20-100
-                items.add(new CircleItem(diameter, x, y));
-            }
-        }
-        AdaptadorGridAnalisis adapter;
-        adapter = new AdaptadorGridAnalisis(activity, items);
-
-        holder.gvGrafico.setAdapter(adapter);
-
-
-
-
-        holder.main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-    }
 
     private int getOcurrencia(String estudios) {
         int res = -1;
