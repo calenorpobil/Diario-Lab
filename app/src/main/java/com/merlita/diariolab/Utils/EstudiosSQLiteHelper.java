@@ -38,13 +38,17 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "DESCRIPCION  VARCHAR(100), FK_ESTUDIO NVARCHAR(50), " +
             "FK_MAXLONG INTEGER, " +
             "CONSTRAINT FK_MAX FOREIGN KEY (FK_MAXLONG) " +
-                "REFERENCES MAXLONG_TIPO(ID), "+
+            "REFERENCES MAXLONG_TIPO(ID), "+
             "CONSTRAINT FK_TI_ES FOREIGN KEY (FK_ESTUDIO) " +
-                "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
+            "REFERENCES ESTUDIO(NOMBRE), CONSTRAINT " +
             "CHK_TIPO CHECK (TIPO_DATO IN ('Número', 'Texto', 'Fecha', 'Tipo')), " +
             "PRIMARY KEY (NOMBRE, FK_ESTUDIO));";
+    String sqlCreate4 = "CREATE TABLE CUALITATIVO (TITULO VARCHAR(20), FK_TIPO_DATO_T  VARCHAR(20), " +
+            "FK_TIPO_DATO_E  VARCHAR(50), " +
+            "CONSTRAINT FK_TIPO FOREIGN KEY (FK_TIPO_DATO_T, FK_TIPO_DATO_E) " +
+            "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO),  "+
+            "PRIMARY KEY (NOMBRE, TIPO_DATO_T, TIPO_DATO_E));";
 
-    String sqlCreate4 = "CREATE TABLE MAXLONG_TIPO (LONG INTEGER, ID INTEGER);";
     private static int idMax = 0;
 
 
@@ -492,6 +496,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(sqlCreate1);
         db.execSQL(sqlCreate2);
         db.execSQL(sqlCreate3);
+        db.execSQL(sqlCreate4);
     }
 
 

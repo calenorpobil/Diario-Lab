@@ -118,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@+id/etEmoji" />
 
     <Button
-        android:id="@+id/btNuevoTipoDato"
+        android:id="@+id/btNuevoCualitativo"
         android:layout_width="50dp"
         android:layout_height="52dp"
         android:layout_marginTop="8dp"
@@ -144,7 +144,7 @@
         app:layout_constraintBottom_toTopOf="@id/btnGuardar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btNuevoTipoDato" />
+        app:layout_constraintTop_toBottomOf="@+id/btNuevoCualitativo" />
     <!-- Botón Guardar -->
     <Button
         android:id="@+id/btnGuardar"

@@ -88,7 +88,7 @@ public class EditActivity extends AppCompatActivity
         etDescripcion = findViewById(R.id.etDescripcion);
         bt = findViewById(R.id.btnGuardar);
         vistaRecycler = findViewById(R.id.recyclerTipos);
-        btNuevoTipo  = findViewById(R.id.btNuevoTipoDato);
+        btNuevoTipo  = findViewById(R.id.btNuevoCualitativo);
 
         // Poblar campos de texto
         etTitulo.setText(nombreEstudio);

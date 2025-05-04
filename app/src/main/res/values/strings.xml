@@ -5,6 +5,7 @@
         <item>Número</item>
         <item>Texto</item>
         <item>Fecha</item>
+        <item>Tipo</item>
     </string-array>
 
     <string-array name="idiomas">

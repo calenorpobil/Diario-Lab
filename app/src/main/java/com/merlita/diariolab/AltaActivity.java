@@ -31,7 +31,7 @@ public class AltaActivity extends AppCompatActivity
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
-    String[] ordenSpinner = {"Número", "Texto", "Fecha"};
+    String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
 
 
     private void toast(String e) {
@@ -54,7 +54,7 @@ public class AltaActivity extends AppCompatActivity
         btGuardar = findViewById(R.id.btnGuardar);
         vistaRecycler = findViewById(R.id.recyclerTipos);
 
-        btNuevoTipo = findViewById(R.id.btNuevoTipoDato);
+        btNuevoTipo = findViewById(R.id.btNuevoCualitativo);
         adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, this);
 
 
