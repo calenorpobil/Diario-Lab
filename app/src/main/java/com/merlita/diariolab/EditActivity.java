@@ -21,11 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class EditActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
@@ -36,13 +38,13 @@ public class EditActivity extends AppCompatActivity
     Button bt, btNuevoTipo;
     ArrayList<TipoDato>
             listaTiposDato  = new ArrayList<>();
+    private ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
     String nombreEstudio;
     int posicion=-1;
     private boolean primeraVez=true;
     int posicionEdicion;
-
 
 
     private void toast(String e) {
@@ -160,7 +162,22 @@ public class EditActivity extends AppCompatActivity
             String tipoDato = c.getString(index);
             index = c.getColumnIndex("DESCRIPCION");
             String descripcion = c.getString(index);
-            listaTiposDato.add(new TipoDato(nombre, tipoDato, descripcion));
+            TipoDato nuevo = new TipoDato(nombre, tipoDato, descripcion);
+            recuperarCualitativos(db, nuevo);
+            listaTiposDato.add(nuevo);
+        }
+
+        c.close();
+    }
+    private void recuperarCualitativos(SQLiteDatabase db, TipoDato nuevo) {
+        Cursor c = db.rawQuery("select * from CUALITATIVO " +
+                "where FK_TIPO_DATO_T = ? and FK_TIPO_DATO_E = ?", new
+                String[]{nuevo.getNombre(), nombreEstudio});
+
+        while (c.moveToNext()) {
+            int index = c.getColumnIndex("TITULO");
+            String titulo = c.getString(index);
+            nuevo.setCualitativo(new Cualitativo(titulo, nombreEstudio, nuevo.getNombre()));
         }
 
         c.close();
@@ -214,8 +231,8 @@ public class EditActivity extends AppCompatActivity
 
 
     @Override
-    public void onButtonClick(int position) {
-
+    public void onButtonClickNuevoCualitativo(Cualitativo nuevo) {
+        listaCualitativos.add(nuevo);
 
     }
 }

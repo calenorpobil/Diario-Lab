@@ -13,6 +13,7 @@ public class TipoDato implements Parcelable {
     private String tipoDato;     // VARCHAR(20)
     private String descripcion;  // VARCHAR(100)
     private String fkEstudio;    // NVARCHAR(50)
+    private Cualitativo cualitativo;
 
     //Variable auxiliar para medir las demás longitudes en el gráfico:
     private static int maximaLongitud = 0;
@@ -23,6 +24,15 @@ public class TipoDato implements Parcelable {
         this.tipoDato = tipoDato;
         this.descripcion = descripcion;
         this.fkEstudio = fkEstudio;
+    }
+    // Con cualitativo
+    public TipoDato(String nombre, String tipoDato, String descripcion,
+                    String fkEstudio, Cualitativo cualitativo) {
+        this.nombre = nombre;
+        this.tipoDato = tipoDato;
+        this.descripcion = descripcion;
+        this.fkEstudio = fkEstudio;
+        this.cualitativo = cualitativo;
     }
 
     public TipoDato() {
@@ -51,6 +61,14 @@ public class TipoDato implements Parcelable {
     }
 
     // Getters y Setters
+    public Cualitativo getCualitativo() {
+        return cualitativo;
+    }
+
+    public void setCualitativo(Cualitativo cualitativo) {
+        this.cualitativo = cualitativo;
+    }
+
     public String getNombre() {
         return nombre;
     }

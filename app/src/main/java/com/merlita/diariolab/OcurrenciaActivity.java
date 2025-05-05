@@ -125,14 +125,6 @@ public class OcurrenciaActivity extends AppCompatActivity
         }
 
 
-/*
-        btNuevoTipo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listaDatos.add(new Dato());
-                actualizarLocal();
-            }
-        });*/
 
 
     }

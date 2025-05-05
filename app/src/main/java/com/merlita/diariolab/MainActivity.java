@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorEstudios;
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public final static int DB_VERSION=12;
+    public final static int DB_VERSION=14;
 
 
 
@@ -619,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
                             "DBEstudios", null, DB_VERSION);) {
 
             SQLiteDatabase db = usdbh.getWritableDatabase();
-            res = usdbh. insertarTipoDato(db,tipoDato);
+            res = usdbh.insertarTipoDato(db,tipoDato);
         }
         return res;
     }
@@ -682,10 +683,15 @@ public class MainActivity extends AppCompatActivity {
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
             usdbh.borrarSQL();
-            usdbh.borrarDatos();
-            usdbh.borrarEstudios();
-            usdbh.borrarOcurrencias();
-            usdbh.borrarTipo_Datos();
+//            usdbh.borrarDatos();
+//            usdbh.borrarEstudios();
+//            usdbh.borrarOcurrencias();
+//            usdbh.borrarTipo_Datos();
+//            usdbh.borrarCualitativos();
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            usdbh.onCreate(db);
 
         }
     }
@@ -705,11 +711,12 @@ public class MainActivity extends AppCompatActivity {
 
                         Intent data = resultado.getData();
                         assert data != null;
-                        //RECOGER DATOS:
+                        // RECOGER DATOS:
                         ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
                         ArrayList<TipoDato> tiposDato = data.getParcelableArrayListExtra("TIPOSDATO");
+                        ArrayList<Cualitativo> cualitativos = data.getParcelableArrayListExtra("CUALITATIVOS");
 
-                        //INSERTAR EL ESTUDIO:
+                        // INSERTAR EL ESTUDIO:
                         if(datosEstudio != null && tiposDato!=null){
                             Estudio nuevoEstudio = new Estudio(
                                     datosEstudio.get(0),
@@ -717,11 +724,18 @@ public class MainActivity extends AppCompatActivity {
                                     datosEstudio.get(2));
                             listaEstudios.add(nuevoEstudio);
                             if(insertarEstudio(nuevoEstudio)!=-1){
-                                //INSERTAR LOS TIPOS DE DATO:
+                                // INSERTAR LOS TIPOS DE DATO:
                                 for (int i = 0; i < tiposDato.size(); i++) {
-                                    //PONER LA FORÁNEA A LOS TIPOS DE DATO:
+                                    // PONER LA FORÁNEA A LOS TIPOS DE DATO:
                                     TipoDato tipoNuevo = tiposDato.get(i);
                                     tipoNuevo.setFkEstudio(nuevoEstudio.getNombre());
+                                    for (int j = 0; j < cualitativos.size(); j++) {
+                                        Cualitativo check = cualitativos.get(j);
+                                        if(check.
+                                                getFk_dato_tipo_t().equals(tipoNuevo.getNombre())){
+                                            tipoNuevo.setCualitativo(check);
+                                        }
+                                    }
                                     //INSERTAR
                                     insertarTipoDato(tiposDato.get(i));
                                 }

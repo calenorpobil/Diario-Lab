@@ -3,6 +3,8 @@ package com.merlita.diariolab.Adaptadores;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.Editable;
@@ -39,10 +41,10 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
 
     public interface OnButtonClickListener {
-        void onButtonClick(int position);
+        void onButtonClickNuevoCualitativo(Cualitativo nuevo);
     }
+    private AdaptadorTiposDato.OnButtonClickListener listener;
 
-    private OnButtonClickListener listener;
     Estudio estudioFila;
 
 
@@ -73,15 +75,16 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             itemView.setOnCreateContextMenuListener(this);
         }
 
+
+
+
+
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view,
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
-            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "BORRAR");
+            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "Borrar Tipo de Dato");
         }
-
-
-
 
 
     }
@@ -127,12 +130,17 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int tamaño = adapter.getCount()-1;
+                int tamanyo = adapter.getCount()-1;
 
-                if(position == tamaño){
+                if(position == tamanyo){
                     if(visible){
                         holder.segundo.setVisibility(GONE);
-                    }else holder.segundo.setVisibility(VISIBLE);
+                    // MOSTRAR LOS CUALITATIVOS
+                    }else {
+                        holder.segundo.setVisibility(VISIBLE);
+                        String nombre = context.getPackageName();
+                        listaCualitativo = getCualitativos(tipoDato.getFkEstudio(), tipoDato.getNombre());
+                    }
                 }else{
                     holder.segundo.setVisibility(GONE);
                 }
@@ -151,8 +159,11 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             @Override
             public void onClick(View v) {
                 Cualitativo nuevo = new Cualitativo();
+                nuevo.setFk_dato_tipo_t(tipoDato.getNombre());
+                nuevo.setFk_dato_tipo_e(tipoDato.getFkEstudio());
                 listaCualitativo.add(nuevo);
-                notifyItemInserted(0);
+                adaptadorCualitativo.notifyItemInserted(0);
+                listener.onButtonClickNuevoCualitativo(nuevo);
             }
         });
 
@@ -183,6 +194,19 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         });
     }
 
+    private ArrayList<Cualitativo> getCualitativos(String fk_estudio, String fk_tipo) {
+        ArrayList<Cualitativo> res = new ArrayList<>();
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this.context,
+                            "DBEstudios", null, DB_VERSION);){
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+        }
+
+        return res;
+    }
 
 
     public AdaptadorTiposDato(Context context, ArrayList<TipoDato> lista,
@@ -216,22 +240,6 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             }
         }
     }
-
-
-    private long editarSQL(Estudio nuevo, int nuevaCuenta){
-        long res=-1;
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this.context,
-                            "DBEstudios", null, 1);){
-            db = usdbh.getWritableDatabase();
-
-            res = usdbh.editarSQL(db, nuevo, nuevaCuenta);
-
-
-        }
-        return res;
-    }
-
 
 
     public AdaptadorTiposDato(@NonNull Context context) {

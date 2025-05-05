@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
@@ -47,7 +48,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "FK_TIPO_DATO_E  VARCHAR(50), " +
             "CONSTRAINT FK_TIPO FOREIGN KEY (FK_TIPO_DATO_T, FK_TIPO_DATO_E) " +
             "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO),  "+
-            "PRIMARY KEY (NOMBRE, TIPO_DATO_T, TIPO_DATO_E));";
+            "PRIMARY KEY (TITULO, FK_TIPO_DATO_T, FK_TIPO_DATO_E));";
 
     private static int idMax = 0;
 
@@ -203,6 +204,26 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         newRowId = db.insert("DATO_TIPO", null, values);
 
+        Cualitativo posible = datoTipo.getCualitativo();
+        if(posible!=null) insertarCualitativo(db, posible);
+
+        return newRowId;
+    }
+    public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
+        long newRowId = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("TITULO", cualitativo.getTitulo());
+        values.put("FK_TIPO_DATO_T", cualitativo.getFk_dato_tipo_t());
+        values.put("FK_TIPO_DATO_E", cualitativo.getFk_dato_tipo_e());
+
+        try{
+            newRowId = db.insertOrThrow("CUALITATIVO", null, values);
+        } catch (SQLiteException ex){
+            String a = ex.getMessage();
+            System.out.println(a);
+        }
+
 
         return newRowId;
     }
@@ -237,6 +258,26 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
                     c.getString(1),
                     c.getString(2),
                     c.getString(3)));
+        }
+        c.close();
+
+        return datos;
+    }
+
+    public ArrayList<Cualitativo> getCualitativos(
+            SQLiteDatabase db, String fk_estudio, String fk_tipo) {
+
+        ArrayList<Cualitativo> datos = new ArrayList<>();
+
+        String sql = "SELECT titulo, fk_tipo_dato_e, fk_tipo_dato_t " +
+                "FROM cualitativo WHERE fk_tipo_dato_t = ? AND fk_tipo_dato_e = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{fk_tipo, fk_estudio});
+
+        while (c.moveToNext()){
+            datos.add(new Cualitativo(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2)));
         }
         c.close();
 
@@ -369,7 +410,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS OCURRENCIA");
         db.execSQL("DROP TABLE IF EXISTS DATO_TIPO");
         db.execSQL("DROP TABLE IF EXISTS DATO");
-        onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS CUALITATIVO");
 
         db.close();
     }
@@ -462,6 +503,16 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         res = db.delete("OCURRENCIA",
+                null, null);
+
+        db.close();
+        return res;
+    }
+    public long borrarCualitativos() {
+        long res=-1;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("CUALITATIVO",
                 null, null);
 
         db.close();

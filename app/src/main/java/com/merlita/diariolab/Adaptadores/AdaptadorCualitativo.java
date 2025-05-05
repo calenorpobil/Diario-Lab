@@ -33,15 +33,7 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
 
     private Context context;
     private ArrayList<Cualitativo> lista;
-
-    public interface OnButtonClickListener {
-        void onButtonClick(int position);
-    }
-
-
     SQLiteDatabase db;
-
-
 
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -52,7 +44,7 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            etTitulo = (EditText) itemView.findViewById(R.id.etNombre);
+            etTitulo = (EditText) itemView.findViewById(R.id.etNombreCualitativo);
             tvCualitativo = (TextView) itemView.findViewById(R.id.tvCualitativo);
 
             itemView.setOnCreateContextMenuListener(this);
@@ -62,10 +54,11 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
         public void onCreateContextMenu(ContextMenu contextMenu, View view,
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
-            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "BORRAR");
+            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "Borrar el tipo");
         }
 
     }
+
 
 
     @NonNull
@@ -83,8 +76,20 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Cualitativo cualitativo = lista.get(holder.getAbsoluteAdapterPosition());
 
-        String texto = "Tipo "+(holder.getAbsoluteAdapterPosition()+1)+": ";
+        String texto = "Tipo "+(getItemCount())+": ";
         holder.tvCualitativo.setText(texto);
+
+        holder.etTitulo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                lista.get(holder.getAbsoluteAdapterPosition()).setTitulo(s.toString());
+            }
+            // ... (métodos onTextChanged y beforeTextChanged vacíos)
+        });
 
     }
 
@@ -105,40 +110,6 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
     }
 
 
-    private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.context,
-                arrayResId, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        if (value != null) {
-            int position = adapter.getPosition(value);
-            if (position >= 0) {
-                spinner.setSelection(position);
-            }
-        }
-    }
-
-
-    private long editarSQL(Estudio nuevo, int nuevaCuenta){
-        long res=-1;
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this.context,
-                            "DBEstudios", null, 1);){
-            db = usdbh.getWritableDatabase();
-
-            res = usdbh.editarSQL(db, nuevo, nuevaCuenta);
-
-
-        }
-        return res;
-    }
-
-
-
-    public AdaptadorCualitativo(@NonNull Context context) {
-        super();
-    }
 
 
 }

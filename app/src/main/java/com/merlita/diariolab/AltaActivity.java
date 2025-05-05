@@ -16,7 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Adaptadores.AdaptadorCualitativo;
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
@@ -29,6 +31,7 @@ public class AltaActivity extends AppCompatActivity
     EditText etTitulo, etDescripcion, etEmoji;
     Button btGuardar, btNuevoTipo;
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
+    ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView vistaRecycler;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
@@ -57,7 +60,6 @@ public class AltaActivity extends AppCompatActivity
         btNuevoTipo = findViewById(R.id.btNuevoCualitativo);
         adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, this);
 
-
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorTiposDato);
 
@@ -80,76 +82,6 @@ public class AltaActivity extends AppCompatActivity
         vistaRecycler.setAdapter(adaptadorTiposDato);
     }
 
-    private void insertarInicial() {
-        try (EstudiosSQLiteHelper usdbh =
-                     new EstudiosSQLiteHelper(this,
-                             "DBEstudios", null, DB_VERSION);) {
-
-
-            SQLiteDatabase db = usdbh.getWritableDatabase();
-
-            //Iniciar una transacción para mejorar el rendimiento
-            try {
-                db.beginTransaction();
-                // Insertar estudios
-                TipoDato nuevo = new TipoDato();
-                if(usdbh.insertarTipoDato(db, nuevo)!=-1){
-                    listaTiposDato.add(nuevo);
-                }
-
-
-                db.setTransactionSuccessful();
-            } catch (Exception e) {
-                Log.e("DB_ERROR", "Error en transacción: " + e.getMessage());
-            } finally {
-                // Finalizar la transacción
-
-                if (db != null && db.inTransaction()) {
-                    db.endTransaction();
-                }
-                db.close();
-            }
-
-        }
-    }
-
-    public void actualizarDatos() {
-        try{
-            try(EstudiosSQLiteHelper usdbh =
-                        new EstudiosSQLiteHelper(this,
-                                "DBEstudios", null,  DB_VERSION);){
-                SQLiteDatabase db;
-                db = usdbh.getWritableDatabase();
-
-                listaTiposDato.clear();
-
-                rellenarLista(db);
-
-                db.close();
-            }
-        } catch (SQLiteDatabaseCorruptException ex){
-            toast("Intentalo en otro momento. ");
-        }
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
-
-    }
-
-
-    private void rellenarLista(SQLiteDatabase db) {
-        Cursor c = db.rawQuery("select * from estudio", null);
-
-        while (c.moveToNext()) {
-            int index = c.getColumnIndex("NOMBRE");
-            String nombre = c.getString(index);
-            index = c.getColumnIndex("TIPO_DATO");
-            String descripcion = c.getString(index);
-            index = c.getColumnIndex("DESCRIPCION");
-            String emoji = c.getString(index);
-            listaTiposDato.add(new TipoDato(nombre, descripcion, emoji));
-        }
-        c.close();
-    }
 
 
     public void clickGuardar(View v) {
@@ -157,7 +89,7 @@ public class AltaActivity extends AppCompatActivity
         if (!etEmoji.getText().toString().isEmpty() &&
                 !etTitulo.getText().toString().isEmpty() &&
                 !etDescripcion.getText().toString().isEmpty() &&
-                !listaTiposDato.isEmpty()) {
+                !listaTiposDato.isEmpty() && !listaCualitativos.isEmpty()) {
             String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato, "alta");
 
             if (error.isEmpty()) {
@@ -174,9 +106,11 @@ public class AltaActivity extends AppCompatActivity
                     AdaptadorTiposDato a = (AdaptadorTiposDato) vistaRecycler.getAdapter();
                     assert a != null;
                     listaTiposDato = a.getLista();
+                    listaCualitativos.get(0).setFk_dato_tipo_e(datosEstudio.get(0));
 
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                     i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);
+                    i.putParcelableArrayListExtra("CUALITATIVOS", listaCualitativos);
 
                     setResult(RESULT_OK, i);
                 } finally {
@@ -238,7 +172,8 @@ public class AltaActivity extends AppCompatActivity
 
 
     @Override
-    public void onButtonClick(int position) {
+    public void onButtonClickNuevoCualitativo(Cualitativo nuevo) {
+        listaCualitativos.add(nuevo);
 
     }
 }
