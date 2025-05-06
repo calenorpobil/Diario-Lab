@@ -38,6 +38,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     private ArrayList<TipoDato> lista;
     ArrayList<Cualitativo> listaCualitativo = new ArrayList<>();
     private boolean visible = false;
+    private String nombreEstudio;
+    private boolean primera = true;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
 
     public interface OnButtonClickListener {
@@ -127,26 +129,24 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         holder.spTipoDato.setAdapter(adapter);
         holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
 
+
         holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int tamanyo = adapter.getCount()-1;
 
-                if(position == tamanyo){
+                if( position == tamanyo){
                     if(visible){
                         holder.segundo.setVisibility(GONE);
                     // MOSTRAR LOS CUALITATIVOS
                     }else {
                         holder.segundo.setVisibility(VISIBLE);
                         String nombre = context.getPackageName();
-                        listaCualitativo = getCualitativos(tipoDato.getFkEstudio(), tipoDato.getNombre());
+                        listaCualitativo = getCualitativos(nombreEstudio, tipoDato.getNombre());
                     }
                 }else{
                     holder.segundo.setVisibility(GONE);
                 }
-                lista.get(holder.getAbsoluteAdapterPosition()).setTipoDato(
-                        parent.getItemAtPosition(position).toString()
-                );
             }
 
             @Override
@@ -196,24 +196,30 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
     private ArrayList<Cualitativo> getCualitativos(String fk_estudio, String fk_tipo) {
         ArrayList<Cualitativo> res = new ArrayList<>();
+        if(primera){
+           primera = false;
 
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this.context,
-                            "DBEstudios", null, DB_VERSION);){
-            db = usdbh.getWritableDatabase();
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this.context,
+                                "DBEstudios", null, DB_VERSION);){
+                db = usdbh.getWritableDatabase();
 
-            res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+                res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+            }
+
+            this.notifyDataSetChanged();
+            return res;
         }
-
-        return res;
+        return listaCualitativo;
     }
 
 
-    public AdaptadorTiposDato(Context context, ArrayList<TipoDato> lista,
+    public AdaptadorTiposDato(Context context, ArrayList<TipoDato> lista, String nombreEstudio,
                               OnButtonClickListener listener) {
         super();
         this.context = context;
         this.lista = lista;
+        this.nombreEstudio = nombreEstudio;
         this.listener = listener;
     }
 

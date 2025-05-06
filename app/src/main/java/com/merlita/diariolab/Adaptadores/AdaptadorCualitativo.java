@@ -78,6 +78,7 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
 
         String texto = "Tipo "+(getItemCount())+": ";
         holder.tvCualitativo.setText(texto);
+        holder.etTitulo.setText(cualitativo.getTitulo());
 
         holder.etTitulo.addTextChangedListener(new TextWatcher() {
             @Override

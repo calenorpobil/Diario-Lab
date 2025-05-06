@@ -97,7 +97,8 @@ public class EditActivity extends AppCompatActivity
         etDescripcion.setText(desc);
         etEmoji.setText(emoji);
 
-        adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, this);
+
+        adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, nombreEstudio, this);
 
 
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -178,6 +179,7 @@ public class EditActivity extends AppCompatActivity
             int index = c.getColumnIndex("TITULO");
             String titulo = c.getString(index);
             nuevo.setCualitativo(new Cualitativo(titulo, nombreEstudio, nuevo.getNombre()));
+            nuevo.setFkEstudio(nombreEstudio);
         }
 
         c.close();
@@ -233,6 +235,5 @@ public class EditActivity extends AppCompatActivity
     @Override
     public void onButtonClickNuevoCualitativo(Cualitativo nuevo) {
         listaCualitativos.add(nuevo);
-
     }
 }

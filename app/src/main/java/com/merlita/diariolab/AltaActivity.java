@@ -58,7 +58,8 @@ public class AltaActivity extends AppCompatActivity
         vistaRecycler = findViewById(R.id.recyclerTipos);
 
         btNuevoTipo = findViewById(R.id.btNuevoCualitativo);
-        adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, this);
+        adaptadorTiposDato = new AdaptadorTiposDato(
+                this, listaTiposDato, "", this);
 
         vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
         vistaRecycler.setAdapter(adaptadorTiposDato);
