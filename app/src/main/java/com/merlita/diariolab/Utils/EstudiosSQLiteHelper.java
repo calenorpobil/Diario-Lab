@@ -468,6 +468,15 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+    public long borrarCualitativos_PorFK(SQLiteDatabase db, String fkEstudio) {
+        long res=-1;
+
+        res = db.delete("CUALITATIVO",
+                "FK_TIPO_DATO_E = ?",
+                new String[]{fkEstudio});
+
+        return res;
+    }
     public long borrarDatos_PorFK(SQLiteDatabase db, String fkEstudio) {
         long res=-1;
 

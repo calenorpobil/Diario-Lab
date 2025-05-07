@@ -163,7 +163,7 @@ public class EditActivity extends AppCompatActivity
             String descripcion = c.getString(index);
             TipoDato nuevo = new TipoDato(nombre, tipoDato, descripcion);
             recuperarCualitativos(db, nuevo);
-            listaTiposDato.add(nuevo);
+            listaTiposDato.add(0, nuevo);
             adaptadorTiposDato.notifyItemInserted(0);
         }
 
@@ -207,10 +207,17 @@ public class EditActivity extends AppCompatActivity
                         datosEstudio.add(etTitulo.getText().toString());
                         datosEstudio.add(etDescripcion.getText().toString());
                         datosEstudio.add(etEmoji.getText().toString());
+                        for (int j = 0; j < listaCualitativos.size(); j++) {
+                            listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
+                        }
+                        for (int j = 0; j < listaTiposDato.size(); j++) {
+                            listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
+                        }
 
 
                         i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                         i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
+                        i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
                         i.putExtra("INDEX", posicion);
 
                         setResult(RESULT_OK, i);

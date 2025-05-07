@@ -109,6 +109,7 @@ public class OcurrenciaActivity extends AppCompatActivity
                 }
             }
 
+            reps = getOcurrencia(estudioActual.getNombre());
             String repeticiones = reps+" "+emojiReps;
             tvReps.setText(repeticiones);
 
@@ -137,6 +138,23 @@ public class OcurrenciaActivity extends AppCompatActivity
             adaptadorDatos.actualizarFecha(position, year, month, dayOfMonth);
         });
         datePicker.show(getSupportFragmentManager(), "datePicker");
+    }
+    private int getOcurrencia(String estudios) {
+        int res = -1;
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getCuentaOcurrencias(db, estudios);
+
+            db.close();
+        }
+
+        return res;
     }
 
     private ArrayList<TipoDato> getTiposDato() {

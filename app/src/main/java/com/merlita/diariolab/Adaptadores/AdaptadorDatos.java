@@ -2,6 +2,8 @@ package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.GONE;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.Editable;
@@ -13,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -21,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Estudio;
@@ -53,6 +58,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         TextView tvNombreTipo;
         Spinner spTipo;
         TextView tvHora;
+        RadioGroup rgCualitativos;
 
 
         public MiContenedor(@NonNull View itemView) {
@@ -63,6 +69,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             spTipo = (Spinner) itemView.findViewById(R.id.spTipoDato);
             etNumero = (EditText) itemView.findViewById(R.id.etNumero);
             tvNombreTipo = (TextView) itemView.findViewById(R.id.tvNombre);
+            rgCualitativos = (RadioGroup) itemView.findViewById(R.id.rgCualitativo);
 
 
 
@@ -76,15 +83,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "BORRAR");
         }
 
-
-
-
-
     }
-
-
-
-
 
     @NonNull
     @Override
@@ -102,8 +101,9 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
         TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
+        ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
 
-
+        listaCualitativos = getCualitativos(dato.getFkTipoEstudio(), tipo.getNombre());
 
         holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
 
@@ -144,6 +144,31 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
                 holder.spTipo.setVisibility(GONE);
                 break;
             }
+            case "Tipo": {
+
+                ArrayList<String> aux = new ArrayList<>();
+                for (Cualitativo a: listaCualitativos) {
+                    aux.add(a.getTitulo());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        this.context, android.R.layout.simple_spinner_item,
+                        aux);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                holder.spTipo.setAdapter(adapter);
+                holder.spTipo.setSelection(0);
+
+//                for (int i = 0; i < listaCualitativos.size(); i++) {
+//                    RadioButton radioButton = new RadioButton(context);
+//                    radioButton.setText(listaCualitativos.get(i).getTitulo());
+//                    radioButton.setId(i);  // Asignar ID único
+//                    holder.rgCualitativos.addView(radioButton);
+//                }
+                holder.tvHora.setVisibility(GONE);
+                holder.etDescripcion.setVisibility(GONE);
+                holder.etNumero.setVisibility(GONE);
+
+
+            }
 
 
         }
@@ -169,20 +194,6 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         });
 
 
-
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this.context,
-                //Cambiar tipos:
-                R.array.tipos,
-                android.R.layout.simple_spinner_item
-        );
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        holder.spTipo.setAdapter(adapter);
-
-
-        holder.spTipo.setSelection(adapter.getPosition(dato.getFkTipoDato()));
 
 
 
@@ -287,7 +298,23 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
     public ArrayList<Dato> getLista(){
         return listaDatos;
     }
+    private ArrayList<Cualitativo> getCualitativos(String fk_estudio, String fk_tipo) {
+        ArrayList<Cualitativo> res = new ArrayList<>();
 
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this.context,
+                            "DBEstudios", null, DB_VERSION);){
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+        }
+
+//        for (int i = 0; i < res.size(); i++) {
+//            listener.onButtonClickNuevoCualitativo(res.get(i));
+//        }
+
+        return res;
+    }
 
     private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.context,

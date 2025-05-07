@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    private boolean editarTipoDato(ArrayList<TipoDato> nuevoTiposDato){
+    private boolean editarTipoDato(ArrayList<TipoDato> nuevoTiposDato, String estudioViejo){
         long[]  fun = new long[nuevoTiposDato.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -644,12 +644,33 @@ public class MainActivity extends AppCompatActivity {
 
             //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
             SQLiteDatabase db = usdbh.getWritableDatabase();
-            fun[0] = usdbh.borrarTiposDatos_PorFK(db, nuevoTiposDato.get(0).getFkEstudio());
+            fun[0] = usdbh.borrarTiposDatos_PorFK(db, estudioViejo);
             for (int i = 0; i < nuevoTiposDato.size(); i++) {
                 //Apunta la clave Foránea del Estudio
                 nuevoTiposDato.get(i).setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
                 try{
                     fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
+                }catch (SQLiteException e){
+                    tvErrores.setText(e.getMessage());
+                }
+            }
+            db.close();
+        }
+        return multiBoolean(fun);
+    }
+    private boolean editarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
+                                      String estudioViejo){
+        long[]  fun = new long[nuevosCualitativos.size()+1];
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
+
+            //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+            usdbh.borrarCualitativos_PorFK(db, estudioViejo);
+            for (int i = 0; i < nuevosCualitativos.size(); i++) {
+                try{
+                    fun[1+i] = usdbh.insertarCualitativo(db, nuevosCualitativos.get(i));
                 }catch (SQLiteException e){
                     tvErrores.setText(e.getMessage());
                 }
@@ -776,20 +797,22 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> datosEstudio = data.getStringArrayListExtra("ESTUDIO");
                 ArrayList<TipoDato> nuevosTiposDato = data.
                         getParcelableArrayListExtra("NUEVOSTIPOSDATO");
+                ArrayList<Cualitativo> nuevosCualitativos = data.
+                        getParcelableArrayListExtra("NUEVOSCUALITATIVOS");
 
                 int posicion = data.getIntExtra("INDEX", -1);
 
-                //INSERTAR EL ESTUDIO:
+                // Insertar el estudio:
                 if (datosEstudio != null && nuevosTiposDato != null) {
                     Estudio editEstudio = new Estudio(
                             datosEstudio.get(0),
                             datosEstudio.get(1),
                             datosEstudio.get(2));
                     Estudio viejo = listaEstudios.get(posicion);
-                    nuevosTiposDato.get(0).setFkEstudio(viejo.getNombre());
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:
-                        editarTipoDato(nuevosTiposDato);
+                        editarTipoDato(nuevosTiposDato, viejo.getNombre());
+                        editarCualitativo(nuevosCualitativos, viejo.getNombre());
                     }
                 }
             }

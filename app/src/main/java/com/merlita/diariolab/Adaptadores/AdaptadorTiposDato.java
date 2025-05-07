@@ -140,9 +140,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
                 //TIPO: CUALITATIVO
                 if( position == tamanyo){
-                    holder.segundo.setVisibility(VISIBLE);
-                    String nombre = context.getPackageName();
                     listaCualitativo = getCualitativos(tipoDato.getFkEstudio(), tipoDato.getNombre());
+                    holder.segundo.setVisibility(VISIBLE);
                 }else{
                     holder.segundo.setVisibility(GONE);
                 }
@@ -159,7 +158,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             public void onClick(View v) {
                 Cualitativo nuevo = new Cualitativo();
                 nuevo.setFk_dato_tipo_t(holder.etNombre.getText().toString());
-                listaCualitativo.add(nuevo);
+                listaCualitativo.add(0, nuevo);
                 adaptadorCualitativo.notifyItemInserted(0);
                 listener.onButtonClickNuevoCualitativo(nuevo);
             }
@@ -208,7 +207,12 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
             }
 
+            for (int i = 0; i < res.size(); i++) {
+                listener.onButtonClickNuevoCualitativo(res.get(i));
+            }
+
             this.notifyDataSetChanged();
+
             return res;
         }
         return listaCualitativo;
@@ -234,19 +238,6 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     }
 
 
-    private void configurarSpinner(Spinner spinner, int arrayResId, String value) {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.context,
-                arrayResId, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        if (value != null) {
-            int position = adapter.getPosition(value);
-            if (position >= 0) {
-                spinner.setSelection(position);
-            }
-        }
-    }
 
 
     public AdaptadorTiposDato(@NonNull Context context) {
