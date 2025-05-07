@@ -1,11 +1,7 @@
 package com.merlita.diariolab;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,11 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.merlita.diariolab.Adaptadores.AdaptadorCualitativo;
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
 import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.TipoDato;
-import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 
@@ -57,6 +51,7 @@ public class AltaActivity extends AppCompatActivity
         btGuardar = findViewById(R.id.btnGuardar);
         vistaRecycler = findViewById(R.id.recyclerTipos);
 
+
         btNuevoTipo = findViewById(R.id.btNuevoCualitativo);
         adaptadorTiposDato = new AdaptadorTiposDato(
                 this, listaTiposDato, "", this);
@@ -71,8 +66,10 @@ public class AltaActivity extends AppCompatActivity
         btNuevoTipo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listaTiposDato.add(new TipoDato());
-                actualizarLocal();
+                TipoDato nuevo = new TipoDato();
+                listaTiposDato.add(nuevo);
+
+                adaptadorTiposDato.notifyItemInserted(0);
             }
         });
 
@@ -100,14 +97,27 @@ public class AltaActivity extends AppCompatActivity
                 try {
                     // Preparar todos los datos para enviar
                     ArrayList<String> datosEstudio = new ArrayList<>();
-                    datosEstudio.add(etTitulo.getText().toString());
+                    String nombreEstudio = etTitulo.getText().toString();
+                    datosEstudio.add(nombreEstudio);
                     datosEstudio.add(etDescripcion.getText().toString());
                     datosEstudio.add(etEmoji.getText().toString());
 
                     AdaptadorTiposDato a = (AdaptadorTiposDato) vistaRecycler.getAdapter();
                     assert a != null;
                     listaTiposDato = a.getLista();
-                    listaCualitativos.get(0).setFk_dato_tipo_e(datosEstudio.get(0));
+                    for (int k = 0; k < listaTiposDato.size(); k++) {
+                        TipoDato cambiar = listaTiposDato.get(k);
+                        cambiar.setFkEstudio(nombreEstudio);
+                        for (int j = 0; j < listaCualitativos.size(); j++) {
+                            Cualitativo check = listaCualitativos.get(j);
+                            check.setFk_dato_tipo_e(nombreEstudio);
+                            if(check.getFk_dato_tipo_t().equals(cambiar.getNombre())){
+                                listaCualitativos.get(j).setFk_dato_tipo_t(cambiar.getNombre());
+                            }
+                        }
+
+                    }
+
 
                     i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                     i.putParcelableArrayListExtra("TIPOSDATO", listaTiposDato);

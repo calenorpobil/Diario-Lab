@@ -624,6 +624,17 @@ public class MainActivity extends AppCompatActivity {
         }
         return res;
     }
+    private long insertarCualitativos(ArrayList<Cualitativo> cualitativos){
+        long  res=-1;
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+            res = usdbh.insertarCualitativos(db, cualitativos);
+        }
+        return res;
+    }
 
     private boolean editarTipoDato(ArrayList<TipoDato> nuevoTiposDato){
         long[]  fun = new long[nuevoTiposDato.size()+1];
@@ -728,17 +739,12 @@ public class MainActivity extends AppCompatActivity {
                                 for (int i = 0; i < tiposDato.size(); i++) {
                                     // PONER LA FORÁNEA A LOS TIPOS DE DATO:
                                     TipoDato tipoNuevo = tiposDato.get(i);
-                                    tipoNuevo.setFkEstudio(nuevoEstudio.getNombre());
-                                    for (int j = 0; j < cualitativos.size(); j++) {
-                                        Cualitativo check = cualitativos.get(j);
-                                        if(check.
-                                                getFk_dato_tipo_t().equals(tipoNuevo.getNombre())){
-                                            tipoNuevo.setCualitativo(check);
-                                        }
-                                    }
                                     //INSERTAR
-                                    insertarTipoDato(tiposDato.get(i));
+                                    insertarTipoDato(tipoNuevo);
                                 }
+
+                                insertarCualitativos(cualitativos);
+
                             }
                         }
 
@@ -748,33 +754,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-
-
-
-    private int editarSQL(Estudio antiguo, Estudio nuevo){
-        int res=-1;
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(this,
-                            "DBEstudios", null, DB_VERSION);){
-            SQLiteDatabase db = usdbh.getWritableDatabase();
-
-            ContentValues values = new ContentValues();
-            values.put("NOMBRE", nuevo.getNombre());
-            values.put("DESCRIPCION", nuevo.getDescripcion());
-
-            // Actualizar usando el ID como condición
-            String[] id = {antiguo.getNombre()};
-            res= db.update("Estudio",
-                    values,
-                    "nombre = ?",
-                    id);
-
-            db.close();
-        } catch (SQLiteConstraintException ex){
-            toast(ex.getMessage());
-        }
-        return res;
-    }
 
 
     /**

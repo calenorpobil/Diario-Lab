@@ -109,6 +109,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         TipoDato tipoDato = lista.get(holder.getAbsoluteAdapterPosition());
+//        tipoDato.setFkEstudio(nombreEstudio);
+
         holder.etDescripcion.setText(tipoDato.getDescripcion());
         holder.etNombre.setText(tipoDato.getNombre());
 
@@ -134,16 +136,13 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int tamanyo = adapter.getCount()-1;
+                tipoDato.setTipoDato(ordenSpinner[position]);
 
+                //TIPO: CUALITATIVO
                 if( position == tamanyo){
-                    if(visible){
-                        holder.segundo.setVisibility(GONE);
-                    // MOSTRAR LOS CUALITATIVOS
-                    }else {
-                        holder.segundo.setVisibility(VISIBLE);
-                        String nombre = context.getPackageName();
-                        listaCualitativo = getCualitativos(nombreEstudio, tipoDato.getNombre());
-                    }
+                    holder.segundo.setVisibility(VISIBLE);
+                    String nombre = context.getPackageName();
+                    listaCualitativo = getCualitativos(tipoDato.getFkEstudio(), tipoDato.getNombre());
                 }else{
                     holder.segundo.setVisibility(GONE);
                 }
@@ -159,8 +158,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             @Override
             public void onClick(View v) {
                 Cualitativo nuevo = new Cualitativo();
-                nuevo.setFk_dato_tipo_t(tipoDato.getNombre());
-                nuevo.setFk_dato_tipo_e(tipoDato.getFkEstudio());
+                nuevo.setFk_dato_tipo_t(holder.etNombre.getText().toString());
                 listaCualitativo.add(nuevo);
                 adaptadorCualitativo.notifyItemInserted(0);
                 listener.onButtonClickNuevoCualitativo(nuevo);
@@ -177,6 +175,9 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             @Override
             public void afterTextChanged(Editable s) {
                 lista.get(holder.getAbsoluteAdapterPosition()).setNombre(s.toString());
+                for (int i = 0; i < listaCualitativo.size(); i++) {
+                    listaCualitativo.get(i).setFk_dato_tipo_t(s.toString());
+                }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });

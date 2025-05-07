@@ -202,15 +202,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         values.put("DESCRIPCION", datoTipo.getDescripcion());
         values.put("FK_ESTUDIO", datoTipo.getFkEstudio());
 
-        newRowId = db.insert("DATO_TIPO", null, values);
-
-        Cualitativo posible = datoTipo.getCualitativo();
-        if(posible!=null) insertarCualitativo(db, posible);
+        try{
+            newRowId = db.insertOrThrow("DATO_TIPO", null, values);
+        }catch(SQLiteException ex){
+            String msg = ex.getMessage();
+            System.out.println(msg);
+        }
 
         return newRowId;
     }
     public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
+
 
         ContentValues values = new ContentValues();
         values.put("TITULO", cualitativo.getTitulo());
@@ -224,6 +227,15 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             System.out.println(a);
         }
 
+
+        return newRowId;
+    }
+    public long insertarCualitativos(SQLiteDatabase db, ArrayList<Cualitativo> cualitativo)  {
+        long newRowId = 0;
+
+        for (int i = 0; i < cualitativo.size(); i++) {
+            insertarCualitativo(db, cualitativo.get(i));
+        }
 
         return newRowId;
     }

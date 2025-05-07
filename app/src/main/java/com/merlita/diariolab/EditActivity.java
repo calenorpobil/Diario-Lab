@@ -22,12 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
 import com.merlita.diariolab.Modelos.Cualitativo;
-import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 public class EditActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
@@ -57,14 +55,13 @@ public class EditActivity extends AppCompatActivity
     //MENU CONTEXTUAL
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        Estudio libro;
         switch (item.getItemId()) {
             case 121:
                 //MENU --> BORRAR
                 Intent i = new Intent(this, EditActivity.class);
                 posicionEdicion = item.getGroupId();
                 listaTiposDato.remove(posicionEdicion);
-                actualizarLocal();
+                adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -113,7 +110,7 @@ public class EditActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 listaTiposDato.add(new TipoDato());
-                actualizarLocal();
+                adaptadorTiposDato.notifyItemInserted(0);
             }
         });
         bt.setOnClickListener(new View.OnClickListener(){
@@ -157,6 +154,7 @@ public class EditActivity extends AppCompatActivity
                 "where FK_ESTUDIO = ?", new String[]{nombreEstudio});
 
         while (c.moveToNext()) {
+            //TODO: recoger el FK_estudio
             int index = c.getColumnIndex("NOMBRE");
             String nombre = c.getString(index);
             index = c.getColumnIndex("TIPO_DATO");
@@ -166,6 +164,7 @@ public class EditActivity extends AppCompatActivity
             TipoDato nuevo = new TipoDato(nombre, tipoDato, descripcion);
             recuperarCualitativos(db, nuevo);
             listaTiposDato.add(nuevo);
+            adaptadorTiposDato.notifyItemInserted(0);
         }
 
         c.close();
@@ -178,7 +177,6 @@ public class EditActivity extends AppCompatActivity
         while (c.moveToNext()) {
             int index = c.getColumnIndex("TITULO");
             String titulo = c.getString(index);
-            nuevo.setCualitativo(new Cualitativo(titulo, nombreEstudio, nuevo.getNombre()));
             nuevo.setFkEstudio(nombreEstudio);
         }
 
