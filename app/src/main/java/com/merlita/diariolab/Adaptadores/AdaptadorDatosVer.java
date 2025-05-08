@@ -2,6 +2,8 @@ package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.GONE;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.Editable;
@@ -21,9 +23,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.Dato;
+import com.merlita.diariolab.Modelos.Ocurrencia;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.R;
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 
@@ -32,6 +37,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     private Context context;
     private ArrayList<TipoDato> listaTipos;
     private ArrayList<Dato> listaDatos;
+    private Ocurrencia ocurrencia;
 
     boolean enabled;
 
@@ -77,10 +83,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "BORRAR");
         }
 
-
-
-
-
     }
 
 
@@ -101,7 +103,9 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
+        TipoDato actual = listaTipos.get(holder.getAbsoluteAdapterPosition());
         if (position>=0 && position < listaTipos.size()){
+            listaDatos = getDatos();
 
             Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
             TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
@@ -159,10 +163,40 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.tvHora.setText(dato.getValorText());
                     holder.etTexto.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
+                    holder.etNumero.setVisibility(GONE);
                     break;
                 }
+                case "Tipo": {
+                    holder.etTexto.setVisibility(GONE);
+                    holder.etNumero.setVisibility(GONE);
+                    holder.tvHora.setVisibility(GONE);
 
 
+                    int max = listaDatos.size();
+
+
+
+                    ArrayList<Cualitativo> listaCualitativos =
+                            getCualitativos(tipo.getFkEstudio(), tipo.getNombre());
+                    ArrayList<String> aux = new ArrayList<>();
+                    for (Cualitativo a: listaCualitativos) {
+                        aux.add(a.getTitulo());
+                    }
+                    ArrayAdapter<String> adapter1 = new ArrayAdapter<>(
+                            this.context, android.R.layout.simple_spinner_item,
+                            aux);
+                    adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    holder.spTipo.setAdapter(adapter1);
+                    holder.spTipo.setEnabled(false);
+
+                    break;
+                }
+                default:{
+                    holder.etTexto.setVisibility(GONE);
+                    holder.spTipo.setVisibility(GONE);
+                    holder.etNumero.setVisibility(GONE);
+                    holder.tvNombreTipo.setText("Elige una ocurrencia para ver:");
+                }
             }
 
             holder.tvHora.setOnClickListener(v -> {
@@ -224,8 +258,33 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         });
     }
 
-    public void enableEditTexts(){
+    private ArrayList<Dato> getDatos() {
+        ArrayList<Dato> res = new ArrayList<>();
 
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this.context,
+                            "DBEstudios", null, DB_VERSION);){
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), ocurrencia.getFkEstudioN());
+        }
+
+        return res;
+    }
+
+
+    private ArrayList<Cualitativo> getCualitativos(String fk_estudio, String fk_tipo) {
+        ArrayList<Cualitativo> res = new ArrayList<>();
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this.context,
+                            "DBEstudios", null, DB_VERSION);){
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+        }
+
+        return res;
     }
 
     public void actualizarFecha(int position, int year, int month, int day) {
@@ -243,7 +302,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
 
     public AdaptadorDatosVer(Context context, ArrayList<Dato> lista,
-                             AdaptadorDatosVer.OnButtonClickListener listener,
+                             AdaptadorDatosVer.OnButtonClickListener listener, Ocurrencia ocurrencia,
                              ArrayList<TipoDato> listaTipos,
                              DatePickerListener listenerFecha, boolean enabled) {
         super();
@@ -251,6 +310,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         this.listaDatos = lista;
         this.listener = listener;
         this.listenerFecha = listenerFecha;
+        this.ocurrencia = ocurrencia;
         this.listaTipos = listaTipos;
         this.enabled = enabled;
 

@@ -55,9 +55,8 @@ public class VerActivity extends AppCompatActivity
     AdaptadorColumnas adaptadorColumnas;
     AdaptadorMedidas adaptadorMedidas;
     AdaptadorTiposGrafico adaptadorTipos;
-    //AdaptadorMedidas adaptadorMedidas;
     RecyclerView rvOcurrencias, rvDatos, rvTipos, rvMedidas, rvColumnas;
-    private String codOcurrencia;
+    private Ocurrencia ocurrencia;
     private LocalDate fechaOcurrencia;
     private int posicion;
     Estudio estudioOcurrencia;
@@ -111,16 +110,10 @@ public class VerActivity extends AppCompatActivity
             tvTitulo.setText(estudioOcurrencia.getNombre());
 
             listaTipos = getTiposDato();
-            listaDatos = getDatos(fk_estudio);
-
-
-
+            listaDatos = getDatos(listaTipos.get(0).getFkEstudio());
 
             adaptadorOcurrencias = new AdaptadorOcurrencias(
                     this, estudioOcurrencia, listaOcurrencias, this);
-            adaptadorDatos = new AdaptadorDatosVer(
-                    this, listaDatos, this, listaTipos,
-                    this, false);
             adaptadorTipos = new AdaptadorTiposGrafico(this, listaTipos, this);
             adaptadorColumnas = new AdaptadorColumnas(this,
                     listaOcurrencias,
@@ -156,8 +149,8 @@ public class VerActivity extends AppCompatActivity
         btModificar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(codOcurrencia!=null){
-                    verDatosOcurrencia(codOcurrencia, fk_estudio, true);
+                if(ocurrencia !=null){
+                    verDatosOcurrencia(ocurrencia, fk_estudio, true);
                     enabled = !enabled;
                 }
 
@@ -287,7 +280,7 @@ public class VerActivity extends AppCompatActivity
 
 
 
-    private ArrayList<Dato> getDatosOcurrencia(String codOcurrencia, String nomEstudio) {
+    private ArrayList<Dato> getDatosOcurrencia(Ocurrencia codOcurrencia, String nomEstudio) {
         ArrayList<Dato> datosResultado=null;
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -296,7 +289,7 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                datosResultado = usdbh.getDatosPorOcurrencia(db, codOcurrencia, nomEstudio);
+                datosResultado = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), nomEstudio);
 
                 db.close();
             } catch (Exception ex){
@@ -330,12 +323,13 @@ public class VerActivity extends AppCompatActivity
     }
 
 
-    private void verDatosOcurrencia(String codOcurrencia, String nomEstudio, boolean enabled) {
+    private void verDatosOcurrencia(Ocurrencia codOcurrencia, String nomEstudio, boolean enabled) {
         listaDatos = getDatosOcurrencia(codOcurrencia, nomEstudio);
         listaTipos = getTiposDato();
 
         adaptadorDatos = new AdaptadorDatosVer(
-                this, listaDatos, this, listaTipos, this, enabled);
+                this, listaDatos, this, ocurrencia,
+                listaTipos, this, enabled);
 
         rvDatos.setAdapter(adaptadorDatos);
 
@@ -471,9 +465,9 @@ public class VerActivity extends AppCompatActivity
 
     // Click en Ocurrencia
     @Override
-    public void onButtonClickOcurrencia(String codOcurrencia, String nomEstudio) {
-        this.codOcurrencia = codOcurrencia;
-        verDatosOcurrencia(codOcurrencia, nomEstudio, false);
+    public void onButtonClickOcurrencia(Ocurrencia ocurrencia) {
+        this.ocurrencia = ocurrencia;
+        verDatosOcurrencia(this.ocurrencia, ocurrencia.getFkEstudioN(), false);
     }
 
     // Click en Datos

@@ -825,8 +825,6 @@ public class MainActivity extends AppCompatActivity {
                 int posicion = data.getIntExtra("INDEX", -1);
 
                 listaEstudios.remove(estudio);
-
-
             }
         //RECOGER NUEVA OCURRENCIA
         } else if (requestCode == 3) {

@@ -27,7 +27,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
     private Estudio estudio;
 
     public interface OnButtonClickListener {
-        void onButtonClickOcurrencia(String codOcurrencia, String codEstudio);
+        void onButtonClickOcurrencia(Ocurrencia ocurrencia);
     }
 
     private AdaptadorOcurrencias.OnButtonClickListener listener;
@@ -102,7 +102,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
             @Override
 
             public void onClick(View v) {
-                listener.onButtonClickOcurrencia(ocurrencia.getCod(), estudio.getNombre());
+                listener.onButtonClickOcurrencia(ocurrencia);
             }
 
         });
