@@ -119,7 +119,7 @@ public class Analisis {
                         new Pareja(explorado.getValorText(), correspondiente.getValorText()),
                         cuenta);
 
-                // MÁXIMAS Y MÍNIMAS REPETICIONES DEL ESTUDIO
+                // MÁXIMAS Y MÍNIMAS REPETICIONES DE LA PAREJA
                 if (repesMax == 0) {
                     repesMax = cuenta;
                     repesMin = cuenta;

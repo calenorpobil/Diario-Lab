@@ -1,5 +1,9 @@
 package com.merlita.diariolab.Adaptadores;
 
+import static android.widget.GridLayout.ALIGN_BOUNDS;
+import static android.widget.GridLayout.ALIGN_MARGINS;
+
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -12,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +60,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     private Point p;
     int anchoPantalla, altoPantalla;
     private ArrayList<CircleItem> colores = new ArrayList<>();
+    private Analisis actual;
 
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -90,7 +96,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        Analisis actual = lista.get(holder.getAbsoluteAdapterPosition());
+        actual = lista.get(holder.getAbsoluteAdapterPosition());
         Estudio estudio1 = actual.getEstudio1();
         Estudio estudio2 = actual.getEstudio2();
         holder.tvEstudio2.setText(estudio2.getNombre());
@@ -98,41 +104,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         holder.tvEstudio1.setText(estudio1.getNombre());
         holder.tvEmoji1.setText(estudio1.getEmoji());
 
-        p = new Point();
-        Display pantallaDisplay = activity.getWindowManager().getDefaultDisplay();
-        pantallaDisplay.getSize(p);
-        anchoPantalla = p.x;
-        altoPantalla = p.y;
-        int filas = actual.getDatos1().size(), columnas = actual.getDatos2().size();
-        int[] ids = new int[columnas*filas];
-
-
-        ViewGroup.LayoutParams lp =
-                new ViewGroup.LayoutParams(
-                        anchoPantalla / columnas-200, altoPantalla / filas-1000);
-        holder.glGrafico.setRowCount(filas);
-        holder.glGrafico.setColumnCount(columnas);
-
-        HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
-        ArrayList<Pareja<String, String>> parejas = actual.getParejas();
-        for (int i = 0; i < filas * columnas; i++) {
-
-            TextView b = new TextView(this.context);
-
-            b.setLayoutParams(lp);
-            b.setBackgroundResource(R.drawable.circle_shape);
-
-            colores.add(new CircleItem(30));
-            //b.setSize(colores.get(i));
-            ids[i] = ViewGroup.generateViewId();
-            b.setText(i+"");
-            b.setTextSize(18);
-            b.setId(ids[i]);
-            holder.glGrafico.setUseDefaultMargins(false);
-            holder.glGrafico.addView(b);
-        }
-
-
+        mostrarGrid(holder);
 
 
         holder.main.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +114,69 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         });
     }
 
+    private void mostrarGrid(@NonNull MiContenedor holder) {
+        p = new Point();
+        Display pantallaDisplay = activity.getWindowManager().getDefaultDisplay();
+        pantallaDisplay.getSize(p);
+        anchoPantalla = p.x;
+        altoPantalla = p.y;
+        // Añado 1 para colocar los nombres de fila y columna:
+        int filas = actual.getDatos1().size()+1, columnas = actual.getDatos2().size()+1;
+        int[] ids = new int[columnas*filas];
+
+
+        ViewGroup.LayoutParams lp =
+                new ViewGroup.LayoutParams(
+                        (int) (anchoPantalla / (columnas*1.25)),
+//                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        altoPantalla / (filas*3));
+        holder.glGrafico.setRowCount(filas);
+        holder.glGrafico.setColumnCount(columnas);
+        holder.glGrafico.setForegroundGravity(Gravity.CENTER);
+
+        asignarCeldas(holder, filas, columnas, lp, ids);
+    }
+
+    private void asignarCeldas(@NonNull MiContenedor holder,
+                               int filas, int columnas, ViewGroup.LayoutParams lp, int[] ids) {
+        HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
+        ArrayList<Pareja<String, String>> parejas = actual.getParejas();
+        for (int i = 0; i < filas * columnas; i++) {
+            TextView b = new TextView(this.context);
+
+            b.setLayoutParams(lp);
+            b.setGravity(Gravity.FILL_HORIZONTAL);
+            GridLayout.Alignment alignment;
+            // Poner nombres de columnas
+            if (i>0 && i< columnas) {
+                ids[i] = ViewGroup.generateViewId();
+                String texto = actual.getDatos1().get(i-1).getValorText();
+                b.setText(texto);
+                b.setId(ids[i]);
+
+            // Poner nombres de filas
+            } else if (i!=0 && i% filas == 0){
+                ids[i] = ViewGroup.generateViewId();
+                int numDato = filas/i;
+                String texto = actual.getDatos2().get(numDato).getValorText();
+                b.setText(texto);
+                b.setId(ids[i]);
+
+            // Poner valores
+            } else {
+                colores.add(new CircleItem(30));
+                //b.setSize(colores.get(i));
+                ids[i] = ViewGroup.generateViewId();
+                b.setText(i+"");
+                b.setTextSize(18);
+                b.setBackgroundResource(R.drawable.circle_shape);
+                b.setId(ids[i]);
+//                holder.glGrafico.setUseDefaultMargins(false);
+
+            }
+            holder.glGrafico.addView(b);
+        }
+    }
 
 
     @NonNull
@@ -192,46 +227,4 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         return lista.size();
     }
 
-    public static class FragmentoFecha extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-
-        private DatePickerDialog.OnDateSetListener listener;
-
-        public void setListener(DatePickerDialog.OnDateSetListener listener) {
-            this.listener = listener;
-        }
-        public static FragmentoFecha newInstance(DatePickerDialog.OnDateSetListener listener) {
-            FragmentoFecha fragment = new FragmentoFecha();
-            fragment.setListener(listener);
-            return fragment;
-        }
-
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState)
-        {
-            final Calendar c = Calendar.getInstance();
-            return new DatePickerDialog(
-                    requireContext(),
-                    (view, year, month, day) -> {
-                        if (listener != null) {
-                            listener.onDateSet(view, year, month, day);
-                        }
-                    },
-                    c.get(Calendar.YEAR),
-                    c.get(Calendar.MONTH),
-                    c.get(Calendar.DAY_OF_MONTH)
-            );
-        }
-
-
-        @Override
-        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-            if (listener != null) {
-                listener.onDateSet(datePicker, year, month, day);
-            }
-
-        }
-
-    }
 }

@@ -94,7 +94,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflador =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflador.inflate(R.layout.columna_dato, parent, false);
+        View v = inflador.inflate(R.layout.fila_dato_ver, parent, false);
 
 
         return new MiContenedor(v);
@@ -171,11 +171,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.etNumero.setVisibility(GONE);
                     holder.tvHora.setVisibility(GONE);
 
-
-                    int max = listaDatos.size();
-
-
-
                     ArrayList<Cualitativo> listaCualitativos =
                             getCualitativos(tipo.getFkEstudio(), tipo.getNombre());
                     ArrayList<String> aux = new ArrayList<>();
@@ -187,7 +182,9 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                             aux);
                     adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     holder.spTipo.setAdapter(adapter1);
-                    holder.spTipo.setEnabled(false);
+                    int index = aux.indexOf(dato.getValorText());
+                    holder.spTipo.setSelection(index);
+                    holder.spTipo.setEnabled(enabled);
 
                     break;
                 }

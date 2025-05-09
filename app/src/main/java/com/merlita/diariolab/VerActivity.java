@@ -62,7 +62,7 @@ public class VerActivity extends AppCompatActivity
     Estudio estudioOcurrencia;
     private String fk_estudio;
     private int reps = 1;
-    boolean enabled;
+    boolean enabled = false;
 
 
 
@@ -150,8 +150,11 @@ public class VerActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if(ocurrencia !=null){
-                    verDatosOcurrencia(ocurrencia, fk_estudio, true);
                     enabled = !enabled;
+                    verDatosOcurrencia(ocurrencia, fk_estudio, enabled);
+                    if(enabled){
+                        btModificar.setText("Cancelar");
+                    }else btModificar.setText("Modificar");
                 }
 
 
@@ -467,7 +470,9 @@ public class VerActivity extends AppCompatActivity
     @Override
     public void onButtonClickOcurrencia(Ocurrencia ocurrencia) {
         this.ocurrencia = ocurrencia;
-        verDatosOcurrencia(this.ocurrencia, ocurrencia.getFkEstudioN(), false);
+        btModificar.setText("Modificar");
+        enabled = false;
+        verDatosOcurrencia(this.ocurrencia, ocurrencia.getFkEstudioN(), enabled);
     }
 
     // Click en Datos
