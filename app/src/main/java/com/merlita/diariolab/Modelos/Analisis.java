@@ -104,7 +104,7 @@ public class Analisis {
             for (int i = 0; i < datos2.size(); i++) {
                 Dato explorado = datos2.get(i);
                 Ocurrencia ocurrencia = getOcurrenciaDeDato(explorado.getFkOcurrencia());
-                // Busca el otro dato con la misma ocurrencia:
+                // Busca el otro dato de la misma ocurrencia:
                 int index = datos1.indexOf(new Dato(ocurrencia));
                 Dato correspondiente = datos1.get(index);
 

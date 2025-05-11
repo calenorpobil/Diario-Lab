@@ -1,35 +1,21 @@
 package com.merlita.diariolab.Adaptadores;
 
-import static android.widget.GridLayout.ALIGN_BOUNDS;
-import static android.widget.GridLayout.ALIGN_MARGINS;
-
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.os.Bundle;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.GridLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.MainActivity;
@@ -38,15 +24,9 @@ import com.merlita.diariolab.Modelos.CircleItem;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Pareja;
 import com.merlita.diariolab.R;
-import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
 
@@ -59,8 +39,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     private ArrayList<Analisis> lista;
     private Point p;
     int anchoPantalla, altoPantalla;
-    private ArrayList<CircleItem> colores = new ArrayList<>();
     private Analisis actual;
+    private int cuentaDatos = 0;
 
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -132,7 +112,6 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
                         altoPantalla / (filas*3));
         holder.glGrafico.setRowCount(filas);
         holder.glGrafico.setColumnCount(columnas);
-        holder.glGrafico.setForegroundGravity(Gravity.CENTER);
 
         asignarCeldas(holder, filas, columnas, lp, ids);
     }
@@ -142,39 +121,51 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
         ArrayList<Pareja<String, String>> parejas = actual.getParejas();
         for (int i = 0; i < filas * columnas; i++) {
-            TextView b = new TextView(this.context);
+            colocarBotones(holder, filas, columnas, lp, ids, i,
+                    resulDatos, parejas);
+        }
+    }
 
-            b.setLayoutParams(lp);
-            b.setGravity(Gravity.FILL_HORIZONTAL);
-            GridLayout.Alignment alignment;
-            // Poner nombres de columnas
-            if (i>0 && i< columnas) {
-                ids[i] = ViewGroup.generateViewId();
-                String texto = actual.getDatos1().get(i-1).getValorText();
-                b.setText(texto);
-                b.setId(ids[i]);
+    private void colocarBotones(@NonNull MiContenedor holder, int filas, int columnas,
+                                ViewGroup.LayoutParams lp, int[] ids, int i,
+                                HashMap<Pareja<String, String>, Integer> resulDatos,
+                                ArrayList<Pareja<String, String>> parejas) {
+        TextView b = new TextView(this.context);
+        View circle = new View(this.context);
+        circle.setBackgroundResource(R.drawable.circle_shape);
 
-            // Poner nombres de filas
-            } else if (i!=0 && i% filas == 0){
-                ids[i] = ViewGroup.generateViewId();
-                int numDato = filas/i;
-                String texto = actual.getDatos2().get(numDato).getValorText();
-                b.setText(texto);
-                b.setId(ids[i]);
-
-            // Poner valores
-            } else {
-                colores.add(new CircleItem(30));
-                //b.setSize(colores.get(i));
-                ids[i] = ViewGroup.generateViewId();
-                b.setText(i+"");
-                b.setTextSize(18);
-                b.setBackgroundResource(R.drawable.circle_shape);
-                b.setId(ids[i]);
-//                holder.glGrafico.setUseDefaultMargins(false);
-
-            }
+        b.setLayoutParams(lp);
+        b.setGravity(Gravity.FILL_HORIZONTAL);
+        // Poner nombres de columnas
+        if (i >0 && i < columnas) {
+            ids[i] = ViewGroup.generateViewId();
+            String texto = actual.getDatos1().get(i - 1).getValorText();
+            b.setText(texto);
+            b.setId(ids[i]);
             holder.glGrafico.addView(b);
+
+        // Poner nombres de filas
+        } else if (i !=0 && i % filas == 0){
+            ids[i] = ViewGroup.generateViewId();
+            int numDato = filas / i;
+            String texto = actual.getDatos2().get(numDato).getValorText();
+            b.setText(texto);
+            b.setId(ids[i]);
+            holder.glGrafico.addView(b);
+
+        // Poner valores
+        } else {
+            int numfila = 0, numColumna = 0;
+            // TODO: Averiguar qué pareja indica cada celda.
+            Pareja<String, String> parejaTabla = parejas.get(0);
+            int anchura = resulDatos.get(parejaTabla);
+            lp.width = anchura;
+            lp.height = anchura;
+            ids[i] = ViewGroup.generateViewId();
+            circle.setId(ids[i]);
+//                holder.glGrafico.setUseDefaultMargins(false);
+            circle.setLayoutParams(lp);
+            holder.glGrafico.addView(circle);
         }
     }
 
@@ -187,30 +178,6 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         View v = inflador.inflate(R.layout.fila_analisis, parent, false);
 
         return new MiContenedor(v);
-    }
-
-
-    private int getOcurrencia(String estudios) {
-        int res = -1;
-
-
-        try(EstudiosSQLiteHelper usdbh =
-                    new EstudiosSQLiteHelper(context,
-                            "DBEstudios", null,  DB_VERSION);){
-            SQLiteDatabase db;
-            db = usdbh.getWritableDatabase();
-
-            res = usdbh.getCuentaOcurrencias(db, estudios);
-
-            db.close();
-        }
-
-        return res;
-    }
-
-
-    public  void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("MyAdapter", "onActivityResult");
     }
 
 
