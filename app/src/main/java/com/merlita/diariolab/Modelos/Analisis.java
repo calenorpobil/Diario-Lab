@@ -160,6 +160,23 @@ public class Analisis {
         return res;
     }
 
+
+    public int getRepesMax() {
+        return repesMax;
+    }
+
+    public void setRepesMax(int repesMax) {
+        this.repesMax = repesMax;
+    }
+
+    public int getRepesMin() {
+        return repesMin;
+    }
+
+    public void setRepesMin(int repesMin) {
+        this.repesMin = repesMin;
+    }
+
     public Estudio getEstudio1() {
         return estudio1;
     }

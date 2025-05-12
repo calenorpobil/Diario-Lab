@@ -40,7 +40,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     private Point p;
     int anchoPantalla, altoPantalla;
     private Analisis actual;
-    private int cuentaDatos = 0;
+    private int numFila=0, numColumna=0;
+
 
     public class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -120,16 +121,19 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
                                int filas, int columnas, ViewGroup.LayoutParams lp, int[] ids) {
         HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
         ArrayList<Pareja<String, String>> parejas = actual.getParejas();
+        ArrayList<String> valoresFilas = new ArrayList<>();
+        ArrayList<String> valoresColumnas = new ArrayList<>();
         for (int i = 0; i < filas * columnas; i++) {
             colocarBotones(holder, filas, columnas, lp, ids, i,
-                    resulDatos, parejas);
+                    resulDatos, parejas, valoresFilas, valoresColumnas);
         }
     }
 
     private void colocarBotones(@NonNull MiContenedor holder, int filas, int columnas,
                                 ViewGroup.LayoutParams lp, int[] ids, int i,
                                 HashMap<Pareja<String, String>, Integer> resulDatos,
-                                ArrayList<Pareja<String, String>> parejas) {
+                                ArrayList<Pareja<String, String>> parejas,
+                                ArrayList<String> valoresFilas, ArrayList<String> valoresColumnas) {
         TextView b = new TextView(this.context);
         View circle = new View(this.context);
         circle.setBackgroundResource(R.drawable.circle_shape);
@@ -139,7 +143,9 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         // Poner nombres de columnas
         if (i >0 && i < columnas) {
             ids[i] = ViewGroup.generateViewId();
-            String texto = actual.getDatos1().get(i - 1).getValorText();
+            numColumna = i-1;
+            String texto = actual.getDatos1().get( numColumna ).getValorText();
+            valoresColumnas.add(texto);
             b.setText(texto);
             b.setId(ids[i]);
             holder.glGrafico.addView(b);
@@ -147,22 +153,31 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         // Poner nombres de filas
         } else if (i !=0 && i % filas == 0){
             ids[i] = ViewGroup.generateViewId();
-            int numDato = filas / i;
-            String texto = actual.getDatos2().get(numDato).getValorText();
+            numFila = (i / filas)-1;
+            String texto = actual.getDatos2().get( numFila ).getValorText();
+            valoresFilas.add(texto);
             b.setText(texto);
             b.setId(ids[i]);
             holder.glGrafico.addView(b);
 
         // Poner valores
         } else {
-            int numfila = 0, numColumna = 0;
-            // TODO: Averiguar qué pareja indica cada celda.
-            Pareja<String, String> parejaTabla = parejas.get(0);
-            int anchura = resulDatos.get(parejaTabla);
-            lp.width = anchura;
-            lp.height = anchura;
-            ids[i] = ViewGroup.generateViewId();
-            circle.setId(ids[i]);
+            if(i!=0){
+                numColumna = i-(columnas*(numFila+1))-1;
+                String datoFila = valoresFilas.get( numFila );
+                String datoColumna = valoresColumnas.get( numColumna );
+                Pareja<String, String> parejaTabla = new Pareja<>(datoFila, datoColumna);
+                int max = actual.getRepesMax();
+                int ancho = (int) (anchoPantalla / (columnas*1.25));
+                int veces = resulDatos.getOrDefault( parejaTabla, 0 );
+                int porcentaje = 0;
+                if(veces!=0) porcentaje = veces/max;
+                int anchura = ancho*porcentaje;
+                lp.width = anchura;
+                lp.height = anchura;
+                ids[i] = ViewGroup.generateViewId();
+                circle.setId(ids[i]);
+            }
 //                holder.glGrafico.setUseDefaultMargins(false);
             circle.setLayoutParams(lp);
             holder.glGrafico.addView(circle);
