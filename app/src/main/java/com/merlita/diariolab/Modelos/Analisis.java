@@ -7,7 +7,9 @@ import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Analisis {
 
@@ -88,8 +90,8 @@ public class Analisis {
 
         //MISMO ESTUDIO
         if(estudio1.getNombre().equals(estudio2.getNombre())){
-            int size1 = datos1.size();
-            int size2 = datos2.size();
+            int size1 = datos1.size(); // Filas
+            int size2 = datos2.size(); // Columnas
 
             if(size2<size1){
                 ArrayList<Dato> aux;
@@ -160,6 +162,36 @@ public class Analisis {
         return res;
     }
 
+    public List<List<String>> getListaTabla(){
+        List<List<String>> lista = new ArrayList<>();
+        List<String> filaLista = new ArrayList<>();
+
+        filaLista.add("");
+
+        for (int i = 0; i < datos2.size(); i++) { // Columnas
+            filaLista.add(datos2.get(i).getValorText());
+        }
+        lista.add(filaLista);
+        Pareja<String, String> pareja;
+        int numColumnas = filaLista.size();
+        filaLista.clear();
+        for (int i = 0; i < numColumnas; i++) {
+            if(i==0){
+                filaLista.add(datos1.get(i).getValorText());
+            }else{
+                int posicion = i+numColumnas;
+                int fila = posicion / numColumnas;
+                int columna = posicion % numColumnas;
+                pareja = new Pareja<>(
+                        datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
+                String valorCelda = resulDatos.get(pareja)+"";
+                filaLista.add(valorCelda);
+            }
+            lista.add(filaLista);
+        }
+
+        return lista;
+    }
 
     public int getRepesMax() {
         return repesMax;

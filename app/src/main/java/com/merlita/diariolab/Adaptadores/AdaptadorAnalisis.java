@@ -1,34 +1,36 @@
 package com.merlita.diariolab.Adaptadores;
 
+import static android.view.View.VISIBLE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
-import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Analisis;
-import com.merlita.diariolab.Modelos.CircleItem;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Pareja;
 import com.merlita.diariolab.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
-public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> {
+public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> implements AdaptadorTabla.ItemClickListener {
 
     private static final int GRID_SIZE = 5;
     private final Activity activity;
@@ -36,11 +38,17 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     private Estudio estudio1, estudio2;
     SQLiteDatabase db;
     private final int DB_VERSION= MainActivity.DB_VERSION;
-    private ArrayList<Analisis> lista;
+    private ArrayList<Analisis> listaAnalisis;
     private Point p;
     int anchoPantalla, altoPantalla;
-    private Analisis actual;
+    private Analisis analisisActual;
     private int numFila=0, numColumna=0;
+    private AdaptadorTabla adaptadorTabla;
+
+    @Override
+    public void onItemClick(View view, int position) {
+
+    }
 
 
     public class MiContenedor extends RecyclerView.ViewHolder
@@ -48,7 +56,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     {
         ConstraintLayout main;
         TextView tvEstudio2, tvEstudio1, tvEmoji1, tvEmoji2;
-        GridLayout glGrafico;
+        RecyclerView glGrafico;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -59,7 +67,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
             tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);
-            glGrafico = (GridLayout) itemView.findViewById(R.id.glGrafico);
+            glGrafico = (RecyclerView) itemView.findViewById(R.id.glGrafico);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -77,15 +85,37 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        actual = lista.get(holder.getAbsoluteAdapterPosition());
-        Estudio estudio1 = actual.getEstudio1();
-        Estudio estudio2 = actual.getEstudio2();
+        analisisActual = listaAnalisis.get(holder.getAbsoluteAdapterPosition());
+        Estudio estudio1 = analisisActual.getEstudio1();
+        Estudio estudio2 = analisisActual.getEstudio2();
         holder.tvEstudio2.setText(estudio2.getNombre());
         holder.tvEmoji2.setText(estudio2.getEmoji());
         holder.tvEstudio1.setText(estudio1.getNombre());
         holder.tvEmoji1.setText(estudio1.getEmoji());
 
-        mostrarGrid(holder);
+        //mostrarGrid(holder);
+        List<List<String>> data = new ArrayList<>();
+        data.add(Arrays.asList("", "Col 1", "Col 2", "Col 3", "Col 3", "Col 3", "Col 3"));  // Cabecera superior
+        data.add(Arrays.asList("Fila 1", "10", "20", "30", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+
+        data = analisisActual.getListaTabla();
+
+
+
+        int numColumns = data.get(0).size();  // Número de columnas (incluye cabecera)
+
+        GridLayoutManager layoutManager = new GridLayoutManager(context, numColumns);
+        holder.glGrafico.setLayoutManager(layoutManager);
+
+        adaptadorTabla = new AdaptadorTabla(context, data);
+        adaptadorTabla.setClickListener(this);
+        holder.glGrafico.setAdapter(adaptadorTabla);
 
 
         holder.main.setOnClickListener(new View.OnClickListener() {
@@ -102,25 +132,26 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         anchoPantalla = p.x;
         altoPantalla = p.y;
         // Añado 1 para colocar los nombres de fila y columna:
-        int filas = actual.getDatos1().size()+1, columnas = actual.getDatos2().size()+1;
+        int filas = analisisActual.getDatos1().size()+1, columnas = analisisActual.getDatos2().size()+1;
         int[] ids = new int[columnas*filas];
 
 
         ViewGroup.LayoutParams lp =
                 new ViewGroup.LayoutParams(
                         (int) (anchoPantalla / (columnas*1.25)),
-//                        ActionBar.LayoutParams.WRAP_CONTENT,
+//                        ActionBar.LayoutParams.MATCH_PARENT,
                         altoPantalla / (filas*3));
-        holder.glGrafico.setRowCount(filas);
-        holder.glGrafico.setColumnCount(columnas);
+//        holder.glGrafico.setRowCount(filas);
+//        holder.glGrafico.setColumnCount(columnas);
+
 
         asignarCeldas(holder, filas, columnas, lp, ids);
     }
 
     private void asignarCeldas(@NonNull MiContenedor holder,
                                int filas, int columnas, ViewGroup.LayoutParams lp, int[] ids) {
-        HashMap<Pareja<String, String>, Integer> resulDatos = actual.getResulDatos();
-        ArrayList<Pareja<String, String>> parejas = actual.getParejas();
+        HashMap<Pareja<String, String>, Integer> resulDatos = analisisActual.getResulDatos();
+        ArrayList<Pareja<String, String>> parejas = analisisActual.getParejas();
         ArrayList<String> valoresFilas = new ArrayList<>();
         ArrayList<String> valoresColumnas = new ArrayList<>();
         for (int i = 0; i < filas * columnas; i++) {
@@ -134,6 +165,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
                                 HashMap<Pareja<String, String>, Integer> resulDatos,
                                 ArrayList<Pareja<String, String>> parejas,
                                 ArrayList<String> valoresFilas, ArrayList<String> valoresColumnas) {
+
+
         TextView b = new TextView(this.context);
         View circle = new View(this.context);
         circle.setBackgroundResource(R.drawable.circle_shape);
@@ -144,7 +177,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         if (i >0 && i < columnas) {
             ids[i] = ViewGroup.generateViewId();
             numColumna = i-1;
-            String texto = actual.getDatos1().get( numColumna ).getValorText();
+            String texto = analisisActual.getDatos1().get( numColumna ).getValorText();
             valoresColumnas.add(texto);
             b.setText(texto);
             b.setId(ids[i]);
@@ -154,10 +187,11 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         } else if (i !=0 && i % filas == 0){
             ids[i] = ViewGroup.generateViewId();
             numFila = (i / filas)-1;
-            String texto = actual.getDatos2().get( numFila ).getValorText();
+            String texto = analisisActual.getDatos2().get( numFila ).getValorText();
             valoresFilas.add(texto);
             b.setText(texto);
             b.setId(ids[i]);
+            b.setVisibility(VISIBLE);
             holder.glGrafico.addView(b);
 
         // Poner valores
@@ -167,8 +201,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
                 String datoFila = valoresFilas.get( numFila );
                 String datoColumna = valoresColumnas.get( numColumna );
                 Pareja<String, String> parejaTabla = new Pareja<>(datoFila, datoColumna);
-                int max = actual.getRepesMax();
-                int ancho = (int) (anchoPantalla / (columnas*1.25));
+                int max = analisisActual.getRepesMax();
+                int ancho = (int) (anchoPantalla / (columnas*1.50));
                 int veces = resulDatos.getOrDefault( parejaTabla, 0 );
                 int porcentaje = 0;
                 if(veces!=0) porcentaje = veces/max;
@@ -201,12 +235,12 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         super();
         this.activity = activity;
         this.context = context;
-        this.lista = lista;
+        this.listaAnalisis = lista;
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return listaAnalisis.size();
     }
 
 }
