@@ -163,22 +163,25 @@ public class Analisis {
     }
 
     public List<List<String>> getListaTabla(){
-        List<List<String>> lista = new ArrayList<>();
+        List<List<String>> listaTabla = new ArrayList<>();
+        List<String> filaLista1 = new ArrayList<>();
         List<String> filaLista = new ArrayList<>();
 
-        filaLista.add("");
+        filaLista1.add("");
 
         for (int i = 0; i < datos2.size(); i++) { // Columnas
-            filaLista.add(datos2.get(i).getValorText());
+            filaLista1.add(datos2.get(i).getValorText());
         }
-        lista.add(filaLista);
+        listaTabla.add(filaLista1);
         Pareja<String, String> pareja;
-        int numColumnas = filaLista.size();
-        filaLista.clear();
+        int numColumnas = filaLista1.size();
         for (int i = 0; i < numColumnas; i++) {
+            // Columna 0:
             if(i==0){
                 filaLista.add(datos1.get(i).getValorText());
+            // Resto de columnas:
             }else{
+                // Posicion obvia la primera fila:
                 int posicion = i+numColumnas;
                 int fila = posicion / numColumnas;
                 int columna = posicion % numColumnas;
@@ -187,10 +190,10 @@ public class Analisis {
                 String valorCelda = resulDatos.get(pareja)+"";
                 filaLista.add(valorCelda);
             }
-            lista.add(filaLista);
         }
+        listaTabla.add(filaLista);
 
-        return lista;
+        return listaTabla;
     }
 
     public int getRepesMax() {
