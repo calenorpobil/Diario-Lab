@@ -162,23 +162,25 @@ public class Analisis {
         return res;
     }
 
-    public List<List<String>> getListaTabla(){
-        List<List<String>> listaTabla = new ArrayList<>();
-        List<String> filaLista1 = new ArrayList<>();
-        List<String> filaLista = new ArrayList<>();
+    public ArrayList<ArrayList<String>> getListaTabla(){
+        ArrayList<ArrayList<String>> listaTabla = new ArrayList<>();
+        ArrayList<String> filaCabecera = new ArrayList<>();
+        ArrayList<ArrayList<String>> filas = new ArrayList<>();
 
-        filaLista1.add("");
+        filaCabecera.add("");
 
         for (int i = 0; i < datos2.size(); i++) { // Columnas
-            filaLista1.add(datos2.get(i).getValorText());
+            filaCabecera.add(datos2.get(i).getValorText());
         }
-        listaTabla.add(filaLista1);
+        listaTabla.add(filaCabecera);
         Pareja<String, String> pareja;
-        int numColumnas = filaLista1.size();
+        int numColumnas = filaCabecera.size();
         for (int i = 0; i < numColumnas; i++) {
+            filas.get(i) = new ArrayList<>();
+            ArrayList<String> filaActual = filas.get(i);
             // Columna 0:
             if(i==0){
-                filaLista.add(datos1.get(i).getValorText());
+                filaActual.add(datos1.get(i).getValorText());
             // Resto de columnas:
             }else{
                 // Posicion obvia la primera fila:
@@ -188,10 +190,10 @@ public class Analisis {
                 pareja = new Pareja<>(
                         datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
                 String valorCelda = resulDatos.get(pareja)+"";
-                filaLista.add(valorCelda);
+                filaActual.add(valorCelda);
             }
+            listaTabla.add(filaActual);
         }
-        listaTabla.add(filaLista);
 
         return listaTabla;
     }

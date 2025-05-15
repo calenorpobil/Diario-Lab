@@ -2,8 +2,8 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:padding="5dp"
-    android:layout_width="50dp"
+    android:padding="0dp"
+    android:layout_width="wrap_content"
     android:layout_height="50dp">
 
     <TextView
@@ -11,6 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:singleLine="false"
         android:background="@color/fondoRectangulo"/>
     <View
         android:id="@+id/vwCirculo"

@@ -2,6 +2,7 @@ package com.merlita.diariolab.Adaptadores;
 
 import static android.view.View.VISIBLE;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -56,7 +57,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     {
         ConstraintLayout main;
         TextView tvEstudio2, tvEstudio1, tvEmoji1, tvEmoji2;
-        RecyclerView glGrafico;
+        RecyclerView rvGrafico;
 
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
@@ -67,7 +68,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
             tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);
-            glGrafico = (RecyclerView) itemView.findViewById(R.id.glGrafico);
+            rvGrafico = (RecyclerView) itemView.findViewById(R.id.glGrafico);
 
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -94,15 +95,15 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         holder.tvEmoji1.setText(estudio1.getEmoji());
 
         //mostrarGrid(holder);
-        List<List<String>> data = new ArrayList<>();
-        data.add(Arrays.asList("", "Col 1", "Col 2", "Col 3", "Col 3", "Col 3", "Col 3"));  // Cabecera superior
-        data.add(Arrays.asList("Fila 1", "10", "20", "30", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-        data.add(Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+        ArrayList<ArrayList<String>> data;
+//        data.add( Arrays.asList("", "Col 1", "Col 2", "Col 3", "Col 3", "Col 3", "Col 3"));  // Cabecera superior
+//        data.add( Arrays.asList("Fila 1", "10", "20", "30", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
+//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
 
         data = analisisActual.getListaTabla();
 
@@ -111,11 +112,11 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         int numColumns = data.get(0).size();  // Número de columnas (incluye cabecera)
 
         GridLayoutManager layoutManager = new GridLayoutManager(context, numColumns);
-        holder.glGrafico.setLayoutManager(layoutManager);
+        holder.rvGrafico.setLayoutManager(layoutManager);
 
         adaptadorTabla = new AdaptadorTabla(context, data);
         adaptadorTabla.setClickListener(this);
-        holder.glGrafico.setAdapter(adaptadorTabla);
+        holder.rvGrafico.setAdapter(adaptadorTabla);
 
 
         holder.main.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +182,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             valoresColumnas.add(texto);
             b.setText(texto);
             b.setId(ids[i]);
-            holder.glGrafico.addView(b);
+            holder.rvGrafico.addView(b);
 
         // Poner nombres de filas
         } else if (i !=0 && i % filas == 0){
@@ -192,7 +193,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             b.setText(texto);
             b.setId(ids[i]);
             b.setVisibility(VISIBLE);
-            holder.glGrafico.addView(b);
+            holder.rvGrafico.addView(b);
 
         // Poner valores
         } else {
@@ -214,7 +215,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
             }
 //                holder.glGrafico.setUseDefaultMargins(false);
             circle.setLayoutParams(lp);
-            holder.glGrafico.addView(circle);
+            holder.rvGrafico.addView(circle);
         }
     }
 

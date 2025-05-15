@@ -11,15 +11,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdaptadorTabla extends RecyclerView.Adapter<AdaptadorTabla.ViewHolder> {
-    private final List<List<String>> mData;
+    private final ArrayList<ArrayList<String>> mData;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
-    // data is passed into the constructor
-    AdaptadorTabla(Context context, List<List<String>> data) {
+
+    AdaptadorTabla(Context context, ArrayList<ArrayList<String>> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -61,21 +62,19 @@ public class AdaptadorTabla extends RecyclerView.Adapter<AdaptadorTabla.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int totalColumnas = mData.get(0).size();  // Ejemplo:
-        int fila = position / totalColumnas;    // División entera
-        int columna = position % totalColumnas; // Resto
+        int totalColumnas = mData.get(0).size();
+        int fila = position / totalColumnas;
+        int columna = position % totalColumnas;
 
         String valor = mData.get(fila).get(columna);
         holder.myTextView.setText(valor);
     }
 
 
-    // convenience method for getting data at click position
     String getItem(int id) {
         return "-1";
     }
 
-    // allows clicks events to be caught
     void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
