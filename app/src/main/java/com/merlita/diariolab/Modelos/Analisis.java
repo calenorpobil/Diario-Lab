@@ -88,7 +88,7 @@ public class Analisis {
     private HashMap<Pareja<String, String>, Integer> calcularResultados() {
         HashMap<Pareja<String, String>, Integer> res = new HashMap<>();
 
-        //MISMO ESTUDIO
+        // MISMO ESTUDIO
         if(estudio1.getNombre().equals(estudio2.getNombre())){
             int size1 = datos1.size(); // Filas
             int size2 = datos2.size(); // Columnas
@@ -169,28 +169,33 @@ public class Analisis {
 
         filaCabecera.add("");
 
-        for (int i = 0; i < datos2.size(); i++) { // Columnas
-            filaCabecera.add(datos2.get(i).getValorText());
-        }
-        listaTabla.add(filaCabecera);
+//        for (int i = 0; i < datos2.size(); i++) { // Columnas
+//            filaCabecera.add(datos2.get(i).getValorText());
+//        }
+//        listaTabla.add(filaCabecera);
         Pareja<String, String> pareja;
-        int numColumnas = filaCabecera.size();
-        for (int i = 0; i < numColumnas; i++) {
-            filas.get(i) = new ArrayList<>();
-            ArrayList<String> filaActual = filas.get(i);
-            // Columna 0:
-            if(i==0){
-                filaActual.add(datos1.get(i).getValorText());
-            // Resto de columnas:
-            }else{
-                // Posicion obvia la primera fila:
-                int posicion = i+numColumnas;
-                int fila = posicion / numColumnas;
-                int columna = posicion % numColumnas;
-                pareja = new Pareja<>(
-                        datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
-                String valorCelda = resulDatos.get(pareja)+"";
-                filaActual.add(valorCelda);
+        int numColumnas = datos2.size()+1;
+        // Cada fila:
+        ArrayList<String> filaActual;
+        for (int fila = 0; fila < datos1.size()+1; fila++) {           // Filas
+            filas.add(new ArrayList<>());
+            filaActual = filas.get(fila);
+            for (int columna = 0; columna < numColumnas; columna++) {         // Columnas
+                // Nombres de columnas:
+                if (fila == 0){
+                    if(columna==0) filaActual.add("");
+                    else filaActual.add(datos2.get(columna-1).getValorText());
+                // Nombres de filas:
+                } else if (columna == 0){
+                    filaActual.add(datos1.get(fila-1).getValorText());
+                // Celdas:
+                }else {
+                    // Posicion obvia la primera fila:
+                    pareja = new Pareja<>(
+                            datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
+                    String valorCelda = resulDatos.get(pareja)+"";
+                    filaActual.add(valorCelda);
+                }
             }
             listaTabla.add(filaActual);
         }
