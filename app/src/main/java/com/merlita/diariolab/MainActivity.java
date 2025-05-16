@@ -96,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
         //EdgeToEdge.enable(this);
 
 
-        Intent i = new Intent(MainActivity.this, AnalisisActivity.class);
-        lanzadorAlta.launch(i);
+//        Intent i = new Intent(MainActivity.this, AnalisisActivity.class);
+//        i.putExtra("ESTUDIO", "EstudioX");
+//        lanzadorAlta.launch(i);
 
         tv = findViewById(R.id.tvEstudio2);
         btAlta = findViewById(R.id.btAlta);

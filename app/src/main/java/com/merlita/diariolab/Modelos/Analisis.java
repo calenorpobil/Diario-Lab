@@ -190,11 +190,17 @@ public class Analisis {
                     filaActual.add(datos1.get(fila-1).getValorText());
                 // Celdas:
                 }else {
-                    // Posicion obvia la primera fila:
                     pareja = new Pareja<>(
                             datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
-                    String valorCelda = resulDatos.get(pareja)+"";
-                    filaActual.add(valorCelda);
+                    String valorCrudo = resulDatos.get(pareja)+"";
+                    int valorNum=0;
+                    try{
+                        valorNum = Integer.parseInt(valorCrudo);
+                    }catch (NumberFormatException ex){
+
+                    }
+                    int valorCelda = valorNum/repesMax;
+                    filaActual.add(valorCelda+"");
                 }
             }
             listaTabla.add(filaActual);

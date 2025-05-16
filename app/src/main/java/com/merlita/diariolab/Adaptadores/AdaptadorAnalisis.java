@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -114,7 +115,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         GridLayoutManager layoutManager = new GridLayoutManager(context, numColumns);
         holder.rvGrafico.setLayoutManager(layoutManager);
 
-        adaptadorTabla = new AdaptadorTabla(context, data);
+        adaptadorTabla = new AdaptadorTabla(context, data, this.activity);
         adaptadorTabla.setClickListener(this);
         holder.rvGrafico.setAdapter(adaptadorTabla);
 
@@ -137,8 +138,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
         int[] ids = new int[columnas*filas];
 
 
-        ViewGroup.LayoutParams lp =
-                new ViewGroup.LayoutParams(
+        LayoutParams lp =
+                new LayoutParams(
                         (int) (anchoPantalla / (columnas*1.25)),
 //                        ActionBar.LayoutParams.MATCH_PARENT,
                         altoPantalla / (filas*3));
@@ -150,7 +151,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     }
 
     private void asignarCeldas(@NonNull MiContenedor holder,
-                               int filas, int columnas, ViewGroup.LayoutParams lp, int[] ids) {
+                               int filas, int columnas, LayoutParams lp, int[] ids) {
         HashMap<Pareja<String, String>, Integer> resulDatos = analisisActual.getResulDatos();
         ArrayList<Pareja<String, String>> parejas = analisisActual.getParejas();
         ArrayList<String> valoresFilas = new ArrayList<>();
@@ -162,7 +163,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
     }
 
     private void colocarBotones(@NonNull MiContenedor holder, int filas, int columnas,
-                                ViewGroup.LayoutParams lp, int[] ids, int i,
+                                LayoutParams lp, int[] ids, int i,
                                 HashMap<Pareja<String, String>, Integer> resulDatos,
                                 ArrayList<Pareja<String, String>> parejas,
                                 ArrayList<String> valoresFilas, ArrayList<String> valoresColumnas) {

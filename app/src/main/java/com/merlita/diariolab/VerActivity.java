@@ -166,6 +166,7 @@ public class VerActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(VerActivity.this, ElegirActivity.class);
+                i.putExtra(estudioOcurrencia.getNombre(), "ESTUDIO");
                 lanzadorAlta.launch(i);
 
             }

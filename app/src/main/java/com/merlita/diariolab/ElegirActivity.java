@@ -32,6 +32,7 @@ public class ElegirActivity extends AppCompatActivity {
     public static ArrayList<Estudio> listaEstudios = new ArrayList<>();
     static AdaptadorEstudiosElegir adaptadorEstudios;
     Button btAnalizar;
+    String nombreEstudio;
 
 
     private Uri selectedFileUri;
@@ -41,6 +42,11 @@ public class ElegirActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elegir);
+
+        Bundle upIntent = this.getIntent().getExtras();
+        assert upIntent != null;
+
+        nombreEstudio = upIntent.getString("ESTUDIO");
 
         btAnalizar = findViewById(R.id.btHome);
         vistaRecycler = findViewById(R.id.rvAnalisis);
@@ -61,6 +67,8 @@ public class ElegirActivity extends AppCompatActivity {
             public void onClick(View v){
 
                 Intent i = new Intent(ElegirActivity.this, AnalisisActivity.class);
+                i.putExtra(nombreEstudio, "ESTUDIO");
+
                 lanzadorAlta.launch(i);
 
             }

@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.emoji2.emojipicker)
     implementation(libs.recyclerview)
+    implementation(libs.filament.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

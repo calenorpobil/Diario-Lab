@@ -28,6 +28,7 @@ public class AnalisisActivity extends AppCompatActivity {
     public static ArrayList<Analisis> listaAnalisis = new ArrayList<>();
     private AdaptadorAnalisis adaptadorAnalisis;
     Button btHome;
+    String nombreEstudio;
 
 
     private Uri selectedFileUri;
@@ -37,6 +38,11 @@ public class AnalisisActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analisis);
+
+        Bundle upIntent = this.getIntent().getExtras();
+        assert upIntent != null;
+
+        nombreEstudio = upIntent.getString("ESTUDIO");
 
         btHome = findViewById(R.id.btHome);
         rvAnalisis = findViewById(R.id.rvAnalisis);
