@@ -28,9 +28,7 @@ import com.merlita.diariolab.Modelos.Pareja;
 import com.merlita.diariolab.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.MiContenedor> implements AdaptadorTabla.ItemClickListener {
 
@@ -65,7 +63,7 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
 
             main = (ConstraintLayout) itemView.findViewById(R.id.main);
 
-            tvEstudio2 = (TextView) itemView.findViewById(R.id.tvEstudio2);
+            tvEstudio2 = (TextView) itemView.findViewById(R.id.tvEstudioElegir);
             tvEstudio1 = (TextView) itemView.findViewById(R.id.tvEstudio1);
             tvEmoji1 = (TextView) itemView.findViewById(R.id.tvEmoji1);
             tvEmoji2 = (TextView) itemView.findViewById(R.id.tvEmoji2);

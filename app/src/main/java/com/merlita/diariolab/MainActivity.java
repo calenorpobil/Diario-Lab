@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 //        i.putExtra("ESTUDIO", "EstudioX");
 //        lanzadorAlta.launch(i);
 
-        tv = findViewById(R.id.tvEstudio2);
+        tv = findViewById(R.id.tvEstudioElegir);
         btAlta = findViewById(R.id.btAlta);
         btDev = findViewById(R.id.btCopia);
         btRevert = findViewById(R.id.btRevert);

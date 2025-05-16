@@ -89,7 +89,7 @@ public class VerActivity extends AppCompatActivity
         fk_estudio = estudioOcurrencia.getNombre();
 
         if(fk_estudio!=null){
-            tvTitulo = findViewById(R.id.tvEstudio2);
+            tvTitulo = findViewById(R.id.tvEstudioElegir);
             btGuardar = findViewById(R.id.btnGuardar);
             btModificar = findViewById(R.id.btModificar);
             btConfirmar = findViewById(R.id.btConfirmar);
@@ -165,8 +165,8 @@ public class VerActivity extends AppCompatActivity
         btAnalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(VerActivity.this, ElegirActivity.class);
-                i.putExtra(estudioOcurrencia.getNombre(), "ESTUDIO");
+                Intent i = new Intent(VerActivity.this, AnalisisActivity.class);
+                i.putExtra("ESTUDIO", estudioOcurrencia.getNombre());
                 lanzadorAlta.launch(i);
 
             }

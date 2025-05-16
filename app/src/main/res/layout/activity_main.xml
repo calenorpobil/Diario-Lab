@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvEstudio2"
+        android:id="@+id/tvEstudioElegir"
         style="@style/TextColor1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toEndOf="@+id/recyclerView"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/recyclerView"
-        app:layout_constraintTop_toTopOf="@+id/tvEstudio2" />
+        app:layout_constraintTop_toTopOf="@+id/tvEstudioElegir" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -44,7 +44,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tvErrores"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEstudio2"
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudioElegir"
         app:reverseLayout="true"
         app:stackFromEnd="false" />
 

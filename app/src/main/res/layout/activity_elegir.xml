@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="@+id/tvTitulo3" />
 
     <TextView
-        android:id="@+id/tvEstudio2"
+        android:id="@+id/tvEstudioElegir"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEstudio2" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudioElegir" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -104,9 +104,9 @@
         android:text="Elige otros estudios para comparar, o ninguno para comparar con todos:"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/tvEstudio2"
+        app:layout_constraintEnd_toEndOf="@+id/tvEstudioElegir"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/tvEstudio2"
+        app:layout_constraintStart_toStartOf="@+id/tvEstudioElegir"
         app:layout_constraintTop_toTopOf="@+id/dividerTop" />
 
 

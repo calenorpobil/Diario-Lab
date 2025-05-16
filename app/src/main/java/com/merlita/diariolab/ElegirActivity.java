@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -34,8 +35,7 @@ public class ElegirActivity extends AppCompatActivity {
     Button btAnalizar;
     String nombreEstudio;
 
-
-    private Uri selectedFileUri;
+    TextView tvEstudio;
 
 
     @Override
@@ -50,6 +50,7 @@ public class ElegirActivity extends AppCompatActivity {
 
         btAnalizar = findViewById(R.id.btHome);
         vistaRecycler = findViewById(R.id.rvAnalisis);
+        tvEstudio = findViewById(R.id.tvEstudioElegir);
         adaptadorEstudios = new AdaptadorEstudiosElegir(this, listaEstudios);
 
 
@@ -67,7 +68,7 @@ public class ElegirActivity extends AppCompatActivity {
             public void onClick(View v){
 
                 Intent i = new Intent(ElegirActivity.this, AnalisisActivity.class);
-                i.putExtra(nombreEstudio, "ESTUDIO");
+                i.putExtra("ESTUDIO", nombreEstudio);
 
                 lanzadorAlta.launch(i);
 

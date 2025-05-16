@@ -75,7 +75,7 @@ public class OcurrenciaActivity extends AppCompatActivity
         posicion = upIntent.getInt("INDEX");
 
         if(fk_estudio!=null){
-            tvTitulo = findViewById(R.id.tvEstudio2);
+            tvTitulo = findViewById(R.id.tvEstudioElegir);
             tvReps = findViewById(R.id.tvRepeticiones);
             tvFecha = findViewById(R.id.tvFecha);
             btGuardar = findViewById(R.id.btnGuardar);
