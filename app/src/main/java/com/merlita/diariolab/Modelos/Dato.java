@@ -61,6 +61,15 @@ public class Dato  implements Parcelable {
         this.fkOcurrencia = ocurrencia.getCod();
     }
 
+    public Dato() {
+        this.fkTipoDato = "";
+        this.fkTipoEstudio = "";
+        this.fkOcurrencia = "";
+        this.valorText = "";
+        int longitud = 0;
+
+    }
+
 
     // Getters y Setters
     public String getFkTipoDato() {

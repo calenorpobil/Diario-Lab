@@ -317,6 +317,37 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return datos;
     }
 
+    public ArrayList<Dato> getDatosUnicosDeTipo(SQLiteDatabase db,
+                                                String nomEstudio, String nomTipo) {
+
+        ArrayList<Dato> datos = new ArrayList<>();
+
+        String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
+                "valor_text FROM dato WHERE FK_TIPO_E = ? AND fk_tipo_n = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{nomEstudio, nomTipo});
+
+        while (c.moveToNext()){
+            Dato dato = new Dato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3));
+            if(!containsDatoPorValor(datos, dato)){
+                datos.add(dato);
+            }
+        }
+        c.close();
+
+        return datos;
+    }
+
+    private boolean containsDatoPorValor(ArrayList<Dato> datos, Dato dato) {
+        for (Dato d: datos) {
+            if(d.getValorText().equals(dato.getValorText())) return true;
+        }
+        return false;
+    }
+
     public ArrayList<Dato> getDatosDeTipo(SQLiteDatabase db, String nomEstudio, String nomTipo) {
 
         ArrayList<Dato> datos = new ArrayList<>();

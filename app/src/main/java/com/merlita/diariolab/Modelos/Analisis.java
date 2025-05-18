@@ -77,7 +77,7 @@ public class Analisis {
             SQLiteDatabase db;
             db = usdbh.getWritableDatabase();
 
-            res = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getNombre());
+            res = usdbh.getDatosUnicosDeTipo(db, tipo.getFkEstudio(), tipo.getNombre());
 
             db.close();
         }
@@ -108,7 +108,9 @@ public class Analisis {
                 Ocurrencia ocurrencia = getOcurrenciaDeDato(explorado.getFkOcurrencia());
                 // Busca el otro dato de la misma ocurrencia:
                 int index = datos1.indexOf(new Dato(ocurrencia));
-                Dato correspondiente = datos1.get(index);
+                Dato correspondiente=new Dato();
+                if(index!=-1)
+                    correspondiente = datos1.get(index);
 
                 ocurrencias.add(new Pareja(explorado.getValorText(), correspondiente.getValorText()));
                 // Colocar un 0 o la cuenta
@@ -164,32 +166,27 @@ public class Analisis {
 
     public ArrayList<ArrayList<String>> getListaTabla(){
         ArrayList<ArrayList<String>> listaTabla = new ArrayList<>();
-        ArrayList<String> filaCabecera = new ArrayList<>();
         ArrayList<ArrayList<String>> filas = new ArrayList<>();
 
-        filaCabecera.add("");
-
-//        for (int i = 0; i < datos2.size(); i++) { // Columnas
-//            filaCabecera.add(datos2.get(i).getValorText());
-//        }
-//        listaTabla.add(filaCabecera);
         Pareja<String, String> pareja;
         int numColumnas = datos2.size()+1;
         // Cada fila:
         ArrayList<String> filaActual;
-        for (int fila = 0; fila < datos1.size()+1; fila++) {           // Filas
+        for (int fila = 0; fila < datos1.size()+1; fila++) {
             filas.add(new ArrayList<>());
             filaActual = filas.get(fila);
-            for (int columna = 0; columna < numColumnas; columna++) {         // Columnas
-                // Nombres de columnas:
+            for (int columna = 0; columna < numColumnas; columna++) {       // Columnas
                 if (fila == 0){
-                    if(columna==0) filaActual.add("");
-                    else filaActual.add(datos2.get(columna-1).getValorText());
-                // Nombres de filas:
-                } else if (columna == 0){
-                    filaActual.add(datos1.get(fila-1).getValorText());
-                // Celdas:
-                }else {
+                    if(columna==0) {
+                        filaActual.add("");
+                    } else {
+                        String nomColumna = datos2.get(columna-1).getValorText();
+                        filaActual.add(nomColumna);
+                    }
+                } else if (columna == 0){                                   // Filas
+                    String nomFila = datos1.get(fila-1).getValorText();
+                    filaActual.add(nomFila);
+                }else {                                                     // Celdas
                     pareja = new Pareja<>(
                             datos2.get(columna-1).getValorText(), datos1.get(fila-1).getValorText());
                     String valorCrudo = resulDatos.get(pareja)+"";
@@ -199,8 +196,11 @@ public class Analisis {
                     }catch (NumberFormatException ex){
 
                     }
-                    int valorCelda = valorNum/repesMax;
+                    int valorCelda = (valorNum*100/repesMax);
                     filaActual.add(valorCelda+"");
+                    if(repesMax!=1){
+                        System.out.println("juan");
+                    }
                 }
             }
             listaTabla.add(filaActual);

@@ -18,9 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.merlita.diariolab.Adaptadores.AdaptadorAnalisis;
 import com.merlita.diariolab.Modelos.Analisis;
 import com.merlita.diariolab.Modelos.Estudio;
+import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AnalisisActivity extends AppCompatActivity {
 
@@ -46,11 +49,22 @@ public class AnalisisActivity extends AppCompatActivity {
 
         btHome = findViewById(R.id.btHome);
         rvAnalisis = findViewById(R.id.rvAnalisis);
-        listaAnalisis.add(new Analisis(this,
-                "Tomar Café",
-                "Tomar Café",
-                "Hora",
-                "Tipo de café"));
+        ArrayList<TipoDato> tiposEstudio = getTiposEstudio();
+        List<List<TipoDato>> pairs = new ArrayList<>();
+        for (int i = 0; i < tiposEstudio.size(); i++) {
+            for (int j = i + 1; j < tiposEstudio.size(); j++) {
+                pairs.add(Arrays.asList(
+                        tiposEstudio.get(i), tiposEstudio.get(j)));
+                listaAnalisis.add(new Analisis(this,
+                        nombreEstudio, nombreEstudio,
+                        tiposEstudio.get(i).getNombre(), tiposEstudio.get(j).getNombre()));
+            }
+        }
+//        listaAnalisis.add(new Analisis(this,
+//                nombreEstudio,
+//                nombreEstudio,
+//                "Hora",
+//                "Tipo de café"));
         adaptadorAnalisis = new AdaptadorAnalisis(this, this,
                 listaAnalisis);
 
@@ -67,6 +81,24 @@ public class AnalisisActivity extends AppCompatActivity {
             public void onClick(View v){
             }
         });
+    }
+
+    private ArrayList<TipoDato> getTiposEstudio() {
+        ArrayList<TipoDato> res = new ArrayList<>();
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getTiposDato(db, nombreEstudio);
+
+            db.close();
+        }
+
+        return res;
     }
 
     public static void actualizarLocal(){

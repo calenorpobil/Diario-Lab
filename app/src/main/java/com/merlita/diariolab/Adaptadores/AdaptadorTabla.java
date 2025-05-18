@@ -94,8 +94,8 @@ public class AdaptadorTabla extends RecyclerView.Adapter<AdaptadorTabla.ViewHold
             int datoAncho=0;
             try {
                 datoAncho = Integer.parseInt(datosTabla.get(fila).get(columna));
-            }catch (NumberFormatException ex){}
-            anchoCircle = anchoCircle*datoAncho;
+            }catch (NumberFormatException ignored){}
+            anchoCircle = anchoCircle*datoAncho/100;
             ViewGroup.LayoutParams lp =
                     new LinearLayout.LayoutParams(anchoCircle, anchoCircle);
             holder.myTextView.setVisibility(GONE);

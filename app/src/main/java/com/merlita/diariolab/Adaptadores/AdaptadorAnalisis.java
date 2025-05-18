@@ -95,18 +95,8 @@ public class AdaptadorAnalisis extends RecyclerView.Adapter<AdaptadorAnalisis.Mi
 
         //mostrarGrid(holder);
         ArrayList<ArrayList<String>> data;
-//        data.add( Arrays.asList("", "Col 1", "Col 2", "Col 3", "Col 3", "Col 3", "Col 3"));  // Cabecera superior
-//        data.add( Arrays.asList("Fila 1", "10", "20", "30", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
-//        data.add( Arrays.asList("Fila 2", "40", "50", "60", "Col 3", "Col 3", "Col 3"));
 
         data = analisisActual.getListaTabla();
-
-
 
         int numColumns = data.get(0).size();  // Número de columnas (incluye cabecera)
 
