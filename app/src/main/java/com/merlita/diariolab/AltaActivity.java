@@ -27,7 +27,7 @@ public class AltaActivity extends AppCompatActivity
     ArrayList<TipoDato> listaTiposDato = new ArrayList<>();
     ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
-    RecyclerView vistaRecycler;
+    RecyclerView rvTipos;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
 
 
@@ -49,15 +49,17 @@ public class AltaActivity extends AppCompatActivity
         etDescripcion = findViewById(R.id.etDescripcion);
         etEmoji = findViewById(R.id.etEmoji);
         btGuardar = findViewById(R.id.btnGuardar);
-        vistaRecycler = findViewById(R.id.recyclerTipos);
+        rvTipos = findViewById(R.id.recyclerTipos);
 
 
         btNuevoTipo = findViewById(R.id.btNuevoCualitativo);
         adaptadorTiposDato = new AdaptadorTiposDato(
                 this, listaTiposDato, "", this);
 
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
+        rvTipos.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL,
+                false));
+        rvTipos.setAdapter(adaptadorTiposDato);
 
 
         actualizarLocal();
@@ -67,7 +69,7 @@ public class AltaActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 TipoDato nuevo = new TipoDato();
-                listaTiposDato.add(nuevo);
+                listaTiposDato.add(0, nuevo);
 
                 adaptadorTiposDato.notifyItemInserted(0);
             }
@@ -76,8 +78,8 @@ public class AltaActivity extends AppCompatActivity
     }
 
     private void actualizarLocal() {
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
+        rvTipos.setLayoutManager(new LinearLayoutManager(this));
+        rvTipos.setAdapter(adaptadorTiposDato);
     }
 
 
@@ -102,7 +104,7 @@ public class AltaActivity extends AppCompatActivity
                     datosEstudio.add(etDescripcion.getText().toString());
                     datosEstudio.add(etEmoji.getText().toString());
 
-                    AdaptadorTiposDato a = (AdaptadorTiposDato) vistaRecycler.getAdapter();
+                    AdaptadorTiposDato a = (AdaptadorTiposDato) rvTipos.getAdapter();
                     assert a != null;
                     listaTiposDato = a.getLista();
                     for (int k = 0; k < listaTiposDato.size(); k++) {

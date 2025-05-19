@@ -36,16 +36,16 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
     private Context context;
     private ArrayList<TipoDato> lista;
-    ArrayList<Cualitativo> listaCualitativo = new ArrayList<>();
     private boolean visible = false;
     private String nombreEstudio;
     private boolean primera = true;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
+    private int cuenta=0;
 
     public interface OnButtonClickListener {
         void onButtonClickNuevoCualitativo(Cualitativo nuevo);
     }
-    private AdaptadorTiposDato.OnButtonClickListener listener;
+    private OnButtonClickListener listener;
 
     Estudio estudioFila;
 
@@ -58,6 +58,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
+        private ArrayList<Cualitativo> listaCualitativos;
         EditText etNombre, etDescripcion;
         Spinner spTipoDato;
         RecyclerView rvCualitativos;
@@ -67,6 +68,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
+            listaCualitativos = new ArrayList<>();
             etNombre = (EditText) itemView.findViewById(R.id.etNombre);
             etDescripcion = (EditText) itemView.findViewById(R.id.etDescripcion);
             spTipoDato = (Spinner) itemView.findViewById(R.id.spTipoDato);
@@ -95,6 +97,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
 
 
+
     @NonNull
     @Override
     public MiContenedor onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -115,10 +118,11 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         holder.etNombre.setText(tipoDato.getNombre());
 
 
-
         AdaptadorCualitativo adaptadorCualitativo =
-                new AdaptadorCualitativo(context, listaCualitativo);
-        holder.rvCualitativos.setLayoutManager(new LinearLayoutManager(context));
+                new AdaptadorCualitativo(context, holder.listaCualitativos);
+        holder.rvCualitativos.setLayoutManager(new LinearLayoutManager(this.context,
+                LinearLayoutManager.VERTICAL,
+                false));
         holder.rvCualitativos.setAdapter(adaptadorCualitativo);
 
 
@@ -138,13 +142,17 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 int tamanyo = adapter.getCount()-1;
                 tipoDato.setTipoDato(ordenSpinner[position]);
 
-                //TIPO: CUALITATIVO
-                if( position == tamanyo){
-                    listaCualitativo = getCualitativos(tipoDato.getFkEstudio(), tipoDato.getNombre());
-                    holder.segundo.setVisibility(VISIBLE);
-                }else{
-                    holder.segundo.setVisibility(GONE);
-                }
+                    //TIPO: CUALITATIVO
+                    if( position == tamanyo){
+                        if(cuenta<getItemCount()){
+                            holder.listaCualitativos = getCualitativos(holder.listaCualitativos,
+                                    tipoDato.getFkEstudio(), tipoDato.getNombre());
+                        }
+                        holder.segundo.setVisibility(VISIBLE);
+                    }else{
+                        holder.segundo.setVisibility(GONE);
+                    }
+                    cuenta++;
             }
 
             @Override
@@ -158,7 +166,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             public void onClick(View v) {
                 Cualitativo nuevo = new Cualitativo();
                 nuevo.setFk_dato_tipo_t(holder.etNombre.getText().toString());
-                listaCualitativo.add(0, nuevo);
+                holder.listaCualitativos.add(0, nuevo);
                 adaptadorCualitativo.notifyItemInserted(0);
                 listener.onButtonClickNuevoCualitativo(nuevo);
             }
@@ -174,8 +182,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             @Override
             public void afterTextChanged(Editable s) {
                 lista.get(holder.getAbsoluteAdapterPosition()).setNombre(s.toString());
-                for (int i = 0; i < listaCualitativo.size(); i++) {
-                    listaCualitativo.get(i).setFk_dato_tipo_t(s.toString());
+                for (int i = 0; i < holder.listaCualitativos.size(); i++) {
+                    holder.listaCualitativos.get(i).setFk_dato_tipo_t(s.toString());
                 }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
@@ -194,10 +202,11 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         });
     }
 
-    private ArrayList<Cualitativo> getCualitativos(String fk_estudio, String fk_tipo) {
+    private ArrayList<Cualitativo> getCualitativos(ArrayList<Cualitativo> listaCualitativos,
+                                                   String fk_estudio, String fk_tipo) {
         ArrayList<Cualitativo> res = new ArrayList<>();
         if(primera){
-           primera = false;
+//           primera = false;
 
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this.context,
@@ -215,7 +224,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
 
             return res;
         }
-        return listaCualitativo;
+        return listaCualitativos;
     }
 
 

@@ -68,7 +68,9 @@ public class AnalisisActivity extends AppCompatActivity {
         adaptadorAnalisis = new AdaptadorAnalisis(this, this,
                 listaAnalisis);
 
-        LinearLayoutManager lm = new LinearLayoutManager(this);
+        LinearLayoutManager lm = new LinearLayoutManager(this,
+                VERTICAL,
+                true);
         lm.setOrientation(VERTICAL);
         lm.setReverseLayout(true);
 

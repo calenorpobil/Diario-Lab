@@ -38,7 +38,7 @@ public class EditActivity extends AppCompatActivity
             listaTiposDato  = new ArrayList<>();
     private ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
-    RecyclerView vistaRecycler;
+    RecyclerView rvTipos;
     String nombreEstudio;
     int posicion=-1;
     private boolean primeraVez=true;
@@ -86,7 +86,7 @@ public class EditActivity extends AppCompatActivity
         etEmoji = findViewById(R.id.etEmoji);
         etDescripcion = findViewById(R.id.etDescripcion);
         bt = findViewById(R.id.btnGuardar);
-        vistaRecycler = findViewById(R.id.recyclerTipos);
+        rvTipos = findViewById(R.id.recyclerTipos);
         btNuevoTipo  = findViewById(R.id.btNuevoCualitativo);
 
         // Poblar campos de texto
@@ -95,11 +95,14 @@ public class EditActivity extends AppCompatActivity
         etEmoji.setText(emoji);
 
 
-        adaptadorTiposDato = new AdaptadorTiposDato(this, listaTiposDato, nombreEstudio, this);
+        adaptadorTiposDato = new AdaptadorTiposDato(this,
+                listaTiposDato, nombreEstudio, this);
 
 
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
+        rvTipos.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL,
+                false));
+        rvTipos.setAdapter(adaptadorTiposDato);
 
 
 
@@ -109,7 +112,7 @@ public class EditActivity extends AppCompatActivity
         btNuevoTipo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listaTiposDato.add(new TipoDato());
+                listaTiposDato.add(0, new TipoDato());
                 adaptadorTiposDato.notifyItemInserted(0);
             }
         });
@@ -123,8 +126,8 @@ public class EditActivity extends AppCompatActivity
     }
 
     private void actualizarLocal() {
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
+        rvTipos.setLayoutManager(new LinearLayoutManager(this));
+        rvTipos.setAdapter(adaptadorTiposDato);
     }
 
     public void actualizarDatos() {
@@ -144,8 +147,8 @@ public class EditActivity extends AppCompatActivity
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Inténtalo en otro momento. ");
         }
-        vistaRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vistaRecycler.setAdapter(adaptadorTiposDato);
+        rvTipos.setLayoutManager(new LinearLayoutManager(this));
+        rvTipos.setAdapter(adaptadorTiposDato);
 
     }
 
