@@ -1,6 +1,11 @@
 package com.merlita.diariolab.Adaptadores;
 
+import static com.merlita.diariolab.MainActivity.DB_VERSION;
+
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +18,7 @@ import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.R;
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 
@@ -69,20 +75,22 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
         //Solo mostrará la longitud de los datos de texto de momento:
         Double max = 0.0;
         Double longitud = 0.0;
-        //for (int i = 0; i < listaDatos.size(); i++) {
-        Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
-        int index = listaTipos.indexOf(
-                new TipoDato(dato.getFkTipoDato(), dato.getFkTipoEstudio()));
-        TipoDato tipoCorrespondiente = listaTipos.get(index);
-        if(tipoCorrespondiente.getTipoDato().equals("Texto")){
-            listaDatosUtiles.add(dato);
+
+        Dato dato = getPrimerDatoOcurrencia(ocurrencia, ocurrencia.getFkEstudioN());
+        if (dato!=null) {
+            int index = listaTipos.indexOf(
+                    new TipoDato(dato.getFkTipoDato(), dato.getFkTipoEstudio()));
+            TipoDato tipoCorrespondiente = listaTipos.get(index);
+            if(tipoCorrespondiente.getTipoDato().equals("Texto")){
+                listaDatosUtiles.add(dato);
+            }
+            if(!listaDatosUtiles.isEmpty()){
+                String texto = listaDatosUtiles.get(0).getValorText();
+                longitud = (double) texto.length());
+                max = (double) tipoCorrespondiente.getMaximaLongitud());
+            }
         }
 
-        if(listaDatosUtiles.size()>0){
-            String texto = listaDatosUtiles.get(0).getValorText();
-            longitud = new Double(texto.length());
-            max = new Double(tipoCorrespondiente.getMaximaLongitud());
-        }
 
         //}
 
@@ -128,6 +136,30 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
                 listener.onButtonClickTipo();
             }
         });
+
+    }
+
+    private Dato getPrimerDatoOcurrencia(Ocurrencia ocurrencia, String nombreEstudio) {
+        Dato datoResultado=null;
+        ArrayList<Dato> datos;
+
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this.context,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                datos = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), nombreEstudio);
+                if(!datos.isEmpty())
+                    datoResultado = datos.get(0);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            Log.d("MyAdapter", "Intentalo en otro momento. ");
+        }
+        return datoResultado;
 
     }
 

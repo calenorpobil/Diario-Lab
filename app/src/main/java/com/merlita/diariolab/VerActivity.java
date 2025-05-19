@@ -44,7 +44,6 @@ public class VerActivity extends AppCompatActivity
         AdaptadorColumnas.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
-    private Context context = this.getBaseContext();
     TextView tvTitulo;
     Button btGuardar, btConfirmar, btModificar, btAnalizar;
     ArrayList<Ocurrencia> listaOcurrencias = new ArrayList<>();

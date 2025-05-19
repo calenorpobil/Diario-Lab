@@ -256,7 +256,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList<Dato> getDatosPorOcurrencia(SQLiteDatabase db, String fkOcurrencia, String nomEstudio) {
+    public ArrayList<Dato> getDatosPorOcurrencia(SQLiteDatabase db,
+                                                 String fkOcurrencia, String nomEstudio) {
 
         ArrayList<Dato> datos = new ArrayList<>();
 
