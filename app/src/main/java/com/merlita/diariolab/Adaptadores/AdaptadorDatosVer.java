@@ -103,12 +103,23 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     //PONER VALORES
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
-        TipoDato actual = listaTipos.get(holder.getAbsoluteAdapterPosition());
+        TipoDato tdActual = listaTipos.get(holder.getAbsoluteAdapterPosition());
+        Dato datoActual = new Dato();
         if (position>=0 && position < listaTipos.size()){
             listaDatos = getDatos();
 
-            Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
-            TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
+            for (int i = 0; i < listaDatos.size(); i++) {
+                String fkDato = listaDatos.get(i).getFkTipoDato();
+                String nomTipo = tdActual.getNombre();
+                if(fkDato.equals(nomTipo)) {
+                    datoActual = listaDatos.get(i);
+                    break;
+                }
+            }
+            if (listaDatos.isEmpty()){
+
+            }
+
 
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                     this.context,
@@ -117,10 +128,6 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     android.R.layout.simple_spinner_item
             );
 
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            holder.spTipo.setAdapter(adapter);
-
-            holder.spTipo.setSelection(adapter.getPosition(dato.getFkTipoDato()));
 
             holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
 
@@ -129,13 +136,13 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             holder.etTexto.setEnabled(enabled);
             holder.tvHora.setEnabled(enabled);
 
-            switch (tipo.getTipoDato()){
+            switch (tdActual.getTipoDato()){
                 case "Número": {
                     holder.tvHora.setVisibility(GONE);
                     holder.etTexto.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
 
-                    holder.etNumero.setText(dato.getValorText());
+                    holder.etNumero.setText(datoActual.getValorText());
                     break;
                 }
                 case "Texto": {
@@ -143,7 +150,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.etNumero.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
 
-                    holder.etTexto.setText(dato.getValorText());
+                    holder.etTexto.setText(datoActual.getValorText());
                     break;
                 }
                 case "Fecha": {
@@ -154,13 +161,13 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
 
                     String nombreTipo = "Escribe una fecha";
-                    nombreTipo = tipo.getDescripcion();
-                    holder.tvHora.setText(dato.getValorText());
+                    nombreTipo = tdActual.getDescripcion();
+                    holder.tvHora.setText(datoActual.getValorText());
 
                     break;
                 }
                 case "Hora": {
-                    holder.tvHora.setText(dato.getValorText());
+                    holder.tvHora.setText(datoActual.getValorText());
                     holder.etTexto.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
                     holder.etNumero.setVisibility(GONE);
@@ -172,18 +179,24 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.tvHora.setVisibility(GONE);
 
                     ArrayList<Cualitativo> listaCualitativos =
-                            getCualitativos(tipo.getFkEstudio(), tipo.getNombre());
-                    ArrayList<String> aux = new ArrayList<>();
-                    for (Cualitativo a: listaCualitativos) {
-                        aux.add(a.getTitulo());
+                            getCualitativos(tdActual.getFkEstudio(), tdActual.getNombre());
+                    ArrayList<String> cualitativos = new ArrayList<>();
+                    for (Cualitativo c: listaCualitativos) {
+                        cualitativos.add(c.getTitulo());
                     }
+
                     ArrayAdapter<String> adapter1 = new ArrayAdapter<>(
                             this.context, android.R.layout.simple_spinner_item,
-                            aux);
+                            cualitativos);
                     adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     holder.spTipo.setAdapter(adapter1);
-                    int index = aux.indexOf(dato.getValorText());
-                    holder.spTipo.setSelection(index);
+                    int index = cualitativos.indexOf(datoActual.getValorText());
+                    if(index==-1){
+                        cualitativos.add("Sin datos");
+                        holder.spTipo.setSelection(cualitativos.size()-1);
+                    } else {
+                        holder.spTipo.setSelection(index);
+                    }
                     holder.spTipo.setEnabled(enabled);
 
                     break;
@@ -255,6 +268,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         });
     }
 
+
     private ArrayList<Dato> getDatos() {
         ArrayList<Dato> res = new ArrayList<>();
 
@@ -298,24 +312,24 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     }
 
 
-    public AdaptadorDatosVer(Context context, ArrayList<Dato> lista,
+    public AdaptadorDatosVer(Context context, ArrayList<TipoDato> listaTipos,
                              AdaptadorDatosVer.OnButtonClickListener listener, Ocurrencia ocurrencia,
-                             ArrayList<TipoDato> listaTipos,
+                             ArrayList<Dato> lista,
                              DatePickerListener listenerFecha, boolean enabled) {
         super();
         this.context = context;
+        this.listaTipos = listaTipos;
         this.listaDatos = lista;
         this.listener = listener;
         this.listenerFecha = listenerFecha;
         this.ocurrencia = ocurrencia;
-        this.listaTipos = listaTipos;
         this.enabled = enabled;
 
     }
 
     @Override
     public int getItemCount() {
-        return listaDatos.size();
+        return listaTipos.size();
     }
 
     public ArrayList<Dato> getLista(){

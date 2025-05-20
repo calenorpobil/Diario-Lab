@@ -86,8 +86,8 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
             }
             if(!listaDatosUtiles.isEmpty()){
                 String texto = listaDatosUtiles.get(0).getValorText();
-                longitud = (double) texto.length());
-                max = (double) tipoCorrespondiente.getMaximaLongitud());
+                longitud = (double) texto.length();
+                max = (double) tipoCorrespondiente.getMaximaLongitud();
             }
         }
 

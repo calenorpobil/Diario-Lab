@@ -127,7 +127,9 @@ public class VerActivity extends AppCompatActivity
             rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
             rvOcurrencias.setAdapter(adaptadorOcurrencias);
 
-            rvTipos.setLayoutManager(new LinearLayoutManager(this));
+            rvTipos.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL,
+                    false));
             rvTipos.setAdapter(adaptadorTipos);
 
             rvColumnas.setLayoutManager(new LinearLayoutManager(this,
@@ -331,8 +333,8 @@ public class VerActivity extends AppCompatActivity
         listaTipos = getTiposDato();
 
         adaptadorDatos = new AdaptadorDatosVer(
-                this, listaDatos, this, ocurrencia,
-                listaTipos, this, enabled);
+                this, listaTipos, this, ocurrencia,
+                listaDatos, this, enabled);
 
         rvDatos.setAdapter(adaptadorDatos);
 
