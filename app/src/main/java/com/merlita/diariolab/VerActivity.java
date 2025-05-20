@@ -1,10 +1,11 @@
 package com.merlita.diariolab;
 
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,6 +86,7 @@ public class VerActivity extends AppCompatActivity
         assert upIntent != null;
 
         estudioOcurrencia = upIntent.getParcelable("ESTUDIO");
+        assert estudioOcurrencia != null;
         fk_estudio = estudioOcurrencia.getNombre();
 
         if(fk_estudio!=null){
@@ -99,12 +101,6 @@ public class VerActivity extends AppCompatActivity
             rvTipos = findViewById(R.id.rvTipos);
             rvMedidas = findViewById(R.id.rvInfo);
 
-
-            /*rvGrafico.setLayoutManager(new LinearLayoutManager(this));
-            rvOcurrencias.setAdapter(adaptadorGrafico);
-
-            rvMedidas.setLayoutManager(new LinearLayoutManager(this));
-            rvOcurrencias.setAdapter(adaptadorMedidas);*/
 
             tvTitulo.setText(estudioOcurrencia.getNombre());
 
@@ -159,6 +155,15 @@ public class VerActivity extends AppCompatActivity
                 }
 
 
+            }
+        });
+
+        btConfirmar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                borrarDatosOcurrencia(listaDatos.get(0).getFkOcurrencia());
+                insertarDatos(listaDatos);
             }
         });
 
@@ -254,6 +259,52 @@ public class VerActivity extends AppCompatActivity
         }
 
         return res;
+    }
+    private void borrarDatosOcurrencia(String codOcu) {
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                usdbh.borrarDatos_PorOcurrencia(db, codOcu);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+
+    }
+
+    private void insertarDatos(ArrayList<Dato> datos) {
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);){
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            for (int i = 0; i < datos.size(); i++) {
+                ContentValues values = new ContentValues();
+                values.put("FK_TIPO_N", datos.get(i).getFkTipoDato());
+                values.put("FK_TIPO_E", datos.get(i).getFkTipoEstudio());
+                values.put("FK_OCURRENCIA", datos.get(0).getFkOcurrencia());
+                String valor = datos.get(i).getValorText();
+                if(valor.isEmpty()){
+                    values.put("VALOR_TEXT", " ");
+                }else{
+                    values.put("VALOR_TEXT", valor);
+                }
+
+                db.insert("Dato", null,
+                        values);
+
+            }
+
+            db.close();
+        } catch (SQLiteException ex){
+            toast(ex.getMessage());
+        }
     }
 
 

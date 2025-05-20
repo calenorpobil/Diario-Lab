@@ -45,7 +45,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         void onButtonClickDatos();
     }
 
-    private AdaptadorDatosVer.OnButtonClickListener listener;
+    private OnButtonClickListener listener;
 
     protected DatePickerListener listenerFecha;
 
@@ -256,9 +256,11 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         holder.spTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                /*listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(
-                        parent.getItemAtPosition(pos).toString()
-                );*/
+                String texto = parent.getItemAtPosition(pos).toString();
+                Dato dato = listaDatos.get(holder.getAbsoluteAdapterPosition());
+                dato.setValorText(
+                        texto
+                );
             }
 
             @Override
@@ -278,6 +280,21 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             db = usdbh.getWritableDatabase();
 
             res = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), ocurrencia.getFkEstudioN());
+            ArrayList<String> tiposConDato = new ArrayList<>();
+            for (Dato dato : res) {
+                String tipoConDato = dato.getFkTipoDato();
+                tiposConDato.add(tipoConDato);
+            }
+            for (TipoDato tipo : listaTipos) {
+                if(!tiposConDato.contains(tipo.getNombre())){
+                    res.add(new Dato(
+                            tipo.getNombre(),
+                            ocurrencia.getFkEstudioN(),
+                            ocurrencia.getCod(),
+                            "Sin datos"));
+                }
+
+            }
         }
 
         return res;
@@ -313,7 +330,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
 
 
     public AdaptadorDatosVer(Context context, ArrayList<TipoDato> listaTipos,
-                             AdaptadorDatosVer.OnButtonClickListener listener, Ocurrencia ocurrencia,
+                             OnButtonClickListener listener, Ocurrencia ocurrencia,
                              ArrayList<Dato> lista,
                              DatePickerListener listenerFecha, boolean enabled) {
         super();

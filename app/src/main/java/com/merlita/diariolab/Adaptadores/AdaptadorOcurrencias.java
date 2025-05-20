@@ -2,6 +2,7 @@ package com.merlita.diariolab.Adaptadores;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
     private Context context;
     private ArrayList<Ocurrencia> listaOcurrencias;
     private Estudio estudio;
+    private int selectedPosition=-1;
 
     public interface OnButtonClickListener {
         void onButtonClickOcurrencia(Ocurrencia ocurrencia);
@@ -83,12 +85,23 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Ocurrencia ocurrencia = listaOcurrencias.get(holder.getAbsoluteAdapterPosition());
+        holder.clFila.setBackgroundResource(0);
 
         String reps = (position+1)+"";
         holder.tvRepeticiones.setText("🔁 "+reps);
         LocalDate date = ocurrencia.getFecha();
         String fecha = date.getDayOfMonth()+"/"+date.getMonthValue()+"/"+date.getYear();
         holder.tvFecha.setText(fecha);
+
+
+        // Cambiar el fondo según la selección
+        if (position == selectedPosition) {
+            holder.clFila.setBackgroundResource(R.color.grisSeleccionado);
+        } else {
+            holder.clFila.setBackgroundResource(0);
+        }
+
+
 
 
         holder.btEditar.setOnClickListener(new View.OnClickListener() {
@@ -103,9 +116,16 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
 
             public void onClick(View v) {
                 listener.onButtonClickOcurrencia(ocurrencia);
+                setSelectedPosition(holder.getAbsoluteAdapterPosition());
             }
 
         });
+    }
+
+    // Mét odo para actualizar la selección
+    public void setSelectedPosition(int position) {
+        selectedPosition = position;
+        notifyDataSetChanged(); // Actualiza todas las celdas
     }
 
 

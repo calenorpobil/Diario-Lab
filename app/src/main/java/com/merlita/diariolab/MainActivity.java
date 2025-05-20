@@ -564,14 +564,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             db.close();
-        } catch (SQLiteConstraintException ex){
-            toast(ex.getMessage());
         } catch (SQLiteException ex){
             toast(ex.getMessage());
         }
         return res;
     }
-    private long[] borrarDatos(ArrayList<Dato> datos){
+    private void borrarDatos(ArrayList<Dato> datos){
         long[] res = new long[datos.size()];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -590,7 +588,23 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLiteConstraintException ex){
             toast(ex.getMessage());
         }
-        return res;
+    }
+
+    private void borrarDatosOcurrencia(String ocuID){
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);){
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            db.delete("Dato",
+                    "fk_ocurrencia = ?",
+                    new String[]{ocuID});
+
+
+            db.close();
+        } catch (SQLiteConstraintException ex){
+            toast(ex.getMessage());
+        }
     }
     private long insertarOcurrencia(Ocurrencia ocurrencia) throws SQLiteException {
         long res = 0;
@@ -857,6 +871,13 @@ public class MainActivity extends AppCompatActivity {
                         borrarDatos(nuevosDatos);
                     }
                 }
+            }
+        // RECOGER VER ACTIVITY
+        } else if (requestCode == 4) {
+
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+
             }
         }
         actualizarDatos();
