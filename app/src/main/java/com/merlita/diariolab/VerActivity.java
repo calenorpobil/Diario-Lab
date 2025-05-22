@@ -544,6 +544,6 @@ public class VerActivity extends AppCompatActivity
 
     @Override
     public void onButtonClickTipo() {
-        tvTitulo.setText(tvTitulo.getText()+"1");
+
     }
 }

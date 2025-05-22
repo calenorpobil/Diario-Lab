@@ -310,15 +310,16 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                         || tipo.getTipoDato().equals("Fecha")){
                     for (int i = 0; i < res.size(); i++) {
                         Dato d = res.get(i);
-                        if (d.getFkTipoDato().equals(tipo.getNombre())){
-                            res.remove(d); break;
+                        if (d.getValorText().equals(" ") && d.getFkTipoDato().equals(tipo.getNombre())){
+                            d.setValorText("Sin datos");
+                            break;
                         }
                     }
-                    res.add(new Dato(
-                            tipo.getNombre(),
-                            ocurrencia.getFkEstudioN(),
-                            ocurrencia.getCod(),
-                            "Sin datos"));
+//                    res.add(new Dato(
+//                            tipo.getNombre(),
+//                            ocurrencia.getFkEstudioN(),
+//                            ocurrencia.getCod(),
+//                            "Sin datos"));
                 }
 
             }
