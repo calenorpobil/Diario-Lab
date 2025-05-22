@@ -518,12 +518,12 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
-    public long borrarDatos_PorOcurrencia(SQLiteDatabase db, String fk_ocurrencia) {
+    public long borrarDatos_PorOcurrencia(SQLiteDatabase db, Ocurrencia ocu) {
         long res=-1;
 
         res = db.delete("DATO",
-                "FK_OCURRENCIA = ?",
-                new String[]{fk_ocurrencia});
+                "FK_OCURRENCIA = ? and FK_TIPO_E = ?",
+                new String[]{ocu.getCod(), ocu.getFkEstudioN()});
 
         return res;
     }
@@ -539,15 +539,15 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public int borrarocurrencia_PorID(SQLiteDatabase db, String cod, String fk_estudio_n) {
+    public int borrarocurrencia_PorID(SQLiteDatabase db, Ocurrencia ocurrencia) {
         int res=-1;
 
         res = db.delete("OCURRENCIA",
-                "id = ? AND FK_ESTUDIO_N = ?",
-                new String[]{cod, fk_estudio_n});
+                "id = ?",
+                new String[]{ocurrencia.getCod()});
 
 
-        borrarDatos_PorOcurrencia(db, cod);
+        borrarDatos_PorOcurrencia(db, ocurrencia);
 
         return res;
     }

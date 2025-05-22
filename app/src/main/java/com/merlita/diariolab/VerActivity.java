@@ -150,8 +150,8 @@ public class VerActivity extends AppCompatActivity
                     enabled = !enabled;
                     verDatosOcurrencia(ocurrencia, fk_estudio, enabled);
                     if(enabled){
-                        btModificar.setText("Cancelar");
-                    }else btModificar.setText("Modificar");
+                        btModificar.setText(R.string.cancelar);
+                    }else btModificar.setText(R.string.modificar);
                 }
 
 
@@ -161,9 +161,14 @@ public class VerActivity extends AppCompatActivity
         btConfirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                borrarDatosOcurrencia(listaDatos.get(0).getFkOcurrencia());
-                insertarDatos(listaDatos);
+                if(enabled){
+                    borrarDatosOcurrencia(ocurrencia);
+                    insertarDatos(listaDatos);
+                    enabled = !enabled;
+                    listaDatos = getDatos(listaTipos.get(0).getFkEstudio());
+                    verDatosOcurrencia(ocurrencia, fk_estudio, enabled);
+                    btModificar.setText(R.string.modificar);
+                }
             }
         });
 
@@ -250,7 +255,7 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                res = usdbh.borrarocurrencia_PorID(db, oc.getCod(), oc.getFkEstudioN());
+                res = usdbh.borrarocurrencia_PorID(db, ocurrencia);
 
                 db.close();
             }
@@ -260,7 +265,7 @@ public class VerActivity extends AppCompatActivity
 
         return res;
     }
-    private void borrarDatosOcurrencia(String codOcu) {
+    private void borrarDatosOcurrencia(Ocurrencia ocu) {
         try{
             try(EstudiosSQLiteHelper usdbh =
                         new EstudiosSQLiteHelper(this,
@@ -268,14 +273,13 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                usdbh.borrarDatos_PorOcurrencia(db, codOcu);
+                usdbh.borrarDatos_PorOcurrencia(db, ocu);
 
                 db.close();
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
         }
-
     }
 
     private void insertarDatos(ArrayList<Dato> datos) {
@@ -336,7 +340,7 @@ public class VerActivity extends AppCompatActivity
 
 
 
-    private ArrayList<Dato> getDatosOcurrencia(Ocurrencia codOcurrencia, String nomEstudio) {
+    private ArrayList<Dato> getDatosOcurrencia(Ocurrencia ocurrencia, String nomEstudio) {
         ArrayList<Dato> datosResultado=null;
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -530,8 +534,12 @@ public class VerActivity extends AppCompatActivity
 
     // Click en Datos
     @Override
-    public void onButtonClickDatos() {
+    public void onButtonClickDatos(ArrayList<Dato> listaDatos) {
+        actualizarListaDatos(listaDatos);
+    }
 
+    private void actualizarListaDatos(ArrayList<Dato> listaDatos) {
+        this.listaDatos = listaDatos;
     }
 
     @Override

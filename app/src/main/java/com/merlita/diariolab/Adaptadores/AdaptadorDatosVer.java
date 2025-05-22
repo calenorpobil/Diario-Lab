@@ -42,7 +42,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
     boolean enabled;
 
     public interface OnButtonClickListener {
-        void onButtonClickDatos();
+        void onButtonClickDatos(ArrayList<Dato> datos);
     }
 
     private OnButtonClickListener listener;
@@ -236,7 +236,22 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setFkTipoDato(s.toString());
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                listener.onButtonClickDatos(listaDatos);
+            }
+            // ... (métodos onTextChanged y beforeTextChanged vacíos)
+        });
+
+        holder.etNumero.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String texto = s.toString();
+                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(texto);
+                listener.onButtonClickDatos(listaDatos);
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
@@ -249,6 +264,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             @Override
             public void afterTextChanged(Editable s) {
                 listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
+                listener.onButtonClickDatos(listaDatos);
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });
@@ -261,6 +277,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                 dato.setValorText(
                         texto
                 );
+                listener.onButtonClickDatos(listaDatos);
             }
 
             @Override
@@ -282,11 +299,21 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             res = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), ocurrencia.getFkEstudioN());
             ArrayList<String> tiposConDato = new ArrayList<>();
             for (Dato dato : res) {
-                String tipoConDato = dato.getFkTipoDato();
-                tiposConDato.add(tipoConDato);
+                if(!dato.getValorText().isBlank()){
+                    String tipoConDato = dato.getFkTipoDato();
+                    tiposConDato.add(tipoConDato);
+                }
             }
             for (TipoDato tipo : listaTipos) {
-                if(!tiposConDato.contains(tipo.getNombre())){
+                // Si el tipo no tiene dato y está desactivado, o es una fecha, se le pone "Sin datos"
+                if((!tiposConDato.contains(tipo.getNombre())  && !enabled)
+                        || tipo.getTipoDato().equals("Fecha")){
+                    for (int i = 0; i < res.size(); i++) {
+                        Dato d = res.get(i);
+                        if (d.getFkTipoDato().equals(tipo.getNombre())){
+                            res.remove(d); break;
+                        }
+                    }
                     res.add(new Dato(
                             tipo.getNombre(),
                             ocurrencia.getFkEstudioN(),

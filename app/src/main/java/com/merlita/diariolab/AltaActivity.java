@@ -89,7 +89,7 @@ public class AltaActivity extends AppCompatActivity
         if (!etEmoji.getText().toString().isEmpty() &&
                 !etTitulo.getText().toString().isEmpty() &&
                 !etDescripcion.getText().toString().isEmpty() &&
-                !listaTiposDato.isEmpty() && !listaCualitativos.isEmpty()) {
+                !listaTiposDato.isEmpty()) {
             String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato, "alta");
 
             if (error.isEmpty()) {
