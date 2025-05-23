@@ -1,5 +1,7 @@
 package com.merlita.diariolab;
 
+import static android.view.View.VISIBLE;
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -45,8 +47,8 @@ public class VerActivity extends AppCompatActivity
         AdaptadorColumnas.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
-    TextView tvTitulo;
-    Button btGuardar, btConfirmar, btModificar, btAnalizar;
+    TextView tvTitulo, tvSinDatos;
+    Button btConfirmar, btModificar, btAnalizar;
     ArrayList<Ocurrencia> listaOcurrencias = new ArrayList<>();
     ArrayList<Dato> listaDatos = new ArrayList<>();
     ArrayList<TipoDato> listaTipos = new ArrayList<>();
@@ -90,20 +92,21 @@ public class VerActivity extends AppCompatActivity
         fk_estudio = estudioOcurrencia.getNombre();
         int numOcu = getOcurrencias();
 
+        tvTitulo = findViewById(R.id.tvEstudioElegir);
+        tvSinDatos = findViewById(R.id.tvSinDatos);
+        btModificar = findViewById(R.id.btModificar);
+        btConfirmar = findViewById(R.id.btConfirmar);
+        btAnalizar = findViewById(R.id.btHome);
+        rvOcurrencias = findViewById(R.id.rvOcurrencias);
+        rvDatos = findViewById(R.id.rvAnalisis);
+        rvColumnas = findViewById(R.id.rvGrafico);
+        rvTipos = findViewById(R.id.rvTipos);
+        rvMedidas = findViewById(R.id.rvInfo);
+        tvTitulo.setText(estudioOcurrencia.getNombre());
+
         if(fk_estudio!=null && numOcu>0){
-            tvTitulo = findViewById(R.id.tvEstudioElegir);
-            btGuardar = findViewById(R.id.btnGuardar);
-            btModificar = findViewById(R.id.btModificar);
-            btConfirmar = findViewById(R.id.btConfirmar);
-            btAnalizar = findViewById(R.id.btHome);
-            rvOcurrencias = findViewById(R.id.rvOcurrencias);
-            rvDatos = findViewById(R.id.rvAnalisis);
-            rvColumnas = findViewById(R.id.rvGrafico);
-            rvTipos = findViewById(R.id.rvTipos);
-            rvMedidas = findViewById(R.id.rvInfo);
 
 
-            tvTitulo.setText(estudioOcurrencia.getNombre());
 
             listaTipos = getTiposDato();
             listaDatos = getDatos(listaTipos.get(0).getFkEstudio());
@@ -141,6 +144,7 @@ public class VerActivity extends AppCompatActivity
 
         }else{
             //NO HA FUNCIONADO EL CODIGO
+            tvSinDatos.setVisibility(VISIBLE);
         }
 
         actualizarListas();
@@ -336,9 +340,10 @@ public class VerActivity extends AppCompatActivity
         }
         //rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
         //rvOcurrencias.setAdapter(adaptadorOcurrencias);
-        adaptadorOcurrencias.notifyItemRangeChanged(sizeOcurrencias, added);
-        adaptadorColumnas.notifyItemRangeChanged(sizeOcurrencias, added);
-
+        if(adaptadorOcurrencias != null && adaptadorColumnas != null){
+            adaptadorOcurrencias.notifyItemRangeChanged(sizeOcurrencias, added);
+            adaptadorColumnas.notifyItemRangeChanged(sizeOcurrencias, added);
+        }
     }
 
 
@@ -443,9 +448,10 @@ public class VerActivity extends AppCompatActivity
 
 
 
-            tvTitulo.setText(estudioOcurrencia.getEmoji()+" "+fk_estudio);
 
         }
+        String titulo = estudioOcurrencia.getEmoji()+" "+fk_estudio;
+        tvTitulo.setText(titulo);
 
         c.close();
         return res;

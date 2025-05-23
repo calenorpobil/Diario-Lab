@@ -185,9 +185,9 @@ public class EditActivity extends AppCompatActivity
 
                 tipo.setFkEstudio(nombreEstudio);
 
+                usdbh.borrarOcurrencia_PorTipo(tipo);
                 usdbh.borrarTipoDato(tipo);
                 usdbh.borrarDatos_porTipo(tipo);
-                usdbh.borrarOcurrencia_PorTipo(tipo);
 
 
                 db.close();

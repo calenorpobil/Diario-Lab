@@ -83,4 +83,8 @@
     <string name="tipo">Tipo</string>
     <string name="numero_columna_grafico">99</string>
     <string name="botonCheck">✔</string>
+    <string name="estudio_vac_o_na_ade_datos_en_la_pantalla_principal">
+        Estudio vacío.
+        Añade datos en la pantalla principal.
+    </string>
 </resources>

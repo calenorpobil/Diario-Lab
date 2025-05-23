@@ -524,9 +524,9 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 //                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
 //                new String[]{tipo.getTipoDato(), tipo.getFkEstudio()});
 //        c.moveToFirst();
-        String query = "DELETE FROM ocurrencia WHERE ID like (select FK_OCURRENCIA from DATO where " +
-                "FK_TIPO_N like '"+tipo.getTipoDato()+"' and FK_TIPO_E like '"+tipo.getFkEstudio()+"')" +
-                "and FK_ESTUDIO_N like '"+tipo.getFkEstudio()+"'";
+        String query = "DELETE FROM ocurrencia WHERE ID = (select FK_OCURRENCIA from DATO where " +
+                "FK_TIPO_N = '"+tipo.getNombre()+"' and FK_TIPO_E = '"+tipo.getFkEstudio()+"')" +
+                "and FK_ESTUDIO_N = '"+tipo.getFkEstudio()+"'";
 ////                res = db.delete("OCURRENCIA",
 ////                "ID = (select FK_OCURRENCIA from DATO where "+
 ////                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
