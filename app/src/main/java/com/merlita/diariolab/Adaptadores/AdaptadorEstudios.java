@@ -5,9 +5,11 @@ import static android.view.View.VISIBLE;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.merlita.diariolab.EditActivity;
+import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 import com.merlita.diariolab.MainActivity;
 import com.merlita.diariolab.Modelos.Estudio;
@@ -153,24 +156,38 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                              new EstudiosSQLiteHelper(context,
                                      "DBEstudios", null, DB_VERSION);) {
 
-                    db=usdbh.getWritableDatabase();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("⚠");
+                    builder.setMessage("Este Estudio tiene datos asignados. " +
+                            "¿Seguro que quieres borrarlos todos?");
+                    builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-                    String nombreEstudio = actual.getNombre();
-                    if (usdbh.borrarEstudio(actual, db) != -1 &&
-                            usdbh.borrarTiposDatos_PorFK(db, nombreEstudio) != -1 &&
-                            usdbh.borrarDatos_PorFK(db, nombreEstudio) != -1 &&
-                            usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1) {
-                        lista.remove(actual);
-                        MainActivity.actualizarLocal();
-                    }else{
-                        // BORRADO INCORRECTO
-                    }
+                            db=usdbh.getWritableDatabase();
+
+                            String nombreEstudio = actual.getNombre();
+                            if (usdbh.borrarEstudio(actual, db) != -1 &&
+                                    usdbh.borrarTiposDatos_PorFK(db, nombreEstudio) != -1 &&
+                                    usdbh.borrarDatos_PorFK(db, nombreEstudio) != -1 &&
+                                    usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1) {
+                                lista.remove(actual);
+                                MainActivity.actualizarLocal();
+                            }else{
+                                // BORRADO INCORRECTO
+                            }
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.show();
 
                 } catch (Exception e) {
                     Log.e("DB_ERROR", "Error en transacción: " + e.getMessage());
-                } finally {
-                    // Finalizar la transacción
-                    db.close();
                 }
             }
         });

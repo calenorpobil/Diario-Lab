@@ -2,13 +2,14 @@ package com.merlita.diariolab.Modelos;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class TipoDato implements Parcelable {
+public class TipoDato implements Parcelable, Cloneable {
 
     private int idTipo=0;
     private String nombre;       // VARCHAR(20)
@@ -60,8 +61,26 @@ public class TipoDato implements Parcelable {
         this.fkEstudio = fkTipoEstudio;
     }
 
-    // Getters y Setters
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
+    // Método para copia profunda:
+    public static ArrayList<TipoDato> copiaPorValor(ArrayList<TipoDato> original) {
+        ArrayList<TipoDato> copia = new ArrayList<>();
+        for (TipoDato item : original) {
+            try {
+                copia.add((TipoDato) item.clone()); // Clona cada objeto
+            } catch (CloneNotSupportedException e) {
+                Log.d("MyAdapter", "Clonado no conseguido");
+            }
+        }
+        return copia;
+    }
+
+
+    // Getters y Setters
     public String getNombre() {
         return nombre;
     }
@@ -149,3 +168,4 @@ public class TipoDato implements Parcelable {
         return Objects.hash(nombre, fkEstudio);
     }
 }
+

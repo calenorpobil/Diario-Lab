@@ -109,6 +109,17 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+    public int getCuentaTiposEstudio(SQLiteDatabase db, String fkEstudioN) {
+        int res=-1;
+
+        Cursor mCount= db.rawQuery("select count(*) from dato_tipo where fk_estudio = ?",
+                new String[]{fkEstudioN});
+        mCount.moveToFirst();
+        res = mCount.getInt(0);
+        mCount.close();
+
+        return res;
+    }
     public Estudio getEstudio(SQLiteDatabase db, String nombreEstudio) {
         Estudio res=null;
 
@@ -193,8 +204,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     public long insertarTipoDato(SQLiteDatabase db, TipoDato datoTipo)  {
         long newRowId = 0;
 
-        insertarMaxLong(db,
-                datoTipo.getMaximaLongitud());
+//        insertarMaxLong(db,
+//                datoTipo.getMaximaLongitud());
 
         ContentValues values = new ContentValues();
         values.put("NOMBRE", datoTipo.getNombre());
@@ -514,26 +525,22 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void borrarOcurrencia_PorTipo(TipoDato tipo) {
+    public void borrarOcurrenciasVacias(TipoDato tipo) {
         long res=-1;
 
-
         SQLiteDatabase db = getWritableDatabase();
-//        Cursor c= db.rawQuery("select ID from OCURRENCIA where ID " +
-//                        "= (select FK_OCURRENCIA from DATO where " +
-//                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
-//                new String[]{tipo.getTipoDato(), tipo.getFkEstudio()});
-//        c.moveToFirst();
-        String query = "DELETE FROM ocurrencia WHERE ID = (select FK_OCURRENCIA from DATO where " +
-                "FK_TIPO_N = '"+tipo.getNombre()+"' and FK_TIPO_E = '"+tipo.getFkEstudio()+"')" +
-                "and FK_ESTUDIO_N = '"+tipo.getFkEstudio()+"'";
-////                res = db.delete("OCURRENCIA",
-////                "ID = (select FK_OCURRENCIA from DATO where "+
-////                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
-//                new String[]{tipo.getTipoDato(), tipo.getFkEstudio()});
-        db.execSQL(query);
 
-        System.out.println("");
+        if(getCuentaTiposEstudio(db, tipo.getFkEstudio())==1){
+            String query = "DELETE FROM ocurrencia " +
+                    "WHERE fk_estudio_n = '"+tipo.getFkEstudio()+"'";
+//                    "DELETE FROM ocurrencia WHERE ID = (select FK_OCURRENCIA from DATO where " +
+//                    "FK_TIPO_N = '"+tipo.getNombre()+"' and FK_TIPO_E = '"+tipo.getFkEstudio()+"')" +
+//                    " and FK_ESTUDIO_N = '"+tipo.getFkEstudio()+"';";
+            db.execSQL(query);
+        }
+
+
+
 
     }
 
@@ -590,8 +597,8 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         int res=-1;
 
         res = db.delete("OCURRENCIA",
-                "id = ?",
-                new String[]{ocurrencia.getCod()});
+                "id = ? AND fk_estudio_n = ?",
+                new String[]{ocurrencia.getCod(), ocurrencia.getFkEstudioN()});
 
 
         borrarDatos_PorOcurrencia(db, ocurrencia);

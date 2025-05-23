@@ -2,7 +2,9 @@ package com.merlita.diariolab;
 
 import static android.view.View.VISIBLE;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -104,11 +106,11 @@ public class VerActivity extends AppCompatActivity
         rvMedidas = findViewById(R.id.rvInfo);
         tvTitulo.setText(estudioOcurrencia.getNombre());
 
-        if(fk_estudio!=null && numOcu>0){
+        listaTipos = getTiposDato();
+        if(fk_estudio!=null && numOcu>0 && !listaTipos.isEmpty()){
 
 
 
-            listaTipos = getTiposDato();
             listaDatos = getDatos(listaTipos.get(0).getFkEstudio());
 
             adaptadorOcurrencias = new AdaptadorOcurrencias(
@@ -242,18 +244,34 @@ public class VerActivity extends AppCompatActivity
         switch(item.getItemId())
         {
             case 121:
-                //MENU --> BORRAR
-                Ocurrencia oc = listaOcurrencias.get(position);
-                listaOcurrencias.remove(position);
-                adaptadorOcurrencias.notifyItemRemoved(position);
-                borrarOcurrencia(oc);
+                // MENU --> BORRAR
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("⚠");
+                builder.setMessage("Esta Ocurrencia tiene datos asignados. " +
+                        "¿Seguro que quieres borrarlos?");
+                builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Ocurrencia oc = listaOcurrencias.get(position);
+                        listaOcurrencias.remove(position);
+                        adaptadorOcurrencias.notifyItemRemoved(position);
+                        borrarOcurrencia(oc);
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
             case 122:
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
-    private int borrarOcurrencia(Ocurrencia oc) {
+    private void borrarOcurrencia(Ocurrencia oc) {
         int res = -1;
         try{
             try(EstudiosSQLiteHelper usdbh =
@@ -262,7 +280,7 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                res = usdbh.borrarocurrencia_PorID(db, ocurrencia);
+                res = usdbh.borrarocurrencia_PorID(db, oc);
 
                 db.close();
             }
@@ -270,7 +288,6 @@ public class VerActivity extends AppCompatActivity
             toast("Intentalo en otro momento. ");
         }
 
-        return res;
     }
     private void borrarDatosOcurrencia(Ocurrencia ocu) {
         try{

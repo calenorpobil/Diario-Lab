@@ -38,6 +38,8 @@ public class EditActivity extends AppCompatActivity
     Button bt, btNuevoTipo;
     ArrayList<TipoDato>
             listaTiposDato  = new ArrayList<>();
+    ArrayList<TipoDato>
+            listaAnterior  = new ArrayList<>();
     private ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView rvTipos;
@@ -57,38 +59,35 @@ public class EditActivity extends AppCompatActivity
     //MENU CONTEXTUAL
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case 121:
-                //MENU --> BORRAR
-                Intent i = new Intent(this, EditActivity.class);
-                posicionEdicion = item.getGroupId();
+        if (item.getItemId() == 121) {//MENU --> BORRAR
+            posicionEdicion = item.getGroupId();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("⚠");
-                builder.setMessage("Este tipo tiene X datos. ¿Seguro que quieres borrarlo?");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TipoDato tipoPorBorrar = listaTiposDato.get(posicionEdicion);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("⚠");
+            builder.setMessage("Este Tipo tiene datos asignados. " +
+                    "¿Seguro que quieres borrarlos todos?");
+            builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TipoDato tipoPorBorrar = listaTiposDato.get(posicionEdicion);
 
-                        listaTiposDato.remove(posicionEdicion);
-                        adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
-                        borrarDatosTipos(tipoPorBorrar);
-                        //borrar el tipo en SQL
-                        //borrar tipos con el dato.
-                    }
-                });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    listaTiposDato.remove(posicionEdicion);
+                    adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
+                    borrarDatosTipos(tipoPorBorrar);
+                    //borrar el tipo en SQL
+                    //borrar tipos con el dato.
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                });
-                builder.show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+                }
+            });
+            builder.show();
+            return true;
         }
+        return super.onContextItemSelected(item);
     }
 
 
@@ -130,6 +129,8 @@ public class EditActivity extends AppCompatActivity
 
 
         actualizarDatos();
+        listaAnterior = TipoDato.copiaPorValor(listaTiposDato);
+
 
 
         btNuevoTipo.setOnClickListener(new View.OnClickListener() {
@@ -185,7 +186,7 @@ public class EditActivity extends AppCompatActivity
 
                 tipo.setFkEstudio(nombreEstudio);
 
-                usdbh.borrarOcurrencia_PorTipo(tipo);
+                usdbh.borrarOcurrenciasVacias(tipo);
                 usdbh.borrarTipoDato(tipo);
                 usdbh.borrarDatos_porTipo(tipo);
 
@@ -239,53 +240,72 @@ public class EditActivity extends AppCompatActivity
                 !etDescripcion.getText().toString().isEmpty() &&
                 !listaTiposDato.isEmpty())
         {
-            String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
-                    "edit");
-
-            if (error.isEmpty()) {
-                Intent i = new Intent();
-
-                //Valido campos obligatorios (según esquema SQL)
-                if (etTitulo.getText().toString().isEmpty() ||
-                        etEmoji.getText().toString().isEmpty() ||
-                        etDescripcion.getText().toString().isEmpty()) {
-                    Toast.makeText(this, "Complete los campos obligatorios (*)",
-                            Toast.LENGTH_SHORT).show();
-                }else{
-                    try {
-                        // Preparar todos los datos para enviar
-                        ArrayList<String> datosEstudio = new ArrayList<>();
-                        datosEstudio.add(etTitulo.getText().toString());
-                        datosEstudio.add(etDescripcion.getText().toString());
-                        datosEstudio.add(etEmoji.getText().toString());
-                        for (int j = 0; j < listaCualitativos.size(); j++) {
-                            listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
-                        }
-                        for (int j = 0; j < listaTiposDato.size(); j++) {
-                            listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
-                        }
-
-
-                        i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                        i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
-                        i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
-                        i.putExtra("INDEX", posicion);
-
-                        setResult(RESULT_OK, i);
-                    } finally {
-                        finish();
-                    }
-
-                }
+            if(unTipoHaCambiado()){
 
             }else{
-                toast(error);
+                String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
+                        "edit");
+
+                if (error.isEmpty()) {
+                    Intent i = new Intent();
+
+                    //Valido campos obligatorios (según esquema SQL)
+                    if (etTitulo.getText().toString().isEmpty() ||
+                            etEmoji.getText().toString().isEmpty() ||
+                            etDescripcion.getText().toString().isEmpty()) {
+                        Toast.makeText(this, "Complete los campos obligatorios (*)",
+                                Toast.LENGTH_SHORT).show();
+                    }else{
+                        try {
+                            // Preparar todos los datos para enviar
+                            ArrayList<String> datosEstudio = new ArrayList<>();
+                            datosEstudio.add(etTitulo.getText().toString());
+                            datosEstudio.add(etDescripcion.getText().toString());
+                            datosEstudio.add(etEmoji.getText().toString());
+                            for (int j = 0; j < listaCualitativos.size(); j++) {
+                                listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
+                            }
+                            for (int j = 0; j < listaTiposDato.size(); j++) {
+                                listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
+                            }
+
+
+                            i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                            i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
+                            i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
+                            i.putExtra("INDEX", posicion);
+
+                            setResult(RESULT_OK, i);
+                        } finally {
+                            finish();
+                        }
+                    }
+
+                }else{
+                    toast(error);
+                }
             }
         }else{
             toast("Rellena todos los campos. ");
         }
     }
 
+    private boolean unTipoHaCambiado() {
+        boolean res=false;
+
+        for (TipoDato tipo :
+                listaTiposDato) {
+
+            TipoDato anterior = listaAnterior.get(listaTiposDato.indexOf(tipo));
+            if(!tipo.getTipoDato().equals(anterior.getTipoDato())){
+                res = true;
+                break;
+            }
+        }
+
+
+        return res;
+    }
 
 
     @Override
