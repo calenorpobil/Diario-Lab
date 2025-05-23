@@ -88,8 +88,9 @@ public class VerActivity extends AppCompatActivity
         estudioOcurrencia = upIntent.getParcelable("ESTUDIO");
         assert estudioOcurrencia != null;
         fk_estudio = estudioOcurrencia.getNombre();
+        int numOcu = getOcurrencias();
 
-        if(fk_estudio!=null){
+        if(fk_estudio!=null && numOcu>0){
             tvTitulo = findViewById(R.id.tvEstudioElegir);
             btGuardar = findViewById(R.id.btnGuardar);
             btModificar = findViewById(R.id.btModificar);
@@ -120,7 +121,9 @@ public class VerActivity extends AppCompatActivity
             linearLayoutManager.setReverseLayout(true);
             linearLayoutManager.setStackFromEnd(true);
             rvOcurrencias.setLayoutManager(linearLayoutManager);
-            rvOcurrencias.setLayoutManager(new LinearLayoutManager(this));
+            rvOcurrencias.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL,
+                    true));
             rvOcurrencias.setAdapter(adaptadorOcurrencias);
 
             rvTipos.setLayoutManager(new LinearLayoutManager(this,
@@ -350,6 +353,26 @@ public class VerActivity extends AppCompatActivity
                 db = usdbh.getWritableDatabase();
 
                 datosResultado = usdbh.getDatosPorOcurrencia(db, ocurrencia.getCod(), nomEstudio);
+
+                db.close();
+            } catch (Exception ex){
+                toast("Juan");
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Intentalo en otro momento. ");
+        }
+        return datosResultado;
+    }
+    private int getOcurrencias() {
+        int datosResultado=-1;
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                datosResultado = usdbh.getCuentaOcurrencias(db, fk_estudio);
 
                 db.close();
             } catch (Exception ex){

@@ -491,6 +491,52 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.close();
         return res;
     }
+
+    public void borrarTipoDato(TipoDato tipo) {
+        int res = 0;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("DATO_TIPO",
+                "NOMBRE = ? AND FK_ESTUDIO = ?",
+                new String[]{tipo.getNombre(), tipo.getFkEstudio()});
+
+        db.close();
+    }
+
+    public void borrarDatos_porTipo(TipoDato tipo) {
+        int res = 0;
+        SQLiteDatabase db = getWritableDatabase();
+
+        res = db.delete("DATO",
+                "FK_TIPO_N = ? and FK_TIPO_E = ?",
+                new String[]{tipo.getNombre(), tipo.getFkEstudio()});
+
+        db.close();
+    }
+
+    public void borrarOcurrencia_PorTipo(TipoDato tipo) {
+        long res=-1;
+
+
+        SQLiteDatabase db = getWritableDatabase();
+//        Cursor c= db.rawQuery("select ID from OCURRENCIA where ID " +
+//                        "= (select FK_OCURRENCIA from DATO where " +
+//                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
+//                new String[]{tipo.getTipoDato(), tipo.getFkEstudio()});
+//        c.moveToFirst();
+        String query = "DELETE FROM ocurrencia WHERE ID like (select FK_OCURRENCIA from DATO where " +
+                "FK_TIPO_N like '"+tipo.getTipoDato()+"' and FK_TIPO_E like '"+tipo.getFkEstudio()+"')" +
+                "and FK_ESTUDIO_N like '"+tipo.getFkEstudio()+"'";
+////                res = db.delete("OCURRENCIA",
+////                "ID = (select FK_OCURRENCIA from DATO where "+
+////                        "FK_TIPO_N = ? and FK_TIPO_E = ?)",
+//                new String[]{tipo.getTipoDato(), tipo.getFkEstudio()});
+        db.execSQL(query);
+
+        System.out.println("");
+
+    }
+
     public long borrarTiposDatos_PorFK(SQLiteDatabase db, String fkEstudio) {
         long res=-1;
 
@@ -538,6 +584,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+
 
     public int borrarocurrencia_PorID(SQLiteDatabase db, Ocurrencia ocurrencia) {
         int res=-1;

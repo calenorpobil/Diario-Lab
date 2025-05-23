@@ -2,11 +2,13 @@ package com.merlita.diariolab;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +31,7 @@ public class AltaActivity extends AppCompatActivity
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView rvTipos;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
+    private int posicionEdicion;
 
 
     private void toast(String e) {
@@ -137,6 +140,22 @@ public class AltaActivity extends AppCompatActivity
             toast("Rellena los datos o añade un Tipo de Dato. ");
         }
     }
+
+    //MENU CONTEXTUAL
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case 121:
+                //MENU --> BORRAR
+                posicionEdicion = item.getGroupId();
+                listaTiposDato.remove(posicionEdicion);
+                adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
 
     public static String comprobaciones(EditText etTitulo, EditText etEmoji,
                 EditText etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {

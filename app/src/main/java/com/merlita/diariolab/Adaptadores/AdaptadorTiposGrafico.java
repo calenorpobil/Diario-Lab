@@ -40,7 +40,7 @@ public class AdaptadorTiposGrafico extends RecyclerView.Adapter<AdaptadorTiposGr
         public MiContenedor(@NonNull View itemView) {
             super(itemView);
 
-            btTipo = (Button) itemView.findViewById(R.id.btTipo);
+            btTipo = (Button) itemView.findViewById(R.id.btMedidas);
 
             itemView.setOnCreateContextMenuListener(this);
         }

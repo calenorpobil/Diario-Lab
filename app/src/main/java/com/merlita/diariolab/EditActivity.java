@@ -2,6 +2,8 @@ package com.merlita.diariolab;
 
 import static com.merlita.diariolab.AltaActivity.comprobaciones;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,8 +62,29 @@ public class EditActivity extends AppCompatActivity
                 //MENU --> BORRAR
                 Intent i = new Intent(this, EditActivity.class);
                 posicionEdicion = item.getGroupId();
-                listaTiposDato.remove(posicionEdicion);
-                adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("⚠");
+                builder.setMessage("Este tipo tiene X datos. ¿Seguro que quieres borrarlo?");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        TipoDato tipoPorBorrar = listaTiposDato.get(posicionEdicion);
+
+                        listaTiposDato.remove(posicionEdicion);
+                        adaptadorTiposDato.notifyItemRemoved(posicionEdicion);
+                        borrarDatosTipos(tipoPorBorrar);
+                        //borrar el tipo en SQL
+                        //borrar tipos con el dato.
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -141,6 +164,31 @@ public class EditActivity extends AppCompatActivity
                 listaTiposDato.clear();
 
                 rellenarLista(db);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Inténtalo en otro momento. ");
+        }
+        rvTipos.setLayoutManager(new LinearLayoutManager(this));
+        rvTipos.setAdapter(adaptadorTiposDato);
+
+    }
+
+    public void borrarDatosTipos(TipoDato tipo) {
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                tipo.setFkEstudio(nombreEstudio);
+
+                usdbh.borrarTipoDato(tipo);
+                usdbh.borrarDatos_porTipo(tipo);
+                usdbh.borrarOcurrencia_PorTipo(tipo);
+
 
                 db.close();
             }
