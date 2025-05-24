@@ -40,10 +40,12 @@ public class EditActivity extends AppCompatActivity
             listaTiposDato  = new ArrayList<>();
     ArrayList<TipoDato>
             listaAnterior  = new ArrayList<>();
+    ArrayList<TipoDato> tiposCambiados = new ArrayList<>();
+
     private ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView rvTipos;
-    String nombreEstudio;
+    String nombreEstudio, nombreEstudioAnterior;
     int posicion=-1;
     private boolean primeraVez=true;
     int posicionEdicion;
@@ -100,7 +102,8 @@ public class EditActivity extends AppCompatActivity
         Bundle upIntent = this.getIntent().getExtras();
         assert upIntent != null;
 
-        nombreEstudio = upIntent.getString("NOMBRE");
+        nombreEstudioAnterior = upIntent.getString("NOMBRE");
+        nombreEstudio = nombreEstudioAnterior;
         String desc = upIntent.getString("DESCRIPCION");
         String emoji = upIntent.getString("EMOJI");
         posicion = upIntent.getInt("INDEX");
@@ -235,76 +238,152 @@ public class EditActivity extends AppCompatActivity
         c.close();
     }
     public void clickEditar(View v){
+        nombreEstudio = etTitulo.getText().toString();
         if(!etEmoji.getText().toString().isEmpty() &&
                 !etTitulo.getText().toString().isEmpty() &&
                 !etDescripcion.getText().toString().isEmpty() &&
                 !listaTiposDato.isEmpty())
         {
-            if(unTipoHaCambiado()){
+            tiposCambiados = unTipoHaCambiado();
+            String mensajeCambiados = mensajeCambiados();
+            if(!tiposCambiados.isEmpty()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("⚠");
+                builder.setMessage("Al cambiar el Tipo de "+mensajeCambiados+" se borrarán los datos que tenía. " +
+                        "¿Seguro que quieres borrarlos?");
+                builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-            }else{
-                String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
-                        "edit");
-
-                if (error.isEmpty()) {
-                    Intent i = new Intent();
-
-                    //Valido campos obligatorios (según esquema SQL)
-                    if (etTitulo.getText().toString().isEmpty() ||
-                            etEmoji.getText().toString().isEmpty() ||
-                            etDescripcion.getText().toString().isEmpty()) {
-                        Toast.makeText(this, "Complete los campos obligatorios (*)",
-                                Toast.LENGTH_SHORT).show();
-                    }else{
-                        try {
-                            // Preparar todos los datos para enviar
-                            ArrayList<String> datosEstudio = new ArrayList<>();
-                            datosEstudio.add(etTitulo.getText().toString());
-                            datosEstudio.add(etDescripcion.getText().toString());
-                            datosEstudio.add(etEmoji.getText().toString());
-                            for (int j = 0; j < listaCualitativos.size(); j++) {
-                                listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
-                            }
-                            for (int j = 0; j < listaTiposDato.size(); j++) {
-                                listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
-                            }
-
-
-                            i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                            i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
-                            i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
-                            i.putExtra("INDEX", posicion);
-
-                            setResult(RESULT_OK, i);
-                        } finally {
-                            finish();
+                        for (TipoDato tipo :
+                                tiposCambiados) {
+                            borrarDatosTipos(tipo);
                         }
-                    }
 
-                }else{
-                    toast(error);
-                }
+                        guardarDatos();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
             }
         }else{
             toast("Rellena todos los campos. ");
         }
     }
+    private void guardarDatos(){
+        String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
+                "edit");
 
-    private boolean unTipoHaCambiado() {
-        boolean res=false;
+        if (error.isEmpty()) {
+            Intent i = new Intent();
+
+            //Valido campos obligatorios (según esquema SQL)
+            if (etTitulo.getText().toString().isEmpty() ||
+                    etEmoji.getText().toString().isEmpty() ||
+                    etDescripcion.getText().toString().isEmpty()) {
+
+                Toast.makeText(this, "Complete los campos obligatorios (*)",
+                        Toast.LENGTH_SHORT).show();
+
+            }else{
+                if(tituloEstudioRepetido()){
+                    Toast.makeText(this, "El nombre del Estudio ya existe, cámbielo. ",
+                            Toast.LENGTH_SHORT).show();
+                }else{
+                    try {
+                        // Preparar todos los datos para enviar
+                        ArrayList<String> datosEstudio = new ArrayList<>();
+                        datosEstudio.add(etTitulo.getText().toString());
+                        datosEstudio.add(etDescripcion.getText().toString());
+                        datosEstudio.add(etEmoji.getText().toString());
+                        for (int j = 0; j < listaCualitativos.size(); j++) {
+                            listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
+                        }
+                        for (int j = 0; j < listaTiposDato.size(); j++) {
+                            listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
+                        }
+
+
+                        i.putStringArrayListExtra("ESTUDIO", datosEstudio);
+                        i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
+                        i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
+                        i.putExtra("INDEX", posicion);
+
+                        setResult(RESULT_OK, i);
+                    } finally {
+                        finish();
+                    }
+                }
+            }
+
+        }else{
+            toast(error);
+        }
+    }
+
+    private String mensajeCambiados() {
+        String nombre = "";
+        for (int i = 0; i < tiposCambiados.size(); i++) {
+            if(i==tiposCambiados.size()-1 && tiposCambiados.size()!=1){
+                nombre += " y "+tiposCambiados.get(i).getNombre();
+            }else if ( tiposCambiados.size()!=1){
+                nombre += ", "+tiposCambiados.get(i).getNombre();
+            }else{
+                nombre += tiposCambiados.get(i).getNombre();
+            }
+        }
+        return nombre;
+    }
+
+    private boolean tituloEstudioRepetido() {
+        boolean res = false;
+        ArrayList<String> nombresEstudios = new ArrayList<>();
+
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                nombresEstudios = usdbh.getListaNombreEstudios(db);
+                nombresEstudios.remove(nombreEstudioAnterior);
+
+                db.close();
+            }
+        } catch (SQLiteDatabaseCorruptException ex){
+            toast("Inténtalo en otro momento. ");
+        }
+
+        for (String nombre :
+                nombresEstudios) {
+            if (nombre.equals(nombreEstudio)){
+                res = true;
+                break;
+            }
+        }
+
+        return res;
+    }
+
+    private ArrayList<TipoDato> unTipoHaCambiado() {
+        ArrayList<TipoDato> tiposCambiados = new ArrayList<>();
 
         for (TipoDato tipo :
                 listaTiposDato) {
 
             TipoDato anterior = listaAnterior.get(listaTiposDato.indexOf(tipo));
             if(!tipo.getTipoDato().equals(anterior.getTipoDato())){
-                res = true;
-                break;
+                tiposCambiados.add(tipo);
             }
         }
 
-
-        return res;
+        return tiposCambiados;
     }
 
 

@@ -32,6 +32,7 @@
             android:id="@+id/etNombre"
             android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toStartOf="@+id/tvDescripcion"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +54,10 @@
             android:id="@+id/etDescripcion"
             android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/spTipoDato"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvDescripcion"
             app:layout_constraintTop_toBottomOf="@id/tvDescripcion" />
@@ -61,28 +65,25 @@
         <Spinner
             android:id="@+id/spTipoDato"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/etDescripcion"
             app:layout_constraintStart_toStartOf="@+id/etDescripcion"
-            app:layout_constraintTop_toBottomOf="@+id/etDescripcion" />
+            app:layout_constraintTop_toBottomOf="@+id/etNombre" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="Tipo"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/spTipoDato"
             app:layout_constraintEnd_toEndOf="@+id/etNombre"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etNombre" />
+            app:layout_constraintTop_toTopOf="@+id/spTipoDato" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

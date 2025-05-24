@@ -120,6 +120,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return res;
     }
+    public ArrayList<String> getListaNombreEstudios(SQLiteDatabase db) {
+        ArrayList<String> nombres = new ArrayList<>();
+        Cursor c= db.rawQuery("select nombre from estudio",
+                null);
+        c.moveToFirst();
+        int cuenta = 0;
+        while(c.moveToNext()){
+            nombres.add(c.getString(0));
+        }
+
+        return nombres;
+    }
     public Estudio getEstudio(SQLiteDatabase db, String nombreEstudio) {
         Estudio res=null;
 

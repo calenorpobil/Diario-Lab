@@ -158,8 +158,7 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("⚠");
-                    builder.setMessage("Este Estudio tiene datos asignados. " +
-                            "¿Seguro que quieres borrarlos todos?");
+                    builder.setMessage("¿Seguro que quieres borrar el Estudio con todos sus datos?");
                     builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
