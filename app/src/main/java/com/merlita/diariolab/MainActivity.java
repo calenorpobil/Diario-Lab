@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        //borrarTodo();
+        borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -134,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent i = new Intent(MainActivity.this, AltaActivity.class);
                 lanzadorAlta.launch(i);
-
-                //sumarNumerosServer();
 
             }
         });
@@ -667,8 +665,34 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    private boolean editarTipoDato(ArrayList<TipoDato> nuevoTiposDato, String estudioViejo,
+    private boolean editarDatos(ArrayList<TipoDato> nuevoTiposDato,
                                    ArrayList<TipoDato> viejosTipos){
+        long[]  fun = new long[nuevoTiposDato.size()+1];
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
+
+            SQLiteDatabase db = usdbh.getWritableDatabase();
+
+            for (TipoDato td :
+                    nuevoTiposDato) {
+                for (TipoDato tdViejo :
+                        viejosTipos) {
+                    if (tdViejo.getId() == td.getId()) {
+
+
+                        usdbh.editarTiposDeLosDatos(db, tdViejo.getNombre(), td.getNombre());
+
+
+                    }
+                }
+            }
+
+            db.close();
+        }
+        return multiBoolean(fun);
+    }
+    private void editarTipoDato(ArrayList<TipoDato> nuevoTiposDato, String estudioViejo){
         long[]  fun = new long[nuevoTiposDato.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -682,14 +706,11 @@ public class MainActivity extends AppCompatActivity {
                 nuevoTiposDato.get(i).setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
                 try{
                     fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
-                }catch (SQLiteException e){
+                }catch (SQLiteException ignored){
                 }
             }
-
-
             db.close();
         }
-        return multiBoolean(fun);
     }
     private boolean editarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
                                       String estudioViejo){
@@ -845,7 +866,8 @@ public class MainActivity extends AppCompatActivity {
                     Estudio viejo = listaEstudios.get(posicion);
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:
-                        editarTipoDato(nuevosTiposDato, viejo.getNombre(), viejosTipos);
+                        editarDatos(nuevosTiposDato, viejosTipos);
+                        editarTipoDato(nuevosTiposDato, viejo.getNombre());
                         editarCualitativo(nuevosCualitativos, viejo.getNombre());
                     }
                 }

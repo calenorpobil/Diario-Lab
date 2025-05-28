@@ -246,6 +246,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 //                datoTipo.getMaximaLongitud());
 
         ContentValues values = new ContentValues();
+        values.put("ID", getCuentaTipos(db));
         values.put("NOMBRE", datoTipo.getNombre());
         values.put("TIPO_DATO", datoTipo.getTipoDato());
         values.put("DESCRIPCION", datoTipo.getDescripcion());
@@ -417,6 +418,25 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return datos;
     }
+    public ArrayList<Dato> getDatosDeTipoPorId(SQLiteDatabase db, int idTipo) {
+
+        ArrayList<Dato> datos = new ArrayList<>();
+
+        String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
+                "valor_text FROM dato WHERE ID = ?;";
+        Cursor c = db.rawQuery(sql, new String[]{idTipo+""});
+
+        while (c.moveToNext()){
+            datos.add(new Dato(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3)));
+        }
+        c.close();
+
+        return datos;
+    }
 
 
     public TipoDato getTipoDato(SQLiteDatabase db,
@@ -478,17 +498,16 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
-    public long editarDato(SQLiteDatabase db, Dato dato, Dato nuevo) {
-        long newRowId = 0;
+    public void editarTiposDeLosDatos(SQLiteDatabase db,
+                                      String viejoNombre, String nuevoNombre) {
 
         ContentValues values = new ContentValues();
-        values.put("TIPO_DATO", nuevo.getFkTipoDato());
+        values.put("FK_TIPO_N", nuevoNombre);
 
-        newRowId = db.update("DATO_TIPO", values,
-                "NOMBRE = ?",
-                new String[]{dato.getFkTipoEstudio()});
+        db.update("DATO", values,
+                "FK_TIPO_N = ?",
+                new String[]{viejoNombre});
 
-        return newRowId;
     }
 
 

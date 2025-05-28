@@ -221,7 +221,9 @@ public class EditActivity extends AppCompatActivity
             String tipoDato = c.getString(index);
             index = c.getColumnIndex("DESCRIPCION");
             String descripcion = c.getString(index);
-            TipoDato nuevo = new TipoDato(getCuentaTipos(), nombre, tipoDato, descripcion);
+            index = c.getColumnIndex("ID");
+            int id = c.getInt(index);
+            TipoDato nuevo = new TipoDato(id, nombre, tipoDato, descripcion);
             recuperarCualitativos(db, nuevo);
             listaTiposDato.add(0, nuevo);
             adaptadorTiposDato.notifyItemInserted(0);

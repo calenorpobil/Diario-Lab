@@ -2,8 +2,6 @@ package com.merlita.diariolab;
 
 import static android.view.View.VISIBLE;
 
-import static com.merlita.diariolab.MainActivity.DB_VERSION;
-
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -19,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,8 +48,7 @@ import java.util.ArrayList;
 
 public class VerActivity extends AppCompatActivity
         implements AdaptadorDatosVer.OnButtonClickListener, AdaptadorDatosVer.DatePickerListener,
-        AdaptadorOcurrencias.OnButtonClickListener, AdaptadorTiposGrafico.OnButtonClickListener,
-        AdaptadorColumnas.OnButtonClickListener {
+        AdaptadorOcurrencias.OnButtonClickListener, AdaptadorTiposGrafico.OnButtonClickListener {
     private static final int DB_VERSION = MainActivity.DB_VERSION;
 
     TextView tvTitulo, tvSinDatos;
@@ -64,7 +60,7 @@ public class VerActivity extends AppCompatActivity
     AdaptadorDatosVer adaptadorDatos;
     AdaptadorColumnas adaptadorColumnas;
     AdaptadorMedidas adaptadorMedidas;
-    AdaptadorTiposGrafico adaptadorTipos;
+    AdaptadorTiposGrafico adaptadorTiposGrafico;
     RecyclerView rvOcurrencias, rvDatos, rvMedidas, rvColumnas;
     RecyclerView rvTipos;
     private Ocurrencia ocurrencia;
@@ -125,11 +121,12 @@ public class VerActivity extends AppCompatActivity
 
             adaptadorOcurrencias = new AdaptadorOcurrencias(
                     this, estudioOcurrencia, listaOcurrencias, this);
-            adaptadorTipos = new AdaptadorTiposGrafico(this, listaTipos, this);
+            adaptadorTiposGrafico = new AdaptadorTiposGrafico(this, listaTipos, this);
             ArrayList<Dato> listaDatosTipo = getDatosDeTipo(listaTipos.get(0));
             adaptadorColumnas = new AdaptadorColumnas(this,
                     listaDatosTipo,
                     listaTipos.get(0));
+            adaptadorMedidas = new AdaptadorMedidas(this, listaTipos, this);
             adaptadorMedidas = new AdaptadorMedidas(this, listaTipos, this);
 
             //Invertir el orden de las Ocurrencias:
@@ -144,7 +141,7 @@ public class VerActivity extends AppCompatActivity
             rvTipos.setLayoutManager(new LinearLayoutManager(this,
                     LinearLayoutManager.VERTICAL,
                     false));
-            rvTipos.setAdapter(adaptadorTipos);
+            rvTipos.setAdapter(adaptadorTiposGrafico);
 
 
             rvColumnas.setLayoutManager(new LinearLayoutManager(this,
@@ -207,6 +204,35 @@ public class VerActivity extends AppCompatActivity
         });
 
 
+    }
+
+
+    public void adjustRecyclerViewHeight(RecyclerView recyclerView) {
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter == null) return;
+
+        int totalHeight = 0;
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+                recyclerView.getWidth(),
+                View.MeasureSpec.EXACTLY
+        );
+
+        // Medición UNSPECIFIED para altura dinámica
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(
+                0,
+                View.MeasureSpec.UNSPECIFIED
+        );
+
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
+//            adapter.onBindViewHolder(holder, i);
+            holder.itemView.measure(widthMeasureSpec, heightMeasureSpec);
+            totalHeight += holder.itemView.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+        params.height = totalHeight + recyclerView.getPaddingTop() + recyclerView.getPaddingBottom();
+        recyclerView.setLayoutParams(params);
     }
 
 
@@ -382,7 +408,6 @@ public class VerActivity extends AppCompatActivity
 
 
 
-
     private ArrayList<Dato> getDatosOcurrencia(ArrayList<TipoDato> listaTipos,
                                                Ocurrencia ocurrencia, String nomEstudio) {
         ArrayList<Dato> datosResultado = new ArrayList<>();
@@ -440,7 +465,6 @@ public class VerActivity extends AppCompatActivity
         return datosResultado;
     }
 
-
     private ArrayList<Dato> getDatos(ArrayList<TipoDato> listaTipos, String nomEstudio) {
         ArrayList<Dato> datosResultado =new ArrayList<>();
         try{
@@ -462,28 +486,10 @@ public class VerActivity extends AppCompatActivity
         return datosResultado;
     }
 
-    private ArrayList<Dato> getDatosDeTipo(TipoDato tipo) {
-        ArrayList<Dato> datosResultado =new ArrayList<>();
-        try{
-            try(EstudiosSQLiteHelper usdbh =
-                        new EstudiosSQLiteHelper(this,
-                                "DBEstudios", null,  DB_VERSION);){
-                SQLiteDatabase db;
-                db = usdbh.getWritableDatabase();
-
-                datosResultado = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getNombre());
-
-                db.close();
-            } catch (Exception ignored){
-            }
-        } catch (SQLiteDatabaseCorruptException ignored){
-        }
-        return datosResultado;
-    }
 
     private void verDatosOcurrencia(Ocurrencia codOcurrencia, String nomEstudio, boolean enabled) {
-        listaDatos = getDatosOcurrencia(listaTipos, codOcurrencia, nomEstudio);
         listaTipos = getTiposDato();
+        listaDatos = getDatosOcurrencia(listaTipos, codOcurrencia, nomEstudio);
 
         adaptadorDatos = new AdaptadorDatosVer(
                 this, listaTipos, this, ocurrencia,
@@ -500,7 +506,7 @@ public class VerActivity extends AppCompatActivity
 
 
         Cursor c = db.rawQuery("select * from ocurrencia " +
-                "where FK_ESTUDIO_N = ?",
+                        "where FK_ESTUDIO_N = ?",
                 new String[]{estudioOcurrencia.getNombre()});
 
         while (c.moveToNext()) {
@@ -558,7 +564,7 @@ public class VerActivity extends AppCompatActivity
     }
 
     public static String comprobaciones(TextView tvTitulo,
-                TextView etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
+                                        TextView etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
         String correcto = "";
 /*
 
@@ -603,6 +609,25 @@ public class VerActivity extends AppCompatActivity
                 }
             });
 
+    private ArrayList<Dato> getDatosDeTipo(TipoDato tipo) {
+        ArrayList<Dato> datosResultado =new ArrayList<>();
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(this,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                datosResultado = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getNombre());
+
+                db.close();
+            } catch (Exception ignored){
+            }
+        } catch (SQLiteDatabaseCorruptException ignored){
+        }
+        return datosResultado;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -640,12 +665,6 @@ public class VerActivity extends AppCompatActivity
     private void actualizarListaDatos(ArrayList<Dato> listaDatos) {
         this.listaDatos = listaDatos;
     }
-
-    @Override
-    public void onButtonClickTipo() {
-
-    }
-
     @Override
     public void onButtonClickTipoGrafico(TipoDato tipoDato) {
         listaDatos = getDatosDeTipo(tipoDato);
@@ -655,4 +674,5 @@ public class VerActivity extends AppCompatActivity
         adaptadorColumnas = new AdaptadorColumnas(this, listaDatos, tipoDato);
         rvColumnas.setAdapter(adaptadorColumnas);
     }
+
 }

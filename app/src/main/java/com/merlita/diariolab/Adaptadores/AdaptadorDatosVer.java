@@ -291,6 +291,9 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                 if(posicion<listaDatos.size()){
                     dato = listaDatos.get(posicion);
                     dato.setValorText(texto);
+                }else{
+                    listaDatos.add(new Dato(listaTipos.get(posicion),
+                            ocurrencia.getFkEstudioN(), ocurrencia.getCod(), texto));
                 }
                 listener.onButtonClickDatos(listaDatos);
             }
