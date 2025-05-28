@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tvEstudioElegir"
+        style="@style/TextColor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/estudio_diario"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/recyclerView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTitulo2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Lab_Emojis"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/recyclerView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/recyclerView"
+        app:layout_constraintTop_toTopOf="@+id/tvEstudioElegir" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/btAlta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEstudioElegir"
+        app:reverseLayout="true"
+        app:stackFromEnd="false" />
+
+    <Button
+        android:id="@+id/btAlta"
+        style="@style/IconColor"
+        android:layout_width="93dp"
+        android:layout_height="88dp"
+        android:background="@drawable/round_button"
+        android:drawablePadding="0dp"
+        android:includeFontPadding="false"
+
+        android:padding="0dp"
+        android:text="@string/bt_NuevoEstudio"
+        android:textSize="50sp"
+        app:iconPadding="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvAnyadir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btCopia"
+        style="@style/IconColor"
+        android:layout_width="69dp"
+        android:layout_height="68dp"
+        android:background="@drawable/round_button"
+        android:drawablePadding="0dp"
+        android:includeFontPadding="false"
+        android:padding="0dp"
+        android:text="@string/bt_dev"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:iconPadding="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btAlta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btAlta"
+        app:layout_constraintTop_toTopOf="@+id/btAlta" />
+
+    <Button
+        android:id="@+id/btRevert"
+        style="@style/IconColor"
+        android:layout_width="69dp"
+        android:layout_height="68dp"
+        android:background="@drawable/round_button"
+        android:drawablePadding="0dp"
+        android:includeFontPadding="false"
+        android:padding="0dp"
+        android:text="@string/bt_revert"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:iconPadding="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btAlta"
+        app:layout_constraintEnd_toStartOf="@+id/btAlta"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btAlta" />
+
+    <TextView
+        android:id="@+id/tvAnyadir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Añadir un nuevo estudio"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

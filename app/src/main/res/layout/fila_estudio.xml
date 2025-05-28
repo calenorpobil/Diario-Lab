@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:orientation="vertical">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tvEmoji1"
+            android:layout_width="46dp"
+            android:layout_height="43dp"
+            android:contentDescription="@string/imagen"
+            android:includeFontPadding="false"
+            android:padding="0dp"
+            android:text="@string/EmojiDefault"
+            android:textSize="40sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/tvEstudioElegir"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:maxLines="2"
+            android:text="@string/titulo"
+            android:textAlignment="textStart"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            style="@style/TextColor1"
+            app:layout_constraintEnd_toStartOf="@+id/tvCuenta"
+            app:layout_constraintStart_toEndOf="@id/tvEmoji1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="14dp"
+            android:maxLines="2"
+            android:text="@string/desc_estudio"
+            android:textAlignment="textStart"
+            style="@style/TextColor1"
+            app:layout_constraintEnd_toEndOf="@+id/tvEstudioElegir"
+            app:layout_constraintEnd_toStartOf="@+id/tvCuenta"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tvEstudioElegir"
+            app:layout_constraintTop_toBottomOf="@+id/tvEstudioElegir" />
+
+
+        <TextView
+            android:id="@+id/tvCuenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16sp"
+            android:text="@string/numOcurrencias"
+            app:layout_constraintBottom_toBottomOf="@id/tvDescripcion"
+            app:layout_constraintEnd_toStartOf="@+id/tvCheck"
+            app:layout_constraintTop_toTopOf="@id/tvEmoji1" />
+
+        <Button
+            android:id="@+id/tvCheck"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_button"
+            android:includeFontPadding="false"
+            android:padding="0dp"
+            style="@style/IconColor"
+            android:text="@string/MasBoton"
+            android:textSize="20sp"
+            app:iconPadding="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEmoji1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/botones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main">
+
+        <Button
+            android:id="@+id/btBorrar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/borrar"
+            style="@style/IconColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btEditar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/editar"
+            style="@style/IconColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btVer"
+            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintStart_toEndOf="@+id/btBorrar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btVer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ver"
+            style="@style/IconColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
