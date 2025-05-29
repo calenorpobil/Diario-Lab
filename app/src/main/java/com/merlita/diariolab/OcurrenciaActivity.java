@@ -245,6 +245,7 @@ public class OcurrenciaActivity extends AppCompatActivity
 
     private void rellenarLista(SQLiteDatabase db) {
         String tipo=null, nombre=null, descripcion=null;
+        int id=-1;
         Cursor c = db.rawQuery("select * from dato_tipo " +
                 "where FK_ESTUDIO = ?",
                 new String[]{estudioActual.getNombre()});
@@ -257,8 +258,10 @@ public class OcurrenciaActivity extends AppCompatActivity
             tipo = c.getString(index);
             index = c.getColumnIndex("DESCRIPCION");
             descripcion  = c.getString(index);
+            index = c.getColumnIndex("ID");
+            id  = c.getInt(index);
 
-            listaTiposDato.add(new TipoDato(getCuentaTipos(), nombre, tipo, descripcion, fk_estudio));
+            listaTiposDato.add(new TipoDato(id, nombre, tipo, descripcion, fk_estudio));
         }
         c.close();
     }

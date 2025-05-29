@@ -60,7 +60,6 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
             contextMenu.add(getAbsoluteAdapterPosition(), 122, 1, "Borrar el tipo");
-            listener.onButtonClickQuitarCualitativo(getAbsoluteAdapterPosition());
         }
 
     }

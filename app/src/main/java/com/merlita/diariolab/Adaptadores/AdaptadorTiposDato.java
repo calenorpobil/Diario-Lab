@@ -34,8 +34,7 @@ import com.merlita.diariolab.R;
 
 import java.util.ArrayList;
 
-public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor>
-    implements AdaptadorCualitativo.OnButtonClickListener{
+public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor> {
 
     private Context context;
     private ArrayList<TipoDato> lista;
@@ -44,19 +43,19 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     private boolean primera = true;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
     private int cuenta=0;
-    private AdaptadorCualitativo adaptadorCualitativo;
-
-    @Override
-    public void onButtonClickQuitarCualitativo(int pos) {
-        adaptadorCualitativo.notifyItemRemoved(pos);
-    }
 
     public interface OnButtonClickListener {
         void onButtonClickNuevoCualitativo(Cualitativo nuevo);
     }
     private OnButtonClickListener listener;
 
+    Estudio estudioFila;
+
+
+
     SQLiteDatabase db;
+
+
 
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -115,14 +114,13 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         TipoDato tipoDato = lista.get(holder.getAbsoluteAdapterPosition());
-        boolean tieneDatos = !getDatosDeTipo(tipoDato).isEmpty();
 //        tipoDato.setFkEstudio(nombreEstudio);
 
         holder.etDescripcion.setText(tipoDato.getDescripcion());
         holder.etNombre.setText(tipoDato.getNombre());
 
 
-        adaptadorCualitativo =
+        AdaptadorCualitativo adaptadorCualitativo =
                 new AdaptadorCualitativo(context, holder.listaCualitativos);
         holder.rvCualitativos.setLayoutManager(new LinearLayoutManager(this.context,
                 LinearLayoutManager.VERTICAL,
@@ -138,7 +136,6 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spTipoDato.setAdapter(adapter);
         holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
-        holder.spTipoDato.setEnabled(!tieneDatos);
 
 
         holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -151,7 +148,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                     if( position == tamanyo){
                         if(cuenta<getItemCount()){
                             holder.listaCualitativos = getCualitativos(holder.listaCualitativos,
-                                    tipoDato.getFkEstudio(), tipoDato.getId()+"");
+                                    nombreEstudio, tipoDato.getId()+"");
                         }
                         holder.segundo.setVisibility(VISIBLE);
                     }else{
@@ -172,8 +169,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 Cualitativo nuevo = new Cualitativo();
                 nuevo.setFk_dato_tipo_t(holder.etNombre.getText().toString());
                 holder.listaCualitativos.add(0, nuevo);
-                listener.onButtonClickNuevoCualitativo(nuevo);
                 adaptadorCualitativo.notifyItemInserted(0);
+                listener.onButtonClickNuevoCualitativo(nuevo);
             }
         });
 

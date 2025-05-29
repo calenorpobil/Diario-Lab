@@ -199,7 +199,7 @@ public class VerActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent i = new Intent(VerActivity.this, AnalisisActivity.class);
                 i.putExtra("ESTUDIO", estudioOcurrencia.getNombre());
-                lanzadorAlta.launch(i);
+                //lanzadorAlta.launch(i);
 
             }
         });
@@ -299,6 +299,7 @@ public class VerActivity extends AppCompatActivity
                         listaOcurrencias.remove(position);
                         adaptadorOcurrencias.notifyItemRemoved(position);
                         borrarOcurrencia(oc, position);
+                        actualizarListas();
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -538,82 +539,6 @@ public class VerActivity extends AppCompatActivity
         return res;
     }
 
-
-    public void clickGuardar(View v) {
-        String error = "";//comprobaciones(tvTitulo, tvFecha, listaTiposDato, "alta");
-
-        if (error.isEmpty()) {
-            Intent i = new Intent();
-
-            //Valido campos obligatorios (según esquema SQL)
-            try {
-                // Preparar todos los datos para enviar
-                ArrayList<String> datosEstudio = new ArrayList<>();
-                datosEstudio.add(tvTitulo.getText().toString());
-                //datosEstudio.add(tvFecha.getText().toString());
-
-                //listaDatos.get(0).setFkOcurrencia(fechaOcurrencia);
-
-
-                i.putStringArrayListExtra("ESTUDIO", datosEstudio);
-                i.putParcelableArrayListExtra("DATOS", listaDatos);
-
-                setResult(RESULT_OK, i);
-            } finally {
-                finish();
-            }
-
-        }else{
-            toast(error);
-        }
-    }
-
-    public static String comprobaciones(TextView tvTitulo,
-                                        TextView etDescripcion, ArrayList<TipoDato> listaTiposDato, String alta) {
-        String correcto = "";
-/*
-
-
-        if(alta.equals("alta")){
-            for (int i = 0; i < MainActivity.listaEstudios.size(); i++) {
-                if(tvTitulo.getText().toString().
-                        equals(MainActivity.listaEstudios.get(i).getNombre())){
-                    correcto = "Ese estudio ya existe. ";
-                }
-            }
-        }
-*/
-
-        if (tvTitulo.getText().toString().isEmpty() ||
-                etDescripcion.getText().toString().isEmpty()) {
-            correcto = "Complete los campos obligatorios. ";
-        }
-        //Check por cada TipoDato
-        for (int i = 0; i < listaTiposDato.size(); i++) {
-            if (correcto.isEmpty()) {
-                /*
-                if (listaDatos.get(i).getNombre().isEmpty()) {
-                    correcto="Tienes que poner un nombre al dato. ";
-                    break;
-                }*/
-            }
-        }
-        return correcto;
-    }
-
-    ActivityResultLauncher<Intent>
-            lanzadorAlta = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult resultado) {
-                    if(resultado.getResultCode()==RESULT_OK) {
-
-                    }else{
-                        //SIN DATOS
-                    }
-                }
-            });
-
     private ArrayList<Dato> getDatosDeTipo(TipoDato tipo) {
         ArrayList<Dato> datosResultado =new ArrayList<>();
         try{
@@ -623,7 +548,7 @@ public class VerActivity extends AppCompatActivity
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                datosResultado = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getNombre());
+                datosResultado = usdbh.getDatosDeTipoPorId(db, tipo.getId());
 
                 db.close();
             } catch (Exception ignored){

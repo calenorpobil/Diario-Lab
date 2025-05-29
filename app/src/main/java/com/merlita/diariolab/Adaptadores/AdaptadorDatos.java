@@ -147,7 +147,6 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             case "Tipo": {
 
                 ArrayList<String> aux = new ArrayList<>();
-                aux.add("Sin datos");
                 for (Cualitativo a: listaCualitativos) {
                     aux.add(a.getTitulo());
                 }

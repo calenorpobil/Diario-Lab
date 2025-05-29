@@ -456,7 +456,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         ArrayList<Dato> datos = new ArrayList<>();
 
         String sql = "SELECT fk_tipo_n, fk_tipo_e, fk_ocurrencia, " +
-                "valor_text FROM dato WHERE ID = ?;";
+                "valor_text FROM dato WHERE fk_tipo_n = ?;";
         Cursor c = db.rawQuery(sql, new String[]{idTipo+""});
 
         while (c.moveToNext()){

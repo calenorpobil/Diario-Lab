@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public final static int DB_VERSION=14;
+    public final static int DB_VERSION=15;
 
 
 
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        //borrarTodo();
+        borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -655,6 +655,18 @@ public class MainActivity extends AppCompatActivity {
     }
     private long insertarCualitativos(ArrayList<Cualitativo> cualitativos){
         long  res=-1;
+        String idTipo;
+
+//        TipoDato tipoParaId = recuperarTipo(
+//                cualitativos.get(0).getFk_dato_tipo_e(), cualitativos.get(0).getFk_dato_tipo_t());
+//        if(tipoParaId!=null){
+//            idTipo = tipoParaId.getId()+"";
+//            for (Cualitativo c :
+//                    cualitativos) {
+//                c.setFk_dato_tipo_t(idTipo);
+//            }
+//        }
+
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
@@ -662,6 +674,23 @@ public class MainActivity extends AppCompatActivity {
             SQLiteDatabase db = usdbh.getWritableDatabase();
             res = usdbh.insertarCualitativos(db, cualitativos);
         }
+        return res;
+    }
+
+    private TipoDato recuperarTipo(String estudio, String nombreTipo) {
+        TipoDato res = null;
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  MainActivity.DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.getTipoDato(db, estudio, nombreTipo);
+
+            db.close();
+        }
+
         return res;
     }
 

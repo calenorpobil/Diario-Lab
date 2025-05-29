@@ -94,7 +94,6 @@ public class EditActivity extends AppCompatActivity
             return true;
         }else if (item.getItemId() == 122) {
             listaCualitativos.remove(pos);
-            actualizarDatos();
 
         }
         return super.onContextItemSelected(item);
@@ -152,7 +151,7 @@ public class EditActivity extends AppCompatActivity
             public void onClick(View view) {
                 int cuentaTipos = getCuentaTipos();
                 TipoDato tdNuevo = new TipoDato();
-                tdNuevo.setId(cuentaTipos+1);
+                tdNuevo.setId(cuentaTipos);
 
                 listaTiposDato.add(0, tdNuevo);
                 adaptadorTiposDato.notifyItemInserted(0);
@@ -225,7 +224,6 @@ public class EditActivity extends AppCompatActivity
                 "where FK_ESTUDIO = ?", new String[]{nombreEstudio});
 
         while (c.moveToNext()) {
-            //TODO: recoger el FK_estudio
             int index = c.getColumnIndex("NOMBRE");
             String nombre = c.getString(index);
             index = c.getColumnIndex("TIPO_DATO");
@@ -255,17 +253,31 @@ public class EditActivity extends AppCompatActivity
     }
 
     private void recuperarCualitativos(SQLiteDatabase db, TipoDato nuevo) {
-        Cursor c = db.rawQuery("select * from CUALITATIVO " +
-                "where FK_TIPO_DATO_T = ? and FK_TIPO_DATO_E = ?", new
-                String[]{nuevo.getId()+"", nombreEstudio});
+        int  res=-1;
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null, DB_VERSION);) {
 
-        while (c.moveToNext()) {
-            int index = c.getColumnIndex("TITULO");
-            String titulo = c.getString(index);
-            nuevo.setFkEstudio(nombreEstudio);
+//            listaCualitativos = usdbh.getCualitativos(db,
+//                    nombreEstudio, nuevo.getTipoDato());
+
         }
 
-        c.close();
+//        Cursor c = db.rawQuery("select * from CUALITATIVO " +
+//                "where FK_TIPO_DATO_T = ? and FK_TIPO_DATO_E = ?", new
+//                String[]{nuevo.getId()+"", nombreEstudio});
+//
+//        while (c.moveToNext()) {
+//            int index = c.getColumnIndex("TITULO");
+//            String titulo = c.getString(index);
+//            index = c.getColumnIndex("ESTUDIO");
+//            String estudio = c.getString(index);
+//            index = c.getColumnIndex("FK_DATO_TIPO_E");
+//            String fke = c.getString(index);
+//            listaCualitativos.add(new Cualitativo(titulo, estudio, fke));
+//        }
+//
+//        c.close();
     }
     public void clickEditar(View v){
         nombreEstudio = etTitulo.getText().toString();
