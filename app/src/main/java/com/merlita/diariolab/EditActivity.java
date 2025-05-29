@@ -64,8 +64,9 @@ public class EditActivity extends AppCompatActivity
     //MENU CONTEXTUAL
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int pos = item.getGroupId();
+
         if (item.getItemId() == 121) {//MENU --> BORRAR
-            posicionEdicion = item.getGroupId();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("⚠");
@@ -91,6 +92,10 @@ public class EditActivity extends AppCompatActivity
             });
             builder.show();
             return true;
+        }else if (item.getItemId() == 122) {
+            listaCualitativos.remove(pos);
+            actualizarDatos();
+
         }
         return super.onContextItemSelected(item);
     }
@@ -271,6 +276,7 @@ public class EditActivity extends AppCompatActivity
         {
             tiposCambiados = unTipoHaCambiado();
             String mensajeCambiados = mensajeCambiados();
+            boolean cualitativoSinTitulo = isCualitativoSinTitulo();
             if(!tiposCambiados.isEmpty()){
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("⚠");
@@ -285,12 +291,38 @@ public class EditActivity extends AppCompatActivity
 
                 builder.show();
             } else {
-                guardarDatos();
+                if(isCualitativoSinTitulo()){
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("⚠");
+                    builder.setMessage("Todos los Cualitativos deben tener un título. ");
+                    builder.setPositiveButton("Vale", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.show();
+
+                }else{
+                    guardarDatos();
+                }
             }
         }else{
             toast("Rellena todos los campos. ");
         }
     }
+
+    private boolean isCualitativoSinTitulo() {
+        for (Cualitativo c :
+                listaCualitativos) {
+            if (c.getTitulo()==null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void guardarDatos(){
         String error = comprobaciones(etTitulo, etEmoji, etDescripcion, listaTiposDato,
                 "edit");
@@ -412,6 +444,6 @@ public class EditActivity extends AppCompatActivity
 
     @Override
     public void onButtonClickNuevoCualitativo(Cualitativo nuevo) {
-        listaCualitativos.add(nuevo);
+        listaCualitativos.add(0, nuevo);
     }
 }

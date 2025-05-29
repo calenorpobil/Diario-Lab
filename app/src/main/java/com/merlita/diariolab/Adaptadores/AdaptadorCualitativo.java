@@ -35,6 +35,11 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
     private ArrayList<Cualitativo> lista;
     SQLiteDatabase db;
 
+    public interface OnButtonClickListener {
+        void onButtonClickQuitarCualitativo(int pos);
+    }
+    private static AdaptadorCualitativo.OnButtonClickListener listener;
+
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
     {
@@ -54,7 +59,8 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
         public void onCreateContextMenu(ContextMenu contextMenu, View view,
                                         ContextMenu.ContextMenuInfo contextMenuInfo)
         {
-            contextMenu.add(getAbsoluteAdapterPosition(), 121, 1, "Borrar el tipo");
+            contextMenu.add(getAbsoluteAdapterPosition(), 122, 1, "Borrar el tipo");
+            listener.onButtonClickQuitarCualitativo(getAbsoluteAdapterPosition());
         }
 
     }

@@ -34,7 +34,8 @@ import com.merlita.diariolab.R;
 
 import java.util.ArrayList;
 
-public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor> {
+public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.MiContenedor>
+    implements AdaptadorCualitativo.OnButtonClickListener{
 
     private Context context;
     private ArrayList<TipoDato> lista;
@@ -43,19 +44,19 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     private boolean primera = true;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
     private int cuenta=0;
+    private AdaptadorCualitativo adaptadorCualitativo;
+
+    @Override
+    public void onButtonClickQuitarCualitativo(int pos) {
+        adaptadorCualitativo.notifyItemRemoved(pos);
+    }
 
     public interface OnButtonClickListener {
         void onButtonClickNuevoCualitativo(Cualitativo nuevo);
     }
     private OnButtonClickListener listener;
 
-    Estudio estudioFila;
-
-
-
     SQLiteDatabase db;
-
-
 
     public static class MiContenedor extends RecyclerView.ViewHolder
             implements View.OnCreateContextMenuListener
@@ -121,7 +122,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         holder.etNombre.setText(tipoDato.getNombre());
 
 
-        AdaptadorCualitativo adaptadorCualitativo =
+        adaptadorCualitativo =
                 new AdaptadorCualitativo(context, holder.listaCualitativos);
         holder.rvCualitativos.setLayoutManager(new LinearLayoutManager(this.context,
                 LinearLayoutManager.VERTICAL,
@@ -171,8 +172,8 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 Cualitativo nuevo = new Cualitativo();
                 nuevo.setFk_dato_tipo_t(holder.etNombre.getText().toString());
                 holder.listaCualitativos.add(0, nuevo);
-                adaptadorCualitativo.notifyItemInserted(0);
                 listener.onButtonClickNuevoCualitativo(nuevo);
+                adaptadorCualitativo.notifyItemInserted(0);
             }
         });
 
