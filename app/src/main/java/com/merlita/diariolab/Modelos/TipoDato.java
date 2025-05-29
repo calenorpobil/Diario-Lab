@@ -47,6 +47,7 @@ public class TipoDato implements Parcelable, Cloneable {
         //En el alta, el estudio se añadirá al guardar el estudio.
     }
 
+
     public TipoDato(int id, String nombre, String tipoDato, String descripcion) {
         this.id = id;
         this.nombre = nombre;
@@ -65,6 +66,7 @@ public class TipoDato implements Parcelable, Cloneable {
         this.fkEstudio = fkTipoEstudio;
     }
 
+    @NonNull
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -106,14 +108,10 @@ public class TipoDato implements Parcelable, Cloneable {
         return tipoDato;
     }
 
-
     public void setMaximaLongitud(int siguienteLongitud){
-        if(siguienteLongitud > this.maximaLongitud){
-            this.maximaLongitud = siguienteLongitud;
+        if(siguienteLongitud > maximaLongitud){
+            maximaLongitud = siguienteLongitud;
         }
-    }
-    public int getMaximaLongitud(){
-        return maximaLongitud;
     }
     public void setTipoDato(String tipoDato) {
         this.tipoDato = tipoDato;
@@ -142,6 +140,7 @@ public class TipoDato implements Parcelable, Cloneable {
 
     // Método para crear un objeto TipoDato desde un Parcel
     protected TipoDato(Parcel in) {
+        id = in.readInt();
         nombre = in.readString();
         tipoDato = in.readString();
         descripcion = in.readString();
@@ -163,6 +162,7 @@ public class TipoDato implements Parcelable, Cloneable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
         parcel.writeString(nombre);
         parcel.writeString(tipoDato);
         parcel.writeString(descripcion);

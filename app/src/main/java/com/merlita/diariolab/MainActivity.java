@@ -681,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
                     if (tdViejo.getId() == td.getId()) {
 
 
-                        usdbh.editarTiposDeLosDatos(db, tdViejo.getNombre(), td.getNombre());
+                        //usdbh.editarTiposDeLosDatos(db, tdViejo.getId());
 
 
                     }
@@ -705,7 +705,7 @@ public class MainActivity extends AppCompatActivity {
                 //Apunta la clave Foránea del Estudio
                 nuevoTiposDato.get(i).setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
                 try{
-                    fun[1+i] = usdbh.insertarTipoDato(db, nuevoTiposDato.get(i));
+                    fun[1+i] = usdbh.insertarTipoDatoEditAc(db, nuevoTiposDato.get(i));
                 }catch (SQLiteException ignored){
                 }
             }
@@ -866,7 +866,7 @@ public class MainActivity extends AppCompatActivity {
                     Estudio viejo = listaEstudios.get(posicion);
                     if (editarEstudio(viejo, editEstudio) != -1) {
                         //INSERTAR LOS TIPOS DE DATO:
-                        editarDatos(nuevosTiposDato, viejosTipos);
+                        //editarDatos(nuevosTiposDato, viejosTipos);
                         editarTipoDato(nuevosTiposDato, viejo.getNombre());
                         editarCualitativo(nuevosCualitativos, viejo.getNombre());
                     }

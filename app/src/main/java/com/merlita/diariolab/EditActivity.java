@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
 import com.merlita.diariolab.Modelos.Cualitativo;
+import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
@@ -144,8 +145,13 @@ public class EditActivity extends AppCompatActivity
         btNuevoTipo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listaTiposDato.add(0, new TipoDato());
+                int cuentaTipos = getCuentaTipos();
+                TipoDato tdNuevo = new TipoDato();
+                tdNuevo.setId(cuentaTipos);
+
+                listaTiposDato.add(0, tdNuevo);
                 adaptadorTiposDato.notifyItemInserted(0);
+                rvTipos.scrollToPosition(0);
             }
         });
         bt.setOnClickListener(new View.OnClickListener(){
@@ -275,6 +281,7 @@ public class EditActivity extends AppCompatActivity
 
                     }
                 });
+
                 builder.show();
             } else {
                 guardarDatos();

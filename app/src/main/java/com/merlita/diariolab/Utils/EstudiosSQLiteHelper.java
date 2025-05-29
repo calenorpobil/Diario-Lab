@@ -261,6 +261,28 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
+    public long insertarTipoDatoEditAc(SQLiteDatabase db, TipoDato datoTipo)  {
+        long newRowId = 0;
+
+//        insertarMaxLong(db,
+//                datoTipo.getMaximaLongitud());
+
+        ContentValues values = new ContentValues();
+        values.put("ID", datoTipo.getId());
+        values.put("NOMBRE", datoTipo.getNombre());
+        values.put("TIPO_DATO", datoTipo.getTipoDato());
+        values.put("DESCRIPCION", datoTipo.getDescripcion());
+        values.put("FK_ESTUDIO", datoTipo.getFkEstudio());
+
+        try{
+            newRowId = db.insertOrThrow("DATO_TIPO", null, values);
+        }catch(SQLiteException ex){
+            String msg = ex.getMessage();
+            System.out.println(msg);
+        }
+
+        return newRowId;
+    }
     public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
 
@@ -498,16 +520,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
-    public void editarTiposDeLosDatos(SQLiteDatabase db,
-                                      String viejoNombre, String nuevoNombre) {
+    public int editarTiposDeLosDatos(SQLiteDatabase db,
+                                     String viejoNombre, String nuevoNombre) {
+        int res = -1;
 
         ContentValues values = new ContentValues();
         values.put("FK_TIPO_N", nuevoNombre);
 
-        db.update("DATO", values,
+        res = db.update("DATO", values,
                 "FK_TIPO_N = ?",
                 new String[]{viejoNombre});
 
+        return res;
     }
 
 
