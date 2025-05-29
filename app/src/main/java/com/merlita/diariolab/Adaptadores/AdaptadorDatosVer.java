@@ -186,7 +186,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.tvHora.setVisibility(GONE);
 
                     ArrayList<Cualitativo> listaCualitativos =
-                            getCualitativos(tdActual.getFkEstudio(), tdActual.getNombre());
+                            getCualitativos(tdActual.getFkEstudio(), tdActual.getId()+"");
                     ArrayList<String> cualitativos = new ArrayList<>();
                     for (Cualitativo c: listaCualitativos) {
                         cualitativos.add(c.getTitulo());
@@ -205,6 +205,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                         holder.spTipo.setSelection(index);
                     }
                     holder.spTipo.setEnabled(enabled);
+                    cualitativos.add("Sin datos");
 
                     break;
                 }
@@ -310,9 +311,14 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
         TipoDato elegido = listaTipos.get(posicion);
         for (Dato d :
                 listaDatos) {
-            if (elegido.getNombre().equals(d.getFkTipoDato())) {
-                index = listaDatos.indexOf(d);
-                break;
+            if ((elegido.getId()+"").equals(d.getFkTipoDato())) {
+
+                for (int i = 0; i < listaDatos.size(); i++) {
+                    if(listaDatos.get(i).getFkTipoDato().equals(d.getFkTipoDato())) {
+                        index = i;
+                        break;
+                    }
+                }
             }
         }
         return index;

@@ -284,11 +284,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     }
     public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
+        String idTipo="";
+
+        TipoDato td = getTipoDato(db,
+                cualitativo.getFk_dato_tipo_e(), cualitativo.getFk_dato_tipo_t());
+        if(td!=null){
+            idTipo = td.getId()+"";
+        }
 
 
         ContentValues values = new ContentValues();
         values.put("TITULO", cualitativo.getTitulo());
-        values.put("FK_TIPO_DATO_T", cualitativo.getFk_dato_tipo_t());
+        values.put("FK_TIPO_DATO_T", idTipo);
         values.put("FK_TIPO_DATO_E", cualitativo.getFk_dato_tipo_e());
 
         try{
@@ -301,8 +308,13 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
+
+
+
     public long insertarCualitativos(SQLiteDatabase db, ArrayList<Cualitativo> cualitativo)  {
         long newRowId = 0;
+
+
 
         for (int i = 0; i < cualitativo.size(); i++) {
             insertarCualitativo(db, cualitativo.get(i));
@@ -619,6 +631,24 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         res = db.delete("DATO",
                 "FK_TIPO_N = ? and FK_TIPO_E = ?",
                 new String[]{tipo.getNombre(), tipo.getFkEstudio()});
+
+        db.close();
+    }
+    public void editarDato_porTipoYDatoCualitativo(
+            SQLiteDatabase db, Cualitativo cual,
+            String estudio) {
+        int res = 0;
+
+        ContentValues values = new ContentValues();
+        values.put("VALOR_TEXT", cual.getTitulo());
+
+        // Actualizar usando el ID como condición
+        String[] id = {cual.getFk_dato_tipo_e(), estudio};
+
+        res = db.update("dato",
+                        values,
+                        "fk_tipo_n = ?, fk_tipo_e = ?",
+                        id);
 
         db.close();
     }

@@ -351,6 +351,7 @@ public class VerActivity extends AppCompatActivity
     }
 
     private void insertarDatos(ArrayList<Dato> datos) {
+        long res = 0;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);){
@@ -362,13 +363,13 @@ public class VerActivity extends AppCompatActivity
                 values.put("FK_TIPO_E", datos.get(i).getFkTipoEstudio());
                 values.put("FK_OCURRENCIA", datos.get(0).getFkOcurrencia());
                 String valor = datos.get(i).getValorText();
-                if(valor.isEmpty()){
+                if(valor.isEmpty() || valor.equals("Sin datos")){
                     values.put("VALOR_TEXT", " ");
                 }else{
                     values.put("VALOR_TEXT", valor);
                 }
 
-                db.insert("Dato", null,
+                res = db.insert("Dato", null,
                         values);
 
             }
@@ -438,7 +439,7 @@ public class VerActivity extends AppCompatActivity
                 if (d.getFkTipoDato().equals(td.getId()+"")) {
                     datosResultado.add(d);
                 } else {
-                    datosResultado.add(new Dato());
+//                    datosResultado.add(new Dato());
                 }
             }
         }

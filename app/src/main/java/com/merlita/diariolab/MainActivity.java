@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        borrarTodo();
+        //borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -725,6 +725,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < nuevosCualitativos.size(); i++) {
                 try{
                     fun[1+i] = usdbh.insertarCualitativo(db, nuevosCualitativos.get(i));
+                    //usdbh.editarDato_porTipoYDatoCualitativo(db, nuevosCualitativos.get(i), estudioViejo);
                 }catch (SQLiteException e){
                 }
             }

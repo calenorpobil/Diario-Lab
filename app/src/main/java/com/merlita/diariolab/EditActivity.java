@@ -147,7 +147,7 @@ public class EditActivity extends AppCompatActivity
             public void onClick(View view) {
                 int cuentaTipos = getCuentaTipos();
                 TipoDato tdNuevo = new TipoDato();
-                tdNuevo.setId(cuentaTipos);
+                tdNuevo.setId(cuentaTipos+1);
 
                 listaTiposDato.add(0, tdNuevo);
                 adaptadorTiposDato.notifyItemInserted(0);
@@ -252,7 +252,7 @@ public class EditActivity extends AppCompatActivity
     private void recuperarCualitativos(SQLiteDatabase db, TipoDato nuevo) {
         Cursor c = db.rawQuery("select * from CUALITATIVO " +
                 "where FK_TIPO_DATO_T = ? and FK_TIPO_DATO_E = ?", new
-                String[]{nuevo.getNombre(), nombreEstudio});
+                String[]{nuevo.getId()+"", nombreEstudio});
 
         while (c.moveToNext()) {
             int index = c.getColumnIndex("TITULO");
@@ -274,7 +274,8 @@ public class EditActivity extends AppCompatActivity
             if(!tiposCambiados.isEmpty()){
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("⚠");
-                builder.setMessage("No se puede cambiar el Tipo de dato de "+mensajeCambiados+". ");
+                builder.setMessage("No se puede cambiar el Tipo de dato de "+mensajeCambiados+" " +
+                        "porque contiene datos. Bórralo y crea uno nuevo. ");
                 builder.setPositiveButton("Vale", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -103,7 +103,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
         TipoDato tipo = listaTipos.get(holder.getAbsoluteAdapterPosition());
         ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
 
-        listaCualitativos = getCualitativos(dato.getFkTipoEstudio(), tipo.getNombre());
+        listaCualitativos = getCualitativos(dato.getFkTipoEstudio(), tipo.getId()+"");
 
         holder.tvNombreTipo.setText(listaTipos.get(position).getNombre());
 

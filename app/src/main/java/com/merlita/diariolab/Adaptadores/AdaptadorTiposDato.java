@@ -7,6 +7,7 @@ import static com.merlita.diariolab.MainActivity.DB_VERSION;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Modelos.Cualitativo;
+import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
@@ -112,6 +114,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
     @Override
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         TipoDato tipoDato = lista.get(holder.getAbsoluteAdapterPosition());
+        boolean tieneDatos = !getDatosDeTipo(tipoDato).isEmpty();
 //        tipoDato.setFkEstudio(nombreEstudio);
 
         holder.etDescripcion.setText(tipoDato.getDescripcion());
@@ -134,6 +137,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spTipoDato.setAdapter(adapter);
         holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
+        holder.spTipoDato.setEnabled(!tieneDatos);
 
 
         holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -146,7 +150,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                     if( position == tamanyo){
                         if(cuenta<getItemCount()){
                             holder.listaCualitativos = getCualitativos(holder.listaCualitativos,
-                                    tipoDato.getFkEstudio(), tipoDato.getNombre());
+                                    tipoDato.getFkEstudio(), tipoDato.getId()+"");
                         }
                         holder.segundo.setVisibility(VISIBLE);
                     }else{
@@ -225,6 +229,25 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
             return res;
         }
         return listaCualitativos;
+    }
+
+    private ArrayList<Dato> getDatosDeTipo(TipoDato tipo) {
+        ArrayList<Dato> datosResultado =new ArrayList<>();
+        try{
+            try(EstudiosSQLiteHelper usdbh =
+                        new EstudiosSQLiteHelper(context,
+                                "DBEstudios", null,  DB_VERSION);){
+                SQLiteDatabase db;
+                db = usdbh.getWritableDatabase();
+
+                datosResultado = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getId()+"");
+
+                db.close();
+            } catch (Exception ignored){
+            }
+        } catch (SQLiteDatabaseCorruptException ignored){
+        }
+        return datosResultado;
     }
 
 
