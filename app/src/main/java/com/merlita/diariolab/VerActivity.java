@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -424,6 +425,7 @@ public class VerActivity extends AppCompatActivity
                 db.close();
             } catch (Exception ex){
                 toast("Juan");
+                Log.d("MyAdapter", ex.getMessage());
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
@@ -433,7 +435,7 @@ public class VerActivity extends AppCompatActivity
                 listaTipos) {
             for (Dato d :
                     datosAux) {
-                if (d.getFkTipoDato().equals(td.getNombre())) {
+                if (d.getFkTipoDato().equals(td.getId()+"")) {
                     datosResultado.add(d);
                 } else {
                     datosResultado.add(new Dato());
@@ -458,6 +460,7 @@ public class VerActivity extends AppCompatActivity
                 db.close();
             } catch (Exception ex){
                 toast("Juan");
+                Log.d("MyAdapter", ex.getMessage());
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");
@@ -479,6 +482,7 @@ public class VerActivity extends AppCompatActivity
                 db.close();
             } catch (Exception ex){
                 toast("Juan");
+                Log.d("MyAdapter", ex.getMessage());
             }
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Intentalo en otro momento. ");

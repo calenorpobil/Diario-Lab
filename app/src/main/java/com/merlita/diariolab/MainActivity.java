@@ -354,8 +354,8 @@ public class MainActivity extends AppCompatActivity {
                 if(!usdbh.estudioExiste(db, "Tomar Café")){
                     // Insertar tipos de datos para "Tomar Café"
                     tiposDato1.add(new TipoDato(getCuentaTipos(), "Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
-                    tiposDato1.add(new TipoDato(getCuentaTipos(), "Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
-                    tiposDato1.add(new TipoDato(getCuentaTipos(), "Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
+                    tiposDato1.add(new TipoDato(getCuentaTipos()+1, "Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                    tiposDato1.add(new TipoDato(getCuentaTipos()+2, "Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
                     a[0] = tiposDato1;
 
                     usdbh.insertarEstudio(db, estudios.get(esteEstudio));
@@ -394,8 +394,8 @@ public class MainActivity extends AppCompatActivity {
                     // Tipos para "Ir al gimnasio"
                     ArrayList<TipoDato> tiposDato2 = new ArrayList<>();
                     tiposDato2.add(new TipoDato(getCuentaTipos(), "Duración", "Número", "Duración del entrenamiento en minutos", "Ir al gimnasio"));
-                    tiposDato2.add(new TipoDato(getCuentaTipos(), "Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
-                    tiposDato2.add(new TipoDato(getCuentaTipos(), "Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
+                    tiposDato2.add(new TipoDato(getCuentaTipos()+1, "Fecha", "Fecha", "Fecha del entrenamiento", "Ir al gimnasio"));
+                    tiposDato2.add(new TipoDato(getCuentaTipos()+2, "Actividad", "Texto", "Tipo de actividad realizada", "Ir al gimnasio"));
                     a[1] = tiposDato2;
 
                     usdbh.insertarEstudio(db, estudios.get(esteEstudio));
@@ -432,8 +432,8 @@ public class MainActivity extends AppCompatActivity {
                     // Tipos para "Diario"
                     ArrayList<TipoDato> tiposDato3 = new ArrayList<>();
                     tiposDato3.add(new TipoDato(getCuentaTipos(), "Estado de ánimo", "Texto", "Descripción del estado de ánimo", "Diario"));
-                    tiposDato3.add(new TipoDato(getCuentaTipos(), "Fecha", "Fecha", "Fecha del registro", "Diario"));
-                    tiposDato3.add(new TipoDato(getCuentaTipos(), "Evento destacado", "Texto", "Evento importante del día", "Diario"));
+                    tiposDato3.add(new TipoDato(getCuentaTipos()+1, "Fecha", "Fecha", "Fecha del registro", "Diario"));
+                    tiposDato3.add(new TipoDato(getCuentaTipos()+2, "Evento destacado", "Texto", "Evento importante del día", "Diario"));
                     a[2] = tiposDato3;
 
                     usdbh.insertarEstudio(db, estudios.get(2));

@@ -89,7 +89,6 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("FK_TIPO_E", dato.getFkTipoEstudio());
         values.put("FK_TIPO_N", dato.getFkTipoDato());
-        values.put("FK_TIPO_N", dato.getFkTipoDato());
         values.put("FK_OCURRENCIA", dato.getFkOcurrencia().toString());
         values.put("VALOR_TEXT", dato.getValorText());
 

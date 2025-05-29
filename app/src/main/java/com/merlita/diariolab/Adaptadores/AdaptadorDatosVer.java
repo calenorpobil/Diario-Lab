@@ -115,7 +115,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             cuenta++;
             for (int i = 0; i < listaDatos.size(); i++) {
                 String fkDato = listaDatos.get(i).getFkTipoDato();
-                String nomTipo = tdActual.getNombre();
+                String nomTipo = tdActual.getId()+"";
                 if(fkDato.equals(nomTipo)) {
                     datoActual = listaDatos.get(i);
                     break;

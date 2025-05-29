@@ -28,7 +28,7 @@ public class Dato  implements Parcelable {
      */
     public Dato(TipoDato tipoDato, String fkTipoE, String fkOcurrencia, String valorText) {
         this.id_dato = id_dato+1;
-        this.fkTipoDato = tipoDato.getNombre();
+        this.fkTipoDato = tipoDato.getId()+"";
         this.fkTipoEstudio = fkTipoE;
         this.fkOcurrencia = fkOcurrencia;
         this.valorText = valorText;
