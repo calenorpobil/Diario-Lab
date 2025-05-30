@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!usdbh.estudioExiste(db, "Tomar Café")){
                     // Insertar tipos de datos para "Tomar Café"
                     tiposDato1.add(new TipoDato(getCuentaTipos(), "Tazas", "Número", "Cantidad de tazas consumidas", "Tomar Café"));
-                    tiposDato1.add(new TipoDato(getCuentaTipos()+1, "Hora", "Fecha", "Hora en que se tomó el café", "Tomar Café"));
+                    tiposDato1.add(new TipoDato(getCuentaTipos()+1, "Fecha", "Fecha", "Fecha en que se tomó el café", "Tomar Café"));
                     tiposDato1.add(new TipoDato(getCuentaTipos()+2, "Tipo de café", "Texto", "Tipo de café consumido", "Tomar Café"));
                     a[0] = tiposDato1;
 
@@ -369,21 +369,21 @@ public class MainActivity extends AppCompatActivity {
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-01"), "Tomar Café");
                     usdbh. insertarOcurrencia(db,aux);
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "2"));
-                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-01T08:30:00"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "29/5/2025"));
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Espresso"));
 
                     numOcurrencia = usdbh.getCuentaOcurrencias(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-02"), "Tomar Café");
                     usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "1"));
-                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-02T09:15:00"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "28/5/2025"));
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Latte"));
 
                     numOcurrencia = usdbh.getCuentaOcurrencias(db, estudios.get(esteEstudio).getNombre());
                     aux = new Ocurrencia(numOcurrencia, LocalDate.parse("2024-03-03"), "Tomar Café");
                     usdbh. insertarOcurrencia(db, aux);
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(0), "Tomar Café", aux.getCod(), "3"));
-                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "2024-03-03"));
+                    usdbh. insertarDato(db, new Dato(tiposDato1.get(1), "Tomar Café", aux.getCod(), "27/5/2025"));
                     usdbh. insertarDato(db, new Dato(tiposDato1.get(2), "Tomar Café", aux.getCod(), "Americano"));
 
                 }
@@ -742,7 +742,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private boolean editarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
-                                      ArrayList<Cualitativo> viejosCualitativos,
                                       String estudioViejo){
         long[]  fun = new long[nuevosCualitativos.size()+1];
         try(EstudiosSQLiteHelper usdbh =
@@ -754,7 +753,7 @@ public class MainActivity extends AppCompatActivity {
             usdbh.borrarCualitativos_PorFK(db, estudioViejo);
             for (int i = 0; i < nuevosCualitativos.size(); i++) {
                 try{
-                    fun[1+i] = usdbh.insertarCualitativo(db, viejosCualitativos, nuevosCualitativos.get(i));
+                    fun[1+i] = usdbh.insertarCualitativo(db, nuevosCualitativos.get(i));
                     //usdbh.editarDato_porTipoYDatoCualitativo(db, nuevosCualitativos.get(i), estudioViejo);
                 }catch (SQLiteException e){
                 }

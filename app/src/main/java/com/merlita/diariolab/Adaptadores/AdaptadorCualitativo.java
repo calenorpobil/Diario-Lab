@@ -33,6 +33,7 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
 
     private Context context;
     private ArrayList<Cualitativo> lista;
+    int cuenta=0;
     SQLiteDatabase db;
 
     public interface OnButtonClickListener {
@@ -81,7 +82,7 @@ public class AdaptadorCualitativo extends RecyclerView.Adapter<AdaptadorCualitat
     public void onBindViewHolder(@NonNull MiContenedor holder, int position) {
         Cualitativo cualitativo = lista.get(holder.getAbsoluteAdapterPosition());
 
-        String texto = "Tipo "+(getItemCount())+": ";
+        String texto = "Tipo "+(++cuenta)+": ";
         holder.tvCualitativo.setText(texto);
         holder.etTitulo.setText(cualitativo.getTitulo());
 

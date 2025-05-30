@@ -136,6 +136,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.spTipoDato.setAdapter(adapter);
         holder.spTipoDato.setSelection(adapter.getPosition(tipoDato.getTipoDato()));
+        holder.spTipoDato.setEnabled(getDatosDeTipo(tipoDato).isEmpty());
 
 
         holder.spTipoDato.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -238,7 +239,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 SQLiteDatabase db;
                 db = usdbh.getWritableDatabase();
 
-                datosResultado = usdbh.getDatosDeTipo(db, tipo.getFkEstudio(), tipo.getId()+"");
+                datosResultado = usdbh.getDatosDeTipo(db, nombreEstudio, tipo.getId()+"");
 
                 db.close();
             } catch (Exception ignored){

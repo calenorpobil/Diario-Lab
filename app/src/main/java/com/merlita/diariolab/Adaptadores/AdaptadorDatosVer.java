@@ -167,7 +167,7 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                     holder.etNumero.setVisibility(GONE);
                     holder.spTipo.setVisibility(GONE);
 
-                    if(enabled && datoActual.getValorText().isEmpty()){
+                    if(enabled && datoActual.getValorText().isBlank()){
                         texto = "Elige una fecha";
                     }
                     holder.tvHora.setText(texto);
@@ -205,7 +205,8 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
                         holder.spTipo.setSelection(index);
                     }
                     holder.spTipo.setEnabled(enabled);
-                    cualitativos.add("Sin datos");
+                    if(!cualitativos.contains("Sin datos"))
+                        cualitativos.add("Sin datos");
 
                     break;
                 }

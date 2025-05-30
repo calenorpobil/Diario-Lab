@@ -147,6 +147,7 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
             case "Tipo": {
 
                 ArrayList<String> aux = new ArrayList<>();
+                aux.add("Sin datos");
                 for (Cualitativo a: listaCualitativos) {
                     aux.add(a.getTitulo());
                 }
@@ -158,12 +159,6 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
                 holder.spTipo.setAdapter(adapter);
                 holder.spTipo.setSelection(0);
 
-//                for (int i = 0; i < listaCualitativos.size(); i++) {
-//                    RadioButton radioButton = new RadioButton(context);
-//                    radioButton.setText(listaCualitativos.get(i).getTitulo());
-//                    radioButton.setId(i);  // Asignar ID único
-//                    holder.rgCualitativos.addView(radioButton);
-//                }
                 holder.tvHora.setVisibility(GONE);
                 holder.etDescripcion.setVisibility(GONE);
                 holder.etNumero.setVisibility(GONE);

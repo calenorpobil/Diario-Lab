@@ -282,8 +282,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         return newRowId;
     }
-    public long insertarCualitativo(SQLiteDatabase db,
-                                    ArrayList<Cualitativo> cualiViejos, Cualitativo cualitativo)  {
+    public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
         String idTipo="";
 

@@ -90,8 +90,8 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
 
         if (tipoActual.getTipoDato().equals("Texto")
                 || tipoActual.getTipoDato().equals("Número")) {
-            listaDatosUtiles.add(dato);
         }
+        listaDatosUtiles.add(dato);
         if(!listaDatosUtiles.isEmpty()){
             View itv = holder.itemView;
             switch (tipoActual.getTipoDato()) {
