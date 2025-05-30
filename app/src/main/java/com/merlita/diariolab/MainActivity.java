@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         vistaRecycler.setLayoutManager(lm);
         vistaRecycler.setAdapter(adaptadorEstudios);
 
-        borrarTodo();
+        //borrarTodo();
 
         insertarDatosIniciales();
         actualizarDatos();
@@ -742,18 +742,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private boolean editarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
+                                      ArrayList<Cualitativo> viejosCualitativos,
                                       String estudioViejo){
         long[]  fun = new long[nuevosCualitativos.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
-
             //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
             SQLiteDatabase db = usdbh.getWritableDatabase();
+
             usdbh.borrarCualitativos_PorFK(db, estudioViejo);
             for (int i = 0; i < nuevosCualitativos.size(); i++) {
                 try{
-                    fun[1+i] = usdbh.insertarCualitativo(db, nuevosCualitativos.get(i));
+                    fun[1+i] = usdbh.insertarCualitativo(db, viejosCualitativos, nuevosCualitativos.get(i));
                     //usdbh.editarDato_porTipoYDatoCualitativo(db, nuevosCualitativos.get(i), estudioViejo);
                 }catch (SQLiteException e){
                 }

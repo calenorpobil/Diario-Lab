@@ -111,7 +111,8 @@ public class AdaptadorColumnas extends RecyclerView.Adapter<AdaptadorColumnas.Mi
                     setAlturaNumero(dato.getValorText(), max, min, holder.tvCalculo,
                             tvPorcentaje, itv);
                     break;
-                case "Cualitativo":
+                case "Tipo":
+                case "Fecha":
                     holder.tvCalculo.setVisibility(INVISIBLE);
                     holder.tvDato.setVisibility(INVISIBLE);
                     holder.tvPorcentaje.setText(dato.getValorText());

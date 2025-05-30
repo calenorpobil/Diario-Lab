@@ -128,6 +128,7 @@ public class EditActivity extends AppCompatActivity
         etTitulo.setText(nombreEstudio);
         etDescripcion.setText(desc);
         etEmoji.setText(emoji);
+        bt.setText(R.string.guardar_el_estudio);
 
 
         adaptadorTiposDato = new AdaptadorTiposDato(this,
