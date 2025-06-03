@@ -115,7 +115,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             }
 
             reps = getOcurrencia(estudioActual.getNombre());
-            String repeticiones = reps+" "+emojiReps;
+            String repeticiones = (reps+1)+" "+emojiReps;
             tvReps.setText(repeticiones);
 
 
@@ -318,6 +318,7 @@ public class OcurrenciaActivity extends AppCompatActivity
             db = usdbh.getWritableDatabase();
 
             res =usdbh.getCuentaOcurrencias(db, fk_estudio);
+            res = usdbh.estaElIDOcurrenciaLibre(db, res, fk_estudio);
 
             db.close();
         }

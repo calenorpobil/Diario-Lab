@@ -245,10 +245,16 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             @Override
             public void afterTextChanged(Editable s) {
                 String texto = s.toString();
+                int posicion = holder.getAbsoluteAdapterPosition();
                 int index = getDatoPorIndexTipos(holder.getAbsoluteAdapterPosition());
                 if(index!=-1){
                     listaDatos.get(index).setValorText(texto);
                     listener.onButtonClickDatos(listaDatos);
+                }else{
+                    Dato nuevoDato = new Dato(listaTipos.get(posicion),
+                            ocurrencia.getFkEstudioN(), ocurrencia.getCod(), texto);
+                    nuevoDato.setValorText(texto);
+                    listaDatos.add(nuevoDato);
                 }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
@@ -262,10 +268,16 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             @Override
             public void afterTextChanged(Editable s) {
                 String texto = s.toString();
+                int posicion = holder.getAbsoluteAdapterPosition();
                 int index = getDatoPorIndexTipos(holder.getAbsoluteAdapterPosition());
                 if(index!=-1){
                     listaDatos.get(index).setValorText(texto);
                     listener.onButtonClickDatos(listaDatos);
+                }else{
+                    Dato nuevoDato = new Dato(listaTipos.get(posicion),
+                            ocurrencia.getFkEstudioN(), ocurrencia.getCod(), texto);
+                    nuevoDato.setValorText(texto);
+                    listaDatos.add(nuevoDato);
                 }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
@@ -278,8 +290,18 @@ public class AdaptadorDatosVer extends RecyclerView.Adapter<AdaptadorDatosVer.Mi
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable s) {
-                listaDatos.get(holder.getAbsoluteAdapterPosition()).setValorText(s.toString());
-                listener.onButtonClickDatos(listaDatos);
+                int posicion = holder.getAbsoluteAdapterPosition();
+                String texto = s.toString();
+                int index = getDatoPorIndexTipos(holder.getAbsoluteAdapterPosition());
+                if(index!=-1){
+                    listaDatos.get(index).setValorText(texto);
+                    listener.onButtonClickDatos(listaDatos);
+                }else{
+                    Dato nuevoDato = new Dato(listaTipos.get(posicion),
+                            ocurrencia.getFkEstudioN(), ocurrencia.getCod(), texto);
+                    nuevoDato.setValorText(texto);
+                    listaDatos.add(nuevoDato);
+                }
             }
             // ... (métodos onTextChanged y beforeTextChanged vacíos)
         });

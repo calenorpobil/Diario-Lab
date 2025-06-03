@@ -169,7 +169,8 @@ public class AdaptadorEstudios extends RecyclerView.Adapter<AdaptadorEstudios.Mi
                             if (usdbh.borrarEstudio(actual, db) != -1 &&
                                     usdbh.borrarTiposDatos_PorFK(db, nombreEstudio) != -1 &&
                                     usdbh.borrarDatos_PorFK(db, nombreEstudio) != -1 &&
-                                    usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1) {
+                                    usdbh.borrarOcurrencia_PorFK(db, nombreEstudio) != -1 &&
+                                    usdbh.borrarCualitativos_PorFK(db, nombreEstudio)!=-1) {
                                 lista.remove(actual);
                                 MainActivity.actualizarLocal();
                             }else{

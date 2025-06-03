@@ -15,6 +15,7 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Modelos.Estudio;
 import com.merlita.diariolab.Modelos.Ocurrencia;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -49,6 +50,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
             "CONSTRAINT FK_TIPO FOREIGN KEY (FK_TIPO_DATO_T, FK_TIPO_DATO_E) " +
             "REFERENCES DATO_TIPO (NOMBRE, FK_ESTUDIO),  "+
             "PRIMARY KEY (TITULO, FK_TIPO_DATO_T, FK_TIPO_DATO_E));";
+    String sqlCreate5 = "CREATE TABLE DATOS_PRUEBA (ACTIVOS INTEGER);";
 
     private static int idMax = 0;
 
@@ -118,6 +120,41 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         mCount.close();
 
         return res;
+    }
+    public int estaElIDTipoLibre(SQLiteDatabase db, int id, ArrayList<Integer> pillados) {
+        int res=-1;
+
+        Cursor cID= db.rawQuery("select ID from dato_tipo " +
+                        "where ID = ?;",
+                new String[]{id+""});
+        if(cID.moveToFirst()){
+            id = estaElIDTipoLibre(db, (id+1), pillados);
+        } else {
+            if (!pillados.contains(id)){
+                return id;
+            }else{
+                id = estaElIDTipoLibre(db, (id+1), pillados);
+            }
+        }
+        cID.close();
+
+        return id;
+    }
+    public int estaElIDOcurrenciaLibre(SQLiteDatabase db, int id,
+                                       String fkEstudio) {
+        int res=-1;
+
+        Cursor cID= db.rawQuery("select ID from ocurrencia " +
+                        "where ID = ? and FK_ESTUDIO_N = ?;",
+                new String[]{"OC"+id, fkEstudio});
+        if(cID.moveToFirst()){
+            id = estaElIDOcurrenciaLibre(db, (id+1), fkEstudio);
+        }else{
+            return id;
+        }
+        cID.close();
+
+        return id;
     }
     public int getCuentaTiposEstudio(SQLiteDatabase db, String fkEstudioN) {
         int res=-1;
@@ -245,7 +282,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 //                datoTipo.getMaximaLongitud());
 
         ContentValues values = new ContentValues();
-        values.put("ID", getCuentaTipos(db));
+        values.put("ID", datoTipo.getId());
         values.put("NOMBRE", datoTipo.getNombre());
         values.put("TIPO_DATO", datoTipo.getTipoDato());
         values.put("DESCRIPCION", datoTipo.getDescripcion());
@@ -284,18 +321,11 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     }
     public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
-        String idTipo="";
-
-        TipoDato td = getTipoDato(db,
-                cualitativo.getFk_dato_tipo_e(), cualitativo.getFk_dato_tipo_t());
-        if(td!=null){
-            idTipo = td.getId()+"";
-        }
 
 
         ContentValues values = new ContentValues();
         values.put("TITULO", cualitativo.getTitulo());
-        values.put("FK_TIPO_DATO_T", idTipo);
+        values.put("FK_TIPO_DATO_T", cualitativo.getFk_dato_tipo_t());
         values.put("FK_TIPO_DATO_E", cualitativo.getFk_dato_tipo_e());
 
         try{
@@ -317,7 +347,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
 
         for (int i = 0; i < cualitativo.size(); i++) {
-            insertarCualitativo(db, cualitativo.get(i));
+            newRowId = insertarCualitativo(db, cualitativo.get(i));
         }
 
         return newRowId;
@@ -576,6 +606,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS DATO_TIPO");
         db.execSQL("DROP TABLE IF EXISTS DATO");
         db.execSQL("DROP TABLE IF EXISTS CUALITATIVO");
+        db.execSQL("DROP TABLE IF EXISTS DATOS_PRUEBA");
 
         db.close();
     }
@@ -630,7 +661,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
 
         res = db.delete("DATO",
                 "FK_TIPO_N = ? and FK_TIPO_E = ?",
-                new String[]{tipo.getNombre(), tipo.getFkEstudio()});
+                new String[]{tipo.getId()+"", tipo.getFkEstudio()});
 
         db.close();
     }
@@ -689,6 +720,15 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
                 new String[]{fkEstudio});
 
         return res;
+    }
+    public void borrarCualitativos_PorEstudioYTipo(SQLiteDatabase db, String fkEstudio,
+                                                   String fkTipo) {
+        long res=-1;
+
+        res = db.delete("CUALITATIVO",
+                "FK_TIPO_DATO_E = ? AND FK_TIPO_DATO_T = ?",
+                new String[]{fkEstudio, fkTipo});
+
     }
     public long borrarDatos_PorFK(SQLiteDatabase db, String fkEstudio) {
         long res=-1;
@@ -783,6 +823,7 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(sqlCreate2);
         db.execSQL(sqlCreate3);
         db.execSQL(sqlCreate4);
+        db.execSQL(sqlCreate5);
     }
 
 

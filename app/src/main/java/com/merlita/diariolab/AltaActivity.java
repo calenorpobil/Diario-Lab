@@ -1,6 +1,7 @@
 package com.merlita.diariolab;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
 import com.merlita.diariolab.Modelos.Cualitativo;
 import com.merlita.diariolab.Modelos.TipoDato;
+import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
 
@@ -34,6 +36,7 @@ public class AltaActivity extends AppCompatActivity
     RecyclerView rvTipos;
     String[] ordenSpinner = {"Número", "Texto", "Fecha", "Tipo"};
     private int posicionEdicion;
+    private ArrayList<Integer> pillados = new ArrayList<>();
 
 
     private void toast(String e) {
@@ -77,6 +80,8 @@ public class AltaActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 TipoDato nuevo = new TipoDato();
+                int nuevoId = getNuevoIdTipo();
+                nuevo.setId(nuevoId);
                 listaTiposDato.add(0, nuevo);
 
                 adaptadorTiposDato.notifyItemInserted(0);
@@ -85,6 +90,24 @@ public class AltaActivity extends AppCompatActivity
 
     }
 
+    private int getNuevoIdTipo() {
+        int res=-1;
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            res = usdbh.estaElIDTipoLibre(db, 0, pillados);
+            pillados.add(res);
+
+            db.close();
+        }
+
+        return res;
+    }
     private void actualizarLocal() {
         rvTipos.setLayoutManager(new LinearLayoutManager(this));
         rvTipos.setAdapter(adaptadorTiposDato);
@@ -120,9 +143,13 @@ public class AltaActivity extends AppCompatActivity
                         cambiar.setFkEstudio(nombreEstudio);
                         for (int j = 0; j < listaCualitativos.size(); j++) {
                             Cualitativo check = listaCualitativos.get(j);
-                            check.setFk_dato_tipo_e(nombreEstudio);
-                            if(check.getFk_dato_tipo_t().equals(cambiar.getNombre())){
-                                listaCualitativos.get(j).setFk_dato_tipo_t(cambiar.getNombre());
+                            if(check.getTitulo()==null){
+                                listaCualitativos.remove(check);
+                            }else{
+                                check.setFk_dato_tipo_e(nombreEstudio);
+                                if(check.getFk_dato_tipo_t().equals(cambiar.getNombre())){
+                                    listaCualitativos.get(j).setFk_dato_tipo_t(cambiar.getNombre());
+                                }
                             }
                         }
 

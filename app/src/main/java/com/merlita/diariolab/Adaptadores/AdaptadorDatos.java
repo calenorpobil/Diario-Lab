@@ -132,8 +132,10 @@ public class AdaptadorDatos extends RecyclerView.Adapter<AdaptadorDatos.MiConten
 
 
 
-                String nombreTipo = "Escribe una fecha";
-                nombreTipo = tipo.getDescripcion();
+                String nombreTipo = tipo.getDescripcion();
+                if (nombreTipo.isBlank()) {
+                    nombreTipo = "Escribe una fecha";
+                }
                 holder.tvHora.setHint(nombreTipo);
 
                 break;

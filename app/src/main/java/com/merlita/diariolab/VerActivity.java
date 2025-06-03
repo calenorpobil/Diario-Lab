@@ -299,7 +299,7 @@ public class VerActivity extends AppCompatActivity
                         listaOcurrencias.remove(position);
                         adaptadorOcurrencias.notifyItemRemoved(position);
                         borrarOcurrencia(oc, position);
-                        actualizarListas();
+                        //actualizarListas();
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

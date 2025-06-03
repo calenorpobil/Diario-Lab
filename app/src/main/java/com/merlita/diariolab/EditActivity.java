@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.merlita.diariolab.Adaptadores.AdaptadorTiposDato;
 import com.merlita.diariolab.Modelos.Cualitativo;
-import com.merlita.diariolab.Modelos.Dato;
 import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
@@ -52,6 +51,8 @@ public class EditActivity extends AppCompatActivity
     int posicion=-1;
     private boolean primeraVez=true;
     int posicionEdicion;
+    private int cuentaTiposNuevos=0;
+    private ArrayList<Integer> pillados = new ArrayList<>();
 
 
     private void toast(String e) {
@@ -150,7 +151,7 @@ public class EditActivity extends AppCompatActivity
         btNuevoTipo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int cuentaTipos = getCuentaTipos();
+                int cuentaTipos = getNuevoIdTipos();
                 TipoDato tdNuevo = new TipoDato();
                 tdNuevo.setId(cuentaTipos);
 
@@ -241,14 +242,16 @@ public class EditActivity extends AppCompatActivity
 
         c.close();
     }
-    private int getCuentaTipos() {
+    private int getNuevoIdTipos() {
         int  res=-1;
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
 
             SQLiteDatabase db = usdbh.getWritableDatabase();
-            res = usdbh.getCuentaTipos(db);
+            int idMalo = usdbh.getCuentaTipos(db);
+            res = usdbh.estaElIDTipoLibre(db, idMalo, pillados);
+            pillados.add(res);
         }
         return res;
     }
@@ -363,10 +366,16 @@ public class EditActivity extends AppCompatActivity
                         datosEstudio.add(etDescripcion.getText().toString());
                         datosEstudio.add(etEmoji.getText().toString());
                         for (int j = 0; j < listaCualitativos.size(); j++) {
-                            listaCualitativos.get(j).setFk_dato_tipo_e(datosEstudio.get(0));
+                            Cualitativo esteCualitativo = listaCualitativos.get(j);
+                            if(esteCualitativo.getTitulo()==null){
+                                listaCualitativos.remove(esteCualitativo);
+                            }else{
+                                esteCualitativo.setFk_dato_tipo_e(datosEstudio.get(0));
+                            }
                         }
-                        for (int j = 0; j < listaTiposDato.size(); j++) {
-                            listaTiposDato.get(j).setFkEstudio(datosEstudio.get(0));
+                        for (TipoDato td :
+                                listaTiposDato) {
+                            td.setFkEstudio(etTitulo.getText().toString());
                         }
 
 

@@ -14,7 +14,7 @@
         android:id="@+id/info_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/fondoRectangulo"
+        android:background="@color/fondoOcurrencia"
         android:ellipsize="end"
 
         android:gravity="center"

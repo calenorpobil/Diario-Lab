@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     //10.0.2.2      LOCALHOST
     //172.17.0.1     LINUX
     private static final int PUERTO = 8888;
-
+    private boolean datosPrueba=true;
 
 
     private void toast(String e) {
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        //EdgeToEdge.enable(this);
+        //EdgeToEdge.enabl`de(this);
 
 
 //        Intent i = new Intent(MainActivity.this, AnalisisActivity.class);
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         tv = findViewById(R.id.tvEstudioElegir);
         btAlta = findViewById(R.id.btAlta);
-        btDev = findViewById(R.id.btCopia);
+        btDev = findViewById(R.id.btDatosPrueba);
         btRevert = findViewById(R.id.btRevert);
         vistaRecycler = findViewById(R.id.recyclerView);
         adaptadorEstudios = new AdaptadorEstudios(this, listaEstudios);
@@ -123,7 +123,10 @@ public class MainActivity extends AppCompatActivity {
 
         //borrarTodo();
 
-        insertarDatosIniciales();
+
+
+        if(datosPrueba)
+            insertarDatosIniciales();
         actualizarDatos();
 
 
@@ -156,9 +159,14 @@ public class MainActivity extends AppCompatActivity {
         btDev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //openFolderPickerOut();
 
-                openFolderPickerOut();
-                //enviarArchivoNube();
+                datosPrueba = !datosPrueba;
+                if(datosPrueba){
+                    btDev.setText(R.string.bt_dev);
+                }else{
+                    btDev.setText(R.string.bt_empty);
+                }
 
 
             }
@@ -282,6 +290,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private boolean isDatosDePrueba() {
+        boolean res = false;
+
+
+        try(EstudiosSQLiteHelper usdbh =
+                    new EstudiosSQLiteHelper(this,
+                            "DBEstudios", null,  DB_VERSION);){
+            SQLiteDatabase db;
+            db = usdbh.getWritableDatabase();
+
+            db.close();
+        }
+
+        return res;
+    }
 
     private ArrayList<Integer> getOcurrencia(ArrayList<Estudio> estudios) {
         ArrayList<Integer> res = new ArrayList<>();
@@ -657,15 +681,15 @@ public class MainActivity extends AppCompatActivity {
         long  res=-1;
         String idTipo;
 
-//        TipoDato tipoParaId = recuperarTipo(
-//                cualitativos.get(0).getFk_dato_tipo_e(), cualitativos.get(0).getFk_dato_tipo_t());
-//        if(tipoParaId!=null){
-//            idTipo = tipoParaId.getId()+"";
-//            for (Cualitativo c :
-//                    cualitativos) {
-//                c.setFk_dato_tipo_t(idTipo);
-//            }
-//        }
+        TipoDato tipoParaId = recuperarTipo(
+                cualitativos.get(0).getFk_dato_tipo_e(), cualitativos.get(0).getFk_dato_tipo_t());
+        if(tipoParaId!=null){
+            idTipo = tipoParaId.getId()+"";
+            for (Cualitativo c :
+                    cualitativos) {
+                c.setFk_dato_tipo_t(idTipo);
+            }
+        }
 
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -731,10 +755,11 @@ public class MainActivity extends AppCompatActivity {
             SQLiteDatabase db = usdbh.getWritableDatabase();
             fun[0] = usdbh.borrarTiposDatos_PorFK(db, estudioViejo);
             for (int i = 0; i < nuevoTiposDato.size(); i++) {
+                TipoDato tipo = nuevoTiposDato.get(i);
                 //Apunta la clave Foránea del Estudio
-                nuevoTiposDato.get(i).setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
+                tipo.setFkEstudio(nuevoTiposDato.get(0).getFkEstudio());
                 try{
-                    fun[1+i] = usdbh.insertarTipoDatoEditAc(db, nuevoTiposDato.get(i));
+                    fun[1+i] = usdbh.insertarTipoDatoEditAc(db, tipo);
                 }catch (SQLiteException ignored){
                 }
             }
@@ -750,12 +775,23 @@ public class MainActivity extends AppCompatActivity {
             //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
             SQLiteDatabase db = usdbh.getWritableDatabase();
 
-            usdbh.borrarCualitativos_PorFK(db, estudioViejo);
+            Cualitativo cualitativoAux = nuevosCualitativos.get(0);
+            usdbh.borrarCualitativos_PorEstudioYTipo(db, estudioViejo,
+                    cualitativoAux.getFk_dato_tipo_t());
+            TipoDato td = usdbh.getTipoDato(db,
+                    cualitativoAux.getFk_dato_tipo_e(), cualitativoAux.getFk_dato_tipo_t());
             for (int i = 0; i < nuevosCualitativos.size(); i++) {
+                Cualitativo esteCualitativo = nuevosCualitativos.get(i);
+
+                if(td!=null){
+                    esteCualitativo.setFk_dato_tipo_t(td.getId()+"");
+                }
+
                 try{
-                    fun[1+i] = usdbh.insertarCualitativo(db, nuevosCualitativos.get(i));
+                    fun[1+i] = usdbh.insertarCualitativo(db, esteCualitativo);
                     //usdbh.editarDato_porTipoYDatoCualitativo(db, nuevosCualitativos.get(i), estudioViejo);
                 }catch (SQLiteException e){
+                    Log.d("MyAdapter", e.getMessage());
                 }
             }
             db.close();
@@ -815,7 +851,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * RECOGER ALTA ACTIVITY
      *
-     *
      */
     ActivityResultLauncher<Intent>
             lanzadorAlta = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -846,8 +881,11 @@ public class MainActivity extends AppCompatActivity {
                                     //INSERTAR
                                     insertarTipoDato(tipoNuevo);
                                 }
-
-                                insertarCualitativos(cualitativos);
+                                assert cualitativos != null;
+                                if(!cualitativos.isEmpty()){
+                                    cualitativos.get(0).setFk_dato_tipo_e(nuevoEstudio.getNombre());
+                                    insertarCualitativos(cualitativos);
+                                }
 
                             }
                         }
@@ -898,7 +936,9 @@ public class MainActivity extends AppCompatActivity {
                         //INSERTAR LOS TIPOS DE DATO:
                         //editarDatos(nuevosTiposDato, viejosTipos);
                         editarTipoDato(nuevosTiposDato, viejo.getNombre());
-                        editarCualitativo(nuevosCualitativos, viejo.getNombre());
+                        if(nuevosCualitativos!=null && !nuevosCualitativos.isEmpty()){
+                            editarCualitativo(nuevosCualitativos, viejo.getNombre());
+                        }
                     }
                 }
             }

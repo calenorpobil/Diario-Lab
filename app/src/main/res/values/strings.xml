@@ -56,7 +56,8 @@
     <string name="bt_modificar">Modificar</string>
     <string name="bt_ver">Ver</string>
     <string name="bt_revert">🔙</string>
-    <string name="bt_dev">❔️</string>
+    <string name="bt_dev">👾</string>
+    <string name="bt_empty">☁</string>
     <string name="btMenos">-</string>
     <string name="cuenta">Cuenta</string>
     <string name="descripcion_del_estudio">Descripcion del estudio</string>

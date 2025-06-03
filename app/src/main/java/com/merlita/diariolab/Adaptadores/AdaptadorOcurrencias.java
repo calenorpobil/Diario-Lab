@@ -98,7 +98,7 @@ public class AdaptadorOcurrencias extends RecyclerView.Adapter<AdaptadorOcurrenc
         if (position == selectedPosition) {
             holder.clFila.setBackgroundResource(R.color.grisSeleccionado);
         } else {
-            holder.clFila.setBackgroundResource(0);
+            holder.clFila.setBackgroundResource(R.color.fondoOcurrencia);
         }
 
 
