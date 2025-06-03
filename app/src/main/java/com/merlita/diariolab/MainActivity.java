@@ -766,8 +766,8 @@ public class MainActivity extends AppCompatActivity {
             db.close();
         }
     }
-    private boolean editarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
-                                      String estudioViejo){
+    private boolean insertarOEditarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
+                                               String estudioViejo){
         long[]  fun = new long[nuevosCualitativos.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -775,20 +775,19 @@ public class MainActivity extends AppCompatActivity {
             //Aquí tiene que llegar un tipo de Dato con FK obligatoriamente:
             SQLiteDatabase db = usdbh.getWritableDatabase();
 
-            Cualitativo cualitativoAux = nuevosCualitativos.get(0);
-            usdbh.borrarCualitativos_PorEstudioYTipo(db, estudioViejo,
-                    cualitativoAux.getFk_dato_tipo_t());
-            TipoDato td = usdbh.getTipoDato(db,
-                    cualitativoAux.getFk_dato_tipo_e(), cualitativoAux.getFk_dato_tipo_t());
+            //Borrar todos los cualitativos del estudio
+            usdbh.borrarCualitativos_PorFK(db, estudioViejo);
             for (int i = 0; i < nuevosCualitativos.size(); i++) {
-                Cualitativo esteCualitativo = nuevosCualitativos.get(i);
+                Cualitativo cualitativoAux = nuevosCualitativos.get(i);
+                TipoDato td = usdbh.getTipoDato(db,
+                        cualitativoAux.getFk_dato_tipo_e(), cualitativoAux.getFk_dato_tipo_t());
 
                 if(td!=null){
-                    esteCualitativo.setFk_dato_tipo_t(td.getId()+"");
+                    cualitativoAux.setFk_dato_tipo_t(td.getId()+"");
                 }
 
                 try{
-                    fun[1+i] = usdbh.insertarCualitativo(db, esteCualitativo);
+                    fun[1+i] = usdbh.insertarCualitativo(db, cualitativoAux);
                     //usdbh.editarDato_porTipoYDatoCualitativo(db, nuevosCualitativos.get(i), estudioViejo);
                 }catch (SQLiteException e){
                     Log.d("MyAdapter", e.getMessage());
@@ -883,8 +882,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 assert cualitativos != null;
                                 if(!cualitativos.isEmpty()){
-                                    cualitativos.get(0).setFk_dato_tipo_e(nuevoEstudio.getNombre());
-                                    insertarCualitativos(cualitativos);
+                                    insertarOEditarCualitativo(cualitativos, nuevoEstudio.getNombre());
                                 }
 
                             }
@@ -937,7 +935,7 @@ public class MainActivity extends AppCompatActivity {
                         //editarDatos(nuevosTiposDato, viejosTipos);
                         editarTipoDato(nuevosTiposDato, viejo.getNombre());
                         if(nuevosCualitativos!=null && !nuevosCualitativos.isEmpty()){
-                            editarCualitativo(nuevosCualitativos, viejo.getNombre());
+                            insertarOEditarCualitativo(nuevosCualitativos, viejo.getNombre());
                         }
                     }
                 }

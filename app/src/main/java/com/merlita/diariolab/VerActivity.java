@@ -188,6 +188,7 @@ public class VerActivity extends AppCompatActivity
                     enabled = !enabled;
                     listaDatos = getDatos(listaTipos, listaTipos.get(0).getFkEstudio());
                     verDatosOcurrencia(ocurrencia, fk_estudio, enabled);
+                    adaptadorColumnas.notifyItemRangeChanged(0, listaDatos.size());
                     btModificar.setText(R.string.modificar);
                 }
             }
@@ -365,7 +366,7 @@ public class VerActivity extends AppCompatActivity
                 values.put("FK_OCURRENCIA", datos.get(0).getFkOcurrencia());
                 String valor = datos.get(i).getValorText();
                 if(valor.isEmpty() || valor.equals("Sin datos")){
-                    values.put("VALOR_TEXT", " ");
+                    values.put("VALOR_TEXT", "Sin datos");
                 }else{
                     values.put("VALOR_TEXT", valor);
                 }
@@ -598,6 +599,10 @@ public class VerActivity extends AppCompatActivity
     @Override
     public void onButtonClickTipoGrafico(TipoDato tipoDato) {
         listaDatos = getDatosDeTipo(tipoDato);
+        actualizarColumnas(tipoDato);
+    }
+
+    private void actualizarColumnas(TipoDato tipoDato) {
         rvColumnas.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL,
                 false));

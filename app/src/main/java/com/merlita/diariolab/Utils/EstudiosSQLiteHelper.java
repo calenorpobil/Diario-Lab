@@ -322,17 +322,18 @@ public class EstudiosSQLiteHelper extends SQLiteOpenHelper {
     public long insertarCualitativo(SQLiteDatabase db, Cualitativo cualitativo)  {
         long newRowId = 0;
 
+        if(!cualitativo.getTitulo().isBlank()){
+            ContentValues values = new ContentValues();
+            values.put("TITULO", cualitativo.getTitulo());
+            values.put("FK_TIPO_DATO_T", cualitativo.getFk_dato_tipo_t());
+            values.put("FK_TIPO_DATO_E", cualitativo.getFk_dato_tipo_e());
 
-        ContentValues values = new ContentValues();
-        values.put("TITULO", cualitativo.getTitulo());
-        values.put("FK_TIPO_DATO_T", cualitativo.getFk_dato_tipo_t());
-        values.put("FK_TIPO_DATO_E", cualitativo.getFk_dato_tipo_e());
-
-        try{
-            newRowId = db.insertOrThrow("CUALITATIVO", null, values);
-        } catch (SQLiteException ex){
-            String a = ex.getMessage();
-            System.out.println(a);
+            try{
+                newRowId = db.insertOrThrow("CUALITATIVO", null, values);
+            } catch (SQLiteException ex){
+                String a = ex.getMessage();
+                System.out.println(a);
+            }
         }
 
 

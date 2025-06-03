@@ -217,6 +217,7 @@ public class AdaptadorTiposDato extends RecyclerView.Adapter<AdaptadorTiposDato.
                 db = usdbh.getWritableDatabase();
 
                 res = usdbh.getCualitativos(db, fk_estudio, fk_tipo);
+                res.removeIf(c -> c.getTitulo().isBlank());
             }
 
             for (int i = 0; i < res.size(); i++) {

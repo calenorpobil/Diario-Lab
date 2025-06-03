@@ -261,9 +261,13 @@ public class EditActivity extends AppCompatActivity
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
-
-//            listaCualitativos = usdbh.getCualitativos(db,
-//                    nombreEstudio, nuevo.getTipoDato());
+//            ArrayList<Cualitativo> cualitativosAux = usdbh.getCualitativos(db,
+//                    nombreEstudio, nuevo.getId()+"");
+//
+//            for (Cualitativo c:
+//                 cualitativosAux) {
+//                listaCualitativos.add(c);
+//            }
 
         }
 
@@ -307,22 +311,23 @@ public class EditActivity extends AppCompatActivity
 
                 builder.show();
             } else {
-                if(isCualitativoSinTitulo()){
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("⚠");
-                    builder.setMessage("Todos los Cualitativos deben tener un título. ");
-                    builder.setPositiveButton("Vale", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    builder.show();
-
-                }else{
-                    guardarDatos();
-                }
+                guardarDatos();
+//                if(isCualitativoSinTitulo()){
+//
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setTitle("⚠");
+//                    builder.setMessage("Todos los Cualitativos deben tener un título. ");
+//                    builder.setPositiveButton("Vale", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//                        }
+//                    });
+//                    builder.show();
+//
+//                }else{
+//                    guardarDatos();
+//                }
             }
         }else{
             toast("Rellena todos los campos. ");

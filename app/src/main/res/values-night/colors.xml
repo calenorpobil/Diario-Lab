@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="fondoRectangulo">#DC7C44</color>
+    <color name="fondoOcurrencia">#292929</color>
     <color name="fondoRectanguloClick">#C76D3A</color>
     <color name="grisSeleccionado">#4B4B4B</color>
 </resources>
