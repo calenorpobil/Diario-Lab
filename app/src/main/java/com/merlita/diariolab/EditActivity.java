@@ -30,6 +30,8 @@ import com.merlita.diariolab.Modelos.TipoDato;
 import com.merlita.diariolab.Utils.EstudiosSQLiteHelper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EditActivity extends AppCompatActivity
         implements AdaptadorTiposDato.OnButtonClickListener {
@@ -45,6 +47,8 @@ public class EditActivity extends AppCompatActivity
     ArrayList<TipoDato> tiposCambiados = new ArrayList<>();
 
     private ArrayList<Cualitativo> listaCualitativos = new ArrayList<>();
+    private HashSet<Cualitativo> setCualitativos = new HashSet<>();
+    private ArrayList<Cualitativo> listaCualitativosAnterior = new ArrayList<>();
     AdaptadorTiposDato adaptadorTiposDato;
     RecyclerView rvTipos;
     String nombreEstudio, nombreEstudioAnterior;
@@ -216,8 +220,7 @@ public class EditActivity extends AppCompatActivity
         } catch (SQLiteDatabaseCorruptException ex){
             toast("Inténtalo en otro momento. ");
         }
-        rvTipos.setLayoutManager(new LinearLayoutManager(this));
-        rvTipos.setAdapter(adaptadorTiposDato);
+//        1vTipos.setAdapter(adaptadorTiposDato);
 
     }
 
@@ -261,13 +264,10 @@ public class EditActivity extends AppCompatActivity
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
                             "DBEstudios", null, DB_VERSION);) {
-//            ArrayList<Cualitativo> cualitativosAux = usdbh.getCualitativos(db,
-//                    nombreEstudio, nuevo.getId()+"");
-//
-//            for (Cualitativo c:
-//                 cualitativosAux) {
-//                listaCualitativos.add(c);
-//            }
+            ArrayList<Cualitativo> cualitativosAux = usdbh.getCualitativos(db,
+                    nombreEstudio, nuevo.getId()+"");
+
+            listaCualitativosAnterior.addAll(cualitativosAux);
 
         }
 
@@ -384,10 +384,16 @@ public class EditActivity extends AppCompatActivity
                         }
 
 
+                        setCualitativos.addAll(listaCualitativos);
+                        listaCualitativos.clear();
+                        listaCualitativos.addAll(setCualitativos);
+
+
                         i.putStringArrayListExtra("ESTUDIO", datosEstudio);
                         i.putParcelableArrayListExtra("NUEVOSTIPOSDATO", listaTiposDato);
                         i.putParcelableArrayListExtra("TIPOSANTERIORES", listaAnterior);
                         i.putParcelableArrayListExtra("NUEVOSCUALITATIVOS", listaCualitativos);
+                        i.putParcelableArrayListExtra("ANTIGUOSCUALITATIVOS", listaCualitativosAnterior);
                         i.putExtra("INDEX", posicion);
 
                         setResult(RESULT_OK, i);
@@ -473,4 +479,6 @@ public class EditActivity extends AppCompatActivity
     public void onButtonClickNuevoCualitativo(Cualitativo nuevo) {
         listaCualitativos.add(0, nuevo);
     }
+
+
 }

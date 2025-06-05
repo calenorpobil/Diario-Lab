@@ -767,7 +767,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private boolean insertarOEditarCualitativo(ArrayList<Cualitativo> nuevosCualitativos,
-                                               String estudioViejo){
+                                               String estudioViejo, ArrayList<Cualitativo> viejosCualitativos){
         long[]  fun = new long[nuevosCualitativos.size()+1];
         try(EstudiosSQLiteHelper usdbh =
                     new EstudiosSQLiteHelper(this,
@@ -882,7 +882,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 assert cualitativos != null;
                                 if(!cualitativos.isEmpty()){
-                                    insertarOEditarCualitativo(cualitativos, nuevoEstudio.getNombre());
+                                    insertarOEditarCualitativo(cualitativos,
+                                            nuevoEstudio.getNombre(), null);
                                 }
 
                             }
@@ -920,6 +921,8 @@ public class MainActivity extends AppCompatActivity {
                         getParcelableArrayListExtra("TIPOSANTERIORES");
                 ArrayList<Cualitativo> nuevosCualitativos = data.
                         getParcelableArrayListExtra("NUEVOSCUALITATIVOS");
+                ArrayList<Cualitativo> viejosCualitativos = data.
+                        getParcelableArrayListExtra("ANTIGUOSCUALITATIVOS");
 
                 int posicion = data.getIntExtra("INDEX", -1);
 
@@ -935,7 +938,8 @@ public class MainActivity extends AppCompatActivity {
                         //editarDatos(nuevosTiposDato, viejosTipos);
                         editarTipoDato(nuevosTiposDato, viejo.getNombre());
                         if(nuevosCualitativos!=null && !nuevosCualitativos.isEmpty()){
-                            insertarOEditarCualitativo(nuevosCualitativos, viejo.getNombre());
+                            insertarOEditarCualitativo(nuevosCualitativos, viejo.getNombre(),
+                                    viejosCualitativos);
                         }
                     }
                 }
